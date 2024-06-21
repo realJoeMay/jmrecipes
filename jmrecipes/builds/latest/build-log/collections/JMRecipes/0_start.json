@@ -1,0 +1,9 @@
+{
+    "name": "JMRecipes",
+    "label": "More Recipes",
+    "url_path": "",
+    "recipes": [
+        "test-chili",
+        "test-yaml"
+    ]
+}

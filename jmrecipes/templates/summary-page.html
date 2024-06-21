@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Summary • {{ site_title }}</title>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap' rel='stylesheet'>
+    <link rel='icon' type='image/x-icon' href='./icon.png'>
+    <style>
+
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    margin: 0;
+    display: flex;
+    /* justify-content: center; */
+}
+
+a, a:visited {
+    text-decoration: none;
+}
+
+.summary {
+    max-width: 1000px;
+    margin: 0 20px;
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-spacing: 0px;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
+
+th {
+    text-align: start;
+}
+
+th, td {
+    padding: 4px 10px;
+    vertical-align: top;
+}
+
+    </style>
+
+</head>
+<body>
+    <div class="summary">
+
+        <h1>Summary</h1>
+
+        <h2>Recipes</h2>
+        <div>
+            <table>
+                <th>Recipes</th>
+                <th>Collections</th>
+                {% for r in recipes %}
+                <tr>
+                    <td>{{ r.title }}</td>
+                    <td>
+                        {% for c in r.collections %}
+                        <div>{{ c.name }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>            
+        </div>
+
+        <h2>Collections</h2>
+        <div>
+            <table>
+                <th>Collection</th>
+                <th>Recipes</th>
+                {% for c in collections %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>
+                        {% for r in c.recipes %}
+                        <div>{{ r.title }}</div>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>            
+        </div>
+
+        <h2>Ingredients</h2>
+        <div>
+            <table>
+                <th>Recipe</th>
+                <th>Scale</th>
+                <th>Ingredient</th>            
+                {% for r in recipes %}
+                {% for s in r.scales %}
+                {% for i in s.ingredients %}
+                <tr>
+                    <td>{{ r.title }}</td>
+                    <td>{{ s.label }}</td>
+                    <td>{{ i.string }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+                {% endfor %}
+            </table>
+        </div>
+    </div><!-- summary -->
+    
+
+    </div>
+
+        
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+    "name": "Test Recipes",
+    "label": "View All Test Recipes",
+    "url_path": "test-collection",
+    "recipes": [
+        "test-chili"
+    ],
+    "is_homepage": false,
+    "href": "../test-collection"
+}

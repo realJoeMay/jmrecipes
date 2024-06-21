@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>{{ r.title }} • {{ site_title }}</title>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap' rel='stylesheet'>
+    <link rel='icon' type='image/x-icon' href='../icon.png'>
+    <style>
+
+html {
+    font-size: 100%;
+    background-color: #eee;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+body {
+    margin: 0 0 6rem;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+a, a:hover {
+    text-decoration: none;
+    color: #146EBE
+}
+
+
+/* SCALE */
+
+.scale {
+  display: none;
+}
+
+{% for scale in r.scales %}
+.{{ scale.select_class }} .{{ scale.item_class }} {
+  display: block;
+}
+{% endfor %}
+
+
+/* BANNER */
+
+.recipe-banner {
+    max-width: 960px;
+    margin: 0 auto -80px;
+    text-align: center;
+}
+
+.recipe-banner .recipe-image {
+    max-width: 100%;
+    height: 0;
+    box-shadow: 0 1px 10px rgb(0 0 0 / 8%);
+    padding-bottom: calc(540 / 960 * 100%);
+    background-size: cover;
+}
+
+
+
+/* BOXES */
+
+.recipe-boxes:first-child {
+    margin-top: 42px; /* no banner */
+}
+
+.recipe-boxes {
+  position: relative;
+  max-width: 88%;
+  margin: 0px auto 0;
+  container-type: inline-size;
+}
+
+.recipe-box {
+  box-sizing: border-box;
+  max-width: 800px;
+  padding: 24px;
+  margin: 0px auto 42px;
+  background: white;
+  box-shadow: 0 1px 10px rgb(0 0 0 / 8%);
+  transition: padding 0.3s;
+}
+
+@container (min-width: 600px) {
+    .recipe-box {
+        padding: 60px;
+    }
+}
+
+
+/* HEADER */
+
+.title-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.recipe-title {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #272727;
+}
+
+.recipe-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #999;
+}
+
+.description-area {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: solid 1px #ccc;
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+}
+
+.description-area:empty {
+    padding-top: 0rem;
+    margin-top: 0rem;
+    border-top: none;
+}
+
+
+.description-row {
+    display: flex;
+    column-gap: 6px;
+}
+
+.description-value {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ICONS */
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    fill: rgb(85, 88, 92);
+}
+
+svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+
+
+
+
+/* MENU */
+
+.menu {
+    min-height: 100vh;
+    width: 280px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+    box-shadow: 0 1px 10px rgb(0 0 0 / 8%);
+    margin-right: -280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-top {
+    margin-top: 40px;
+}
+
+.menu-bottom {
+    margin-bottom: 10px;
+}
+
+.menu-section-break {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: solid 2px rgba(128, 128, 128, 0.2);
+}
+
+
+
+
+/* MENU ITEMS */
+
+.menu-header {
+    color: rgb(55, 53, 47);
+    fill: rgb(55, 53, 47);
+    font-size: 1.0rem;
+    margin: 0.4rem 20px;
+    font-weight: 400;
+    display: flex;
+    align-items: start;
+}
+
+a.menu-header:hover {
+    color: rgb(55, 53, 47);
+}
+
+@media screen and (max-width: 450px) {
+    .menu-header {font-size: 1.2rem;}
+}
+
+.menu-item {
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+}
+
+.menu-item:hover {
+    border-radius: 3px;
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.menu-icon {
+    width: 1rem;
+    padding:2px 0.8rem 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.menu-text {
+    flex-grow: 1;
+}
+
+.menu-copy-ingredients .menu-header .menu-text {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0px;
+}
+
+
+
+/* MENU BUTTONS */
+
+.menu-button-section {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2%;
+  row-gap: 5px;
+  padding: 0 20px;
+}
+
+.menu-button-section {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome, Edge, Opera and Firefox */
+}
+
+.menu-button-section .menu-button {
+  width:32%;
+  padding: 10px 3px;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
+}
+
+.menu-button:not(.selected):hover {
+    background-color:rgba(128, 128, 128, 0.2);
+}
+
+.menu-button.selected {
+    border-color: #146EBE;
+    color: #146EBE;
+}
+
+
+/* MENU TOGGLE */
+
+.menu-open .menu {
+    margin-right: 0;
+}
+
+.menu-open .recipe {
+    margin-right: 280px;
+}
+
+@media only screen and (max-width: 600px) {
+    .menu-open .recipe {
+        margin-right: 0;
+    }
+}
+
+.recipe, .menu {
+    transition: margin-right .4s;
+}
+
+
+
+/* MENU BUTTONS */
+
+.menu-toggle-btn,
+.menu-close-btn {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 3px;
+}
+
+.menu-toggle-btn {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+}
+
+.menu-toggle-btn svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.menu-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    width: 1rem;
+    height: 1rem;
+}
+
+.menu-close-btn svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.menu-toggle-btn:hover,
+.menu-close-btn:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+
+
+
+/* INGREDIENTS */
+
+.recipe-box-ingredients {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+    column-gap: 4%;
+}
+
+.ingredient-list-name {
+    width: 100%;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #343434;
+    padding-bottom: 0.5rem;
+
+    padding-top: 1.2rem;
+    margin-top: 1rem;
+    border-top: solid 1px #ccc;
+}
+
+.ingredient-list-name:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+}
+
+
+.ingredient {
+    width: 100%;
+}
+
+@container (min-width: 600px){
+    .ingredient {
+        width: 48%;
+    }
+}
+
+.box-title {
+    font-size: 2rem;
+    font-weight: 500;
+    color: #343434;
+    padding-bottom: 1.25rem;
+}
+
+.ingredient-amount {
+    line-height: 1.4;
+}
+
+.ingredient-item {
+    line-height: 1.4;
+    font-weight: 600;
+    color: #343434;
+}
+
+.ingredient-item-descriptor {
+    margin-left: 2px;
+    color: #888;
+    font-style: italic;
+    font-weight: 400;
+}
+
+
+/* INSTRUCTIONS */
+
+.step {
+    display: flex;
+    padding: 0 0 1.25rem 0;
+    margin: 0 0 1.25rem 0;
+    border-bottom: solid 1px #ccc;
+}
+
+.step:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.step-number-circle {
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    border-radius: 3rem;
+    margin-right: 1.25rem;
+    background-color: #E0E0E0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.step-number-number {
+    font-size: 1.5rem;
+    color: #343434;
+}
+
+.step-text {
+    font-size: 1rem;
+    color: #545454;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-top">
+
+            <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
+
+            {% if r.has_scales %}
+            <div class='menu-scale'>
+                <h3 class='menu-header'>Scale</h3>
+                <div class='menu-content menu-button-section'>
+                    {% for scale in r.scales %}
+                    <div class="menu-button menu-button-scale {{ scale.button_class }} {% if scale.multiplier == 1 %}selected{% endif %}" onclick="{{ scale.js_function_name }}()">
+    
+                    {% if scale.has_servings %}
+                    <span style="margin-top:-3px;">{{ scale.servings }}</span>
+                    <span style="font-size:0.9rem;">Servings</span>
+                    {% else %}
+                        {{ scale.label }}
+                    {% endif %}
+
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="menu-section-break"></div>
+            {% endif %}
+
+
+            {% for scale in r.scales %}
+            {% if scale.has_ingredients %}
+            <div class='menu-copy-ingredients scale {{ scale.item_class }}'>
+                <h3 class='menu-header menu-item'>
+                    <span class='menu-icon icon-wrapper copy-ingredients-item'>{{ icon.clipboard }}</span>
+                    <span class='menu-text copy-ingredients-item'>
+                        <span class="button-label">Copy Ingredients</span>
+                        {% if scale.copy_ingredients_sublabel %}
+                        <span class="button-sublabel" style="font-size:0.8rem;">{{ scale.copy_ingredients_sublabel }}</span>
+                        {% endif %}
+                    </span>
+                </h3>
+                <ul class="copy-ingredients" style="display:none;">
+                    {% for i in scale.ingredients %}
+                    <li>{{ i.string }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endfor %}
+    
+
+        
+            <div class='menu_print'>
+                <a class='menu-header menu-item' href='./p{% if is_local %}/index.html{% endif %}'>
+                    <span class='menu-icon icon-wrapper'>{{ icon.print }}</span>
+                    <span class='menu-text'>print</span>
+                </a>
+            </div>
+
+            {% for collection in r.collections %}
+            <div class='menu_collection'>
+              <a class='menu-header menu-item' href='{{ collection.href }}{% if is_local %}/index.html{% endif %}'>
+                  <span class='menu-icon icon-wrapper'>{{ icon.home }}</span>
+                  <span class='menu-text'>{{ collection.label }}</span>
+              </a>
+            </div>
+            {% endfor %}
+    
+
+        </div><!-- menu top -->
+
+        <div class="menu-bottom">
+
+            <div class="menu-section-break"></div>
+    
+            <div class='menu_feedback'>
+                <a class='menu-header menu-item' href="{{ r.feedback_url }}" target="_blank">
+                    <span class='menu-icon icon-wrapper'>{{ icon.message }}</span>
+                    <span class='menu-text'>Feedback</span>
+                </a>
+            </div>
+    
+        </div><!-- menu bottom -->
+    
+    </div><!-- menu -->
+    
+
+    <main class="recipe">
+
+        {% if r.has_image %}
+        <div class='recipe-banner'>
+            <div class='recipe-image' style='background-image: url(./{{ r.image }});'>&nbsp;</div>
+        </div>
+        {% endif %}
+  
+        <div class='recipe-boxes'>
+
+            <div class='recipe-box recipe-box-header'>
+
+                <div class='title-area'>
+                    <h1 class='recipe-title'>{{ r.title }}</h1>
+                    <span class='menu-toggle-btn icon-wrapper' onclick='toggleMenu()'>{{ icon.gear }}</span>
+                </div>
+                {% if r.has_subtitle %}
+                <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
+                {% endif %}
+
+                {% for scale in r.scales %}
+                {% if scale.has_description_area %}
+                <div class='scale {{ scale.item_class }}'>
+                    <div class='description-area'>
+                        {% if scale.has_visible_yields %}
+                        <div class='description-row'>
+                            <span class='description-label'>Yield:</span>
+                            <span class='description-value'>
+                                {% for yield in scale.yield %}
+                                {% if scale.has_visible_yields %}
+                                <span class=''>{{ yield.display_yield }}</span>
+                                {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+            
+                        {% endif %}
+                    </div><!-- description area -->
+                </div><!-- scale -->
+                {% endif %}
+                {% endfor %}
+
+            </div><!-- recipe box header -->
+            
+
+            {% for scale in r.scales %}
+            {% if scale.has_ingredients %}
+            <div class="scale {{ scale.item_class }}">
+                <div class="recipe-box recipe-box-ingredients">
+    
+                    {% for list_name, ingredients in scale.ingredient_lists.items() %}
+                    <h2 class='ingredient-list-name'>{{ list_name }}</h2>
+        
+                    {% for ingredient in ingredients %}
+                    <div class="ingredient">
+        
+                        {% if ingredient.display_amount %}
+                        <div class="ingredient-amount">{{ ingredient.display_amount }}</div>
+                        {% endif %}
+            
+                        {% if ingredient.display_item %}
+                        <div class="ingredient-item">
+                            {{ ingredient.display_item }}
+                            {% if ingredient.descriptor %}
+                            <span class="ingredient-item-descriptor">{{ ingredient.descriptor }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}    
+
+                    </div><!-- ingredient -->
+    
+                {% endfor %}
+                {% endfor %}
+                </div><!-- recipe-box -->
+            </div><!-- scale -->
+            
+            {% endif %}
+            {% endfor %}
+    
+
+            {% for scale in r.scales %}
+            {% if scale.has_instructions %}
+            <div class="scale {{ scale.item_class }}">
+
+                {% for list_name, steps in scale.instruction_lists.items() %}
+                <div class="recipe-box recipe-box-instructions">
+                    <h2 class='box-title'>{{ list_name }}</h2>
+                    {% for step in steps %}
+                    <div class='step'>
+                        <div class='step-number-circle'>
+                            <div class='step-number-number'>{{ step.number }}</div>
+                        </div>
+                        <div class='step-text'>{{ step.text }}</div>
+                    </div>
+          
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+            </div>
+            {% endif %}
+            {% endfor %}
+
+
+        </div>
+    </main>
+
+
+
+
+    <script type="application/ld+json">
+        {{ r.schema_string }}
+    </script>
+
+    <script>
+
+const pageBody = document.querySelector("body");
+
+// Menu
+
+function toggleMenu() {
+    if (pageBody.classList.contains("menu-open")) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+}
+
+function openMenu() {
+    pageBody.classList.add("menu-open");
+}
+
+function closeMenu() {
+    pageBody.classList.remove("menu-open");
+}
+
+
+
+// Scale
+
+function scaleNone() {
+    const menuButtons = document.querySelectorAll(".menu-button-scale")
+    menuButtons.forEach((button) => {
+        button.classList.remove("selected")
+    })
+
+    // remove body classes with prefix
+    const prefix = "display-scale";
+    const classes = pageBody.className.split(" ").filter(c => !c.startsWith(prefix));
+    pageBody.className = classes.join(" ").trim();
+}
+
+{% for scale in r.scales %}
+function {{ scale.js_function_name }}() {
+    scaleNone();
+    pageBody.classList.add("{{ scale.select_class }}");
+    const button = document.querySelector(".{{ scale.button_class }}");
+    button.classList.add("selected")
+}
+{% endfor %}
+
+pageBody.classList.add("{{ r.base_select_class }}");
+
+
+
+
+// Copy Ingredients
+
+{% for scale in r.scales %}
+{% if scale.has_ingredients %}
+
+document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .menu-header").addEventListener("click", function() {
+    var copiedText = "";
+    console.log('hit copy button');
+    document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .copy-ingredients").querySelectorAll("li").forEach(function(line) {
+        copiedText += line.textContent.trim() + "\n";
+    });
+    navigator.clipboard.writeText(copiedText)
+        .then(function() {
+        document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .menu-icon").innerHTML = '{{ icon.check }}';
+        document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .button-label").innerHTML = 'Copied!';
+        setTimeout(function() {
+            document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .menu-icon").innerHTML = '{{ icon.clipboard }}';
+            document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .button-label").innerHTML = 'Copy Ingredients';
+        }, 3000);
+        })
+        .catch(function(err) {
+        console.error('Unable to copy text: ', err);
+        });
+    });
+
+{% endif %}
+{% endfor %}
+
+
+
+
+
+
+
+// Keyboard Shortcuts
+
+document.addEventListener("keydown", function(e) {
+
+    console.log(e.code);
+
+    // Press m to toggle menu
+    if (e.code === "KeyM") {
+        toggleMenu();
+    }
+
+    // Press escape to close menu
+    if (e.code === "Escape") {
+        closeMenu();
+    }
+
+    // Press digit to select scale
+    {% for scale in r.scales %}
+    if (e.code === "Digit{{ scale.keyboard_shortcut }}") {
+        {{ scale.js_function_name }}();
+    }
+    {% endfor %}
+
+});
+
+
+    </script>
+
+
+</body>
+</html>

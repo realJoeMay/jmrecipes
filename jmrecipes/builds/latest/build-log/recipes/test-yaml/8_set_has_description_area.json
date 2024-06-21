@@ -1,0 +1,1325 @@
+{
+    "title": "Normal Recipe yaml",
+    "subtitle": "it's pretty good",
+    "yield": [
+        {
+            "number": "12 <Fraction>",
+            "unit": "servings",
+            "show_yield": true,
+            "show_serving_size": false
+        },
+        {
+            "number": "24 <Fraction>",
+            "unit": "cups",
+            "show_yield": false,
+            "show_serving_size": true
+        }
+    ],
+    "ingredients": [
+        {
+            "number": "2 <Fraction>",
+            "unit": "lb",
+            "item": "Ground Beef",
+            "descriptor": "",
+            "display_number": "2 <Fraction>",
+            "display_unit": "lb",
+            "display_item": "Ground Beef",
+            "list": "Ingredients"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "lb",
+            "item": "Ground Sweet Italian Sausage",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "lb",
+            "display_item": "Ground Sweet Italian Sausage",
+            "list": "Ingredients"
+        },
+        {
+            "number": "60 <Fraction>",
+            "unit": "oz",
+            "item": "Red Kidney Beans",
+            "descriptor": "drained",
+            "display_number": "4 <Fraction>",
+            "display_unit": "(15 oz) cans",
+            "display_item": "Red Kidney Beans",
+            "list": "Ingredients"
+        },
+        {
+            "number": "48 <Fraction>",
+            "unit": "oz",
+            "item": "Diced Tomatoes",
+            "descriptor": "with juice",
+            "display_number": "2 <Fraction>",
+            "display_unit": "(28 oz) cans",
+            "display_item": "Diced Tomatoes",
+            "list": "Ingredients"
+        },
+        {
+            "number": "6 <Fraction>",
+            "unit": "oz",
+            "item": "Tomato Paste",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "(6 oz) can",
+            "display_item": "Tomato Paste",
+            "list": "Ingredients"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "",
+            "item": "Sweet Onion",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "",
+            "display_item": "Sweet Onion",
+            "list": "Ingredients"
+        },
+        {
+            "number": "2 <Fraction>",
+            "unit": "",
+            "item": "Red Bell Pepper",
+            "descriptor": "",
+            "display_number": "2 <Fraction>",
+            "display_unit": "",
+            "display_item": "Red Bell Peppers",
+            "list": "Ingredients"
+        },
+        {
+            "number": "4 <Fraction>",
+            "unit": "tsp",
+            "item": "Better Than Bouillon Beef",
+            "descriptor": "",
+            "display_number": "4 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Better Than Bouillon Beef",
+            "list": "Ingredients"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tbsp",
+            "item": "Worcestershire Sauce",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tbsp",
+            "display_item": "Worcestershire Sauce",
+            "list": "Ingredients"
+        },
+        {
+            "number": "1/2 <Fraction>",
+            "unit": "cup",
+            "item": "Beer",
+            "descriptor": "",
+            "display_number": "1/2 <Fraction>",
+            "display_unit": "cup",
+            "display_item": "Beer",
+            "list": "Ingredients"
+        },
+        {
+            "number": "12 <Fraction>",
+            "unit": "oz",
+            "item": "Frozen Corn",
+            "descriptor": "",
+            "display_number": "12 <Fraction>",
+            "display_unit": "oz",
+            "display_item": "Frozen Corn",
+            "list": "Ingredients"
+        },
+        {
+            "number": "1/4 <Fraction>",
+            "unit": "cup",
+            "item": "Chili Powder",
+            "descriptor": "",
+            "display_number": "1/4 <Fraction>",
+            "display_unit": "cup",
+            "display_item": "Chili Powder",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tbsp",
+            "item": "Minced Garlic",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tbsp",
+            "display_item": "Minced Garlic",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Cayenne",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Cayenne",
+            "list": "Staples"
+        },
+        {
+            "number": "2 <Fraction>",
+            "unit": "tsp",
+            "item": "Cumin",
+            "descriptor": "",
+            "display_number": "2 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Cumin",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Paprika",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Paprika",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Oregano",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Oregano",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Basil",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Basil",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Salt",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Salt",
+            "list": "Staples"
+        },
+        {
+            "number": "1 <Fraction>",
+            "unit": "tsp",
+            "item": "Black Pepper",
+            "descriptor": "",
+            "display_number": "1 <Fraction>",
+            "display_unit": "tsp",
+            "display_item": "Black Pepper",
+            "list": "Staples"
+        }
+    ],
+    "instructions": [
+        {
+            "text": "Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently, until meat is evenly browned. Drain off excess grease."
+        },
+        {
+            "text": "Add in remaining ingredients. Stir to blend, then cover and simmer over low heat for at least 2 hours, stirring occasionally."
+        }
+    ],
+    "scales": [
+        {
+            "multiplier": "1 <Fraction>",
+            "label": "1x",
+            "item_class": "scale-1x",
+            "select_class": "display-scale-1x",
+            "button_class": "display-scale-1x-btn",
+            "js_function_name": "scale1x",
+            "keyboard_shortcut": 1,
+            "yield": [
+                {
+                    "number": "12 <Fraction>",
+                    "unit": "servings",
+                    "show_yield": true,
+                    "show_serving_size": false,
+                    "display_yield": "12 servings"
+                },
+                {
+                    "number": "24 <Fraction>",
+                    "unit": "cups",
+                    "show_yield": false,
+                    "show_serving_size": true
+                }
+            ],
+            "has_visible_yields": true,
+            "has_servings": true,
+            "servings": "12 <Fraction>",
+            "servings_string": "12 servings",
+            "copy_ingredients_sublabel": "",
+            "ingredients": [
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "lb",
+                    "item": "Ground Beef",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "lb",
+                    "display_item": "Ground Beef",
+                    "list": "Ingredients",
+                    "string": "2 lb Ground Beef",
+                    "display_amount": "2 lb"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "lb",
+                    "item": "Ground Sweet Italian Sausage",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "lb",
+                    "display_item": "Ground Sweet Italian Sausage",
+                    "list": "Ingredients",
+                    "string": "1 lb Ground Sweet Italian Sausage",
+                    "display_amount": "1 lb"
+                },
+                {
+                    "number": "60 <Fraction>",
+                    "unit": "oz",
+                    "item": "Red Kidney Beans",
+                    "descriptor": "drained",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "(15 oz) cans",
+                    "display_item": "Red Kidney Beans",
+                    "list": "Ingredients",
+                    "string": "4 (15 oz) cans Red Kidney Beans",
+                    "display_amount": "4 (15 oz) cans"
+                },
+                {
+                    "number": "48 <Fraction>",
+                    "unit": "oz",
+                    "item": "Diced Tomatoes",
+                    "descriptor": "with juice",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "(28 oz) cans",
+                    "display_item": "Diced Tomatoes",
+                    "list": "Ingredients",
+                    "string": "2 (28 oz) cans Diced Tomatoes",
+                    "display_amount": "2 (28 oz) cans"
+                },
+                {
+                    "number": "6 <Fraction>",
+                    "unit": "oz",
+                    "item": "Tomato Paste",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "(6 oz) can",
+                    "display_item": "Tomato Paste",
+                    "list": "Ingredients",
+                    "string": "1 (6 oz) can Tomato Paste",
+                    "display_amount": "1 (6 oz) can"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "",
+                    "item": "Sweet Onion",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "",
+                    "display_item": "Sweet Onion",
+                    "list": "Ingredients",
+                    "string": "1 Sweet Onion",
+                    "display_amount": "1"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "",
+                    "item": "Red Bell Pepper",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "",
+                    "display_item": "Red Bell Peppers",
+                    "list": "Ingredients",
+                    "string": "2 Red Bell Peppers",
+                    "display_amount": "2"
+                },
+                {
+                    "number": "4 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Better Than Bouillon Beef",
+                    "descriptor": "",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Better Than Bouillon Beef",
+                    "list": "Ingredients",
+                    "string": "4 tsp Better Than Bouillon Beef",
+                    "display_amount": "4 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tbsp",
+                    "item": "Worcestershire Sauce",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tbsp",
+                    "display_item": "Worcestershire Sauce",
+                    "list": "Ingredients",
+                    "string": "1 tbsp Worcestershire Sauce",
+                    "display_amount": "1 tbsp"
+                },
+                {
+                    "number": "1/2 <Fraction>",
+                    "unit": "cup",
+                    "item": "Beer",
+                    "descriptor": "",
+                    "display_number": "1/2 <Fraction>",
+                    "display_unit": "cup",
+                    "display_item": "Beer",
+                    "list": "Ingredients",
+                    "string": "\u00bd cup Beer",
+                    "display_amount": "\u00bd cup"
+                },
+                {
+                    "number": "12 <Fraction>",
+                    "unit": "oz",
+                    "item": "Frozen Corn",
+                    "descriptor": "",
+                    "display_number": "12 <Fraction>",
+                    "display_unit": "oz",
+                    "display_item": "Frozen Corn",
+                    "list": "Ingredients",
+                    "string": "12 oz Frozen Corn",
+                    "display_amount": "12 oz"
+                },
+                {
+                    "number": "1/4 <Fraction>",
+                    "unit": "cup",
+                    "item": "Chili Powder",
+                    "descriptor": "",
+                    "display_number": "1/4 <Fraction>",
+                    "display_unit": "cup",
+                    "display_item": "Chili Powder",
+                    "list": "Staples",
+                    "string": "\u00bc cup Chili Powder",
+                    "display_amount": "\u00bc cup"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tbsp",
+                    "item": "Minced Garlic",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tbsp",
+                    "display_item": "Minced Garlic",
+                    "list": "Staples",
+                    "string": "1 tbsp Minced Garlic",
+                    "display_amount": "1 tbsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Cayenne",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Cayenne",
+                    "list": "Staples",
+                    "string": "1 tsp Cayenne",
+                    "display_amount": "1 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Cumin",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Cumin",
+                    "list": "Staples",
+                    "string": "2 tsp Cumin",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Paprika",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Paprika",
+                    "list": "Staples",
+                    "string": "1 tsp Paprika",
+                    "display_amount": "1 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Oregano",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Oregano",
+                    "list": "Staples",
+                    "string": "1 tsp Oregano",
+                    "display_amount": "1 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Basil",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Basil",
+                    "list": "Staples",
+                    "string": "1 tsp Basil",
+                    "display_amount": "1 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Salt",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Salt",
+                    "list": "Staples",
+                    "string": "1 tsp Salt",
+                    "display_amount": "1 tsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Black Pepper",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Black Pepper",
+                    "list": "Staples",
+                    "string": "1 tsp Black Pepper",
+                    "display_amount": "1 tsp"
+                }
+            ],
+            "has_ingredients": true,
+            "ingredient_lists": {
+                "Ingredients": [
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "lb",
+                        "item": "Ground Beef",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "lb",
+                        "display_item": "Ground Beef",
+                        "list": "Ingredients",
+                        "string": "2 lb Ground Beef",
+                        "display_amount": "2 lb"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "lb",
+                        "item": "Ground Sweet Italian Sausage",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "lb",
+                        "display_item": "Ground Sweet Italian Sausage",
+                        "list": "Ingredients",
+                        "string": "1 lb Ground Sweet Italian Sausage",
+                        "display_amount": "1 lb"
+                    },
+                    {
+                        "number": "60 <Fraction>",
+                        "unit": "oz",
+                        "item": "Red Kidney Beans",
+                        "descriptor": "drained",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "(15 oz) cans",
+                        "display_item": "Red Kidney Beans",
+                        "list": "Ingredients",
+                        "string": "4 (15 oz) cans Red Kidney Beans",
+                        "display_amount": "4 (15 oz) cans"
+                    },
+                    {
+                        "number": "48 <Fraction>",
+                        "unit": "oz",
+                        "item": "Diced Tomatoes",
+                        "descriptor": "with juice",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "(28 oz) cans",
+                        "display_item": "Diced Tomatoes",
+                        "list": "Ingredients",
+                        "string": "2 (28 oz) cans Diced Tomatoes",
+                        "display_amount": "2 (28 oz) cans"
+                    },
+                    {
+                        "number": "6 <Fraction>",
+                        "unit": "oz",
+                        "item": "Tomato Paste",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "(6 oz) can",
+                        "display_item": "Tomato Paste",
+                        "list": "Ingredients",
+                        "string": "1 (6 oz) can Tomato Paste",
+                        "display_amount": "1 (6 oz) can"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "",
+                        "item": "Sweet Onion",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "",
+                        "display_item": "Sweet Onion",
+                        "list": "Ingredients",
+                        "string": "1 Sweet Onion",
+                        "display_amount": "1"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "",
+                        "item": "Red Bell Pepper",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "",
+                        "display_item": "Red Bell Peppers",
+                        "list": "Ingredients",
+                        "string": "2 Red Bell Peppers",
+                        "display_amount": "2"
+                    },
+                    {
+                        "number": "4 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Better Than Bouillon Beef",
+                        "descriptor": "",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Better Than Bouillon Beef",
+                        "list": "Ingredients",
+                        "string": "4 tsp Better Than Bouillon Beef",
+                        "display_amount": "4 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tbsp",
+                        "item": "Worcestershire Sauce",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tbsp",
+                        "display_item": "Worcestershire Sauce",
+                        "list": "Ingredients",
+                        "string": "1 tbsp Worcestershire Sauce",
+                        "display_amount": "1 tbsp"
+                    },
+                    {
+                        "number": "1/2 <Fraction>",
+                        "unit": "cup",
+                        "item": "Beer",
+                        "descriptor": "",
+                        "display_number": "1/2 <Fraction>",
+                        "display_unit": "cup",
+                        "display_item": "Beer",
+                        "list": "Ingredients",
+                        "string": "\u00bd cup Beer",
+                        "display_amount": "\u00bd cup"
+                    },
+                    {
+                        "number": "12 <Fraction>",
+                        "unit": "oz",
+                        "item": "Frozen Corn",
+                        "descriptor": "",
+                        "display_number": "12 <Fraction>",
+                        "display_unit": "oz",
+                        "display_item": "Frozen Corn",
+                        "list": "Ingredients",
+                        "string": "12 oz Frozen Corn",
+                        "display_amount": "12 oz"
+                    }
+                ],
+                "Staples": [
+                    {
+                        "number": "1/4 <Fraction>",
+                        "unit": "cup",
+                        "item": "Chili Powder",
+                        "descriptor": "",
+                        "display_number": "1/4 <Fraction>",
+                        "display_unit": "cup",
+                        "display_item": "Chili Powder",
+                        "list": "Staples",
+                        "string": "\u00bc cup Chili Powder",
+                        "display_amount": "\u00bc cup"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tbsp",
+                        "item": "Minced Garlic",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tbsp",
+                        "display_item": "Minced Garlic",
+                        "list": "Staples",
+                        "string": "1 tbsp Minced Garlic",
+                        "display_amount": "1 tbsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Cayenne",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Cayenne",
+                        "list": "Staples",
+                        "string": "1 tsp Cayenne",
+                        "display_amount": "1 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Cumin",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Cumin",
+                        "list": "Staples",
+                        "string": "2 tsp Cumin",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Paprika",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Paprika",
+                        "list": "Staples",
+                        "string": "1 tsp Paprika",
+                        "display_amount": "1 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Oregano",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Oregano",
+                        "list": "Staples",
+                        "string": "1 tsp Oregano",
+                        "display_amount": "1 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Basil",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Basil",
+                        "list": "Staples",
+                        "string": "1 tsp Basil",
+                        "display_amount": "1 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Salt",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Salt",
+                        "list": "Staples",
+                        "string": "1 tsp Salt",
+                        "display_amount": "1 tsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Black Pepper",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Black Pepper",
+                        "list": "Staples",
+                        "string": "1 tsp Black Pepper",
+                        "display_amount": "1 tsp"
+                    }
+                ]
+            },
+            "instructions": [
+                {
+                    "text": "Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently, until meat is evenly browned. Drain off excess grease.",
+                    "number": 1
+                },
+                {
+                    "text": "Add in remaining ingredients. Stir to blend, then cover and simmer over low heat for at least 2 hours, stirring occasionally.",
+                    "number": 2
+                }
+            ],
+            "has_instructions": true,
+            "instruction_lists": {
+                "Instructions": [
+                    {
+                        "text": "Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently, until meat is evenly browned. Drain off excess grease.",
+                        "number": 1
+                    },
+                    {
+                        "text": "Add in remaining ingredients. Stir to blend, then cover and simmer over low heat for at least 2 hours, stirring occasionally.",
+                        "number": 2
+                    }
+                ]
+            },
+            "has_description_area": true
+        },
+        {
+            "multiplier": "2 <Fraction>",
+            "label": "2x",
+            "item_class": "scale-2x",
+            "select_class": "display-scale-2x",
+            "button_class": "display-scale-2x-btn",
+            "js_function_name": "scale2x",
+            "keyboard_shortcut": 2,
+            "yield": [
+                {
+                    "number": "24 <Fraction>",
+                    "unit": "servings",
+                    "show_yield": true,
+                    "show_serving_size": false,
+                    "display_yield": "24 servings"
+                },
+                {
+                    "number": "48 <Fraction>",
+                    "unit": "cups",
+                    "show_yield": false,
+                    "show_serving_size": true
+                }
+            ],
+            "has_visible_yields": true,
+            "has_servings": true,
+            "servings": "24 <Fraction>",
+            "servings_string": "24 servings",
+            "copy_ingredients_sublabel": "for 24 servings",
+            "ingredients": [
+                {
+                    "number": "4 <Fraction>",
+                    "unit": "lb",
+                    "item": "Ground Beef",
+                    "descriptor": "",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "lb",
+                    "display_item": "Ground Beef",
+                    "list": "Ingredients",
+                    "string": "4 lb Ground Beef",
+                    "display_amount": "4 lb"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "lb",
+                    "item": "Ground Sweet Italian Sausage",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "lb",
+                    "display_item": "Ground Sweet Italian Sausage",
+                    "list": "Ingredients",
+                    "string": "2 lb Ground Sweet Italian Sausage",
+                    "display_amount": "2 lb"
+                },
+                {
+                    "number": "120 <Fraction>",
+                    "unit": "oz",
+                    "item": "Red Kidney Beans",
+                    "descriptor": "drained",
+                    "display_number": "8 <Fraction>",
+                    "display_unit": "(15 oz) cans",
+                    "display_item": "Red Kidney Beans",
+                    "list": "Ingredients",
+                    "string": "8 (15 oz) cans Red Kidney Beans",
+                    "display_amount": "8 (15 oz) cans"
+                },
+                {
+                    "number": "96 <Fraction>",
+                    "unit": "oz",
+                    "item": "Diced Tomatoes",
+                    "descriptor": "with juice",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "(28 oz) cans",
+                    "display_item": "Diced Tomatoes",
+                    "list": "Ingredients",
+                    "string": "4 (28 oz) cans Diced Tomatoes",
+                    "display_amount": "4 (28 oz) cans"
+                },
+                {
+                    "number": "12 <Fraction>",
+                    "unit": "oz",
+                    "item": "Tomato Paste",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "(6 oz) can",
+                    "display_item": "Tomato Paste",
+                    "list": "Ingredients",
+                    "string": "2 (6 oz) can Tomato Paste",
+                    "display_amount": "2 (6 oz) can"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "",
+                    "item": "Sweet Onion",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "",
+                    "display_item": "Sweet Onion",
+                    "list": "Ingredients",
+                    "string": "2 Sweet Onion",
+                    "display_amount": "2"
+                },
+                {
+                    "number": "4 <Fraction>",
+                    "unit": "",
+                    "item": "Red Bell Pepper",
+                    "descriptor": "",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "",
+                    "display_item": "Red Bell Peppers",
+                    "list": "Ingredients",
+                    "string": "4 Red Bell Peppers",
+                    "display_amount": "4"
+                },
+                {
+                    "number": "8 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Better Than Bouillon Beef",
+                    "descriptor": "",
+                    "display_number": "8 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Better Than Bouillon Beef",
+                    "list": "Ingredients",
+                    "string": "8 tsp Better Than Bouillon Beef",
+                    "display_amount": "8 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tbsp",
+                    "item": "Worcestershire Sauce",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tbsp",
+                    "display_item": "Worcestershire Sauce",
+                    "list": "Ingredients",
+                    "string": "2 tbsp Worcestershire Sauce",
+                    "display_amount": "2 tbsp"
+                },
+                {
+                    "number": "1 <Fraction>",
+                    "unit": "cup",
+                    "item": "Beer",
+                    "descriptor": "",
+                    "display_number": "1 <Fraction>",
+                    "display_unit": "cup",
+                    "display_item": "Beer",
+                    "list": "Ingredients",
+                    "string": "1 cup Beer",
+                    "display_amount": "1 cup"
+                },
+                {
+                    "number": "24 <Fraction>",
+                    "unit": "oz",
+                    "item": "Frozen Corn",
+                    "descriptor": "",
+                    "display_number": "24 <Fraction>",
+                    "display_unit": "oz",
+                    "display_item": "Frozen Corn",
+                    "list": "Ingredients",
+                    "string": "24 oz Frozen Corn",
+                    "display_amount": "24 oz"
+                },
+                {
+                    "number": "1/2 <Fraction>",
+                    "unit": "cup",
+                    "item": "Chili Powder",
+                    "descriptor": "",
+                    "display_number": "1/2 <Fraction>",
+                    "display_unit": "cup",
+                    "display_item": "Chili Powder",
+                    "list": "Staples",
+                    "string": "\u00bd cup Chili Powder",
+                    "display_amount": "\u00bd cup"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tbsp",
+                    "item": "Minced Garlic",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tbsp",
+                    "display_item": "Minced Garlic",
+                    "list": "Staples",
+                    "string": "2 tbsp Minced Garlic",
+                    "display_amount": "2 tbsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Cayenne",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Cayenne",
+                    "list": "Staples",
+                    "string": "2 tsp Cayenne",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "4 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Cumin",
+                    "descriptor": "",
+                    "display_number": "4 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Cumin",
+                    "list": "Staples",
+                    "string": "4 tsp Cumin",
+                    "display_amount": "4 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Paprika",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Paprika",
+                    "list": "Staples",
+                    "string": "2 tsp Paprika",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Oregano",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Oregano",
+                    "list": "Staples",
+                    "string": "2 tsp Oregano",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Basil",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Basil",
+                    "list": "Staples",
+                    "string": "2 tsp Basil",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Salt",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Salt",
+                    "list": "Staples",
+                    "string": "2 tsp Salt",
+                    "display_amount": "2 tsp"
+                },
+                {
+                    "number": "2 <Fraction>",
+                    "unit": "tsp",
+                    "item": "Black Pepper",
+                    "descriptor": "",
+                    "display_number": "2 <Fraction>",
+                    "display_unit": "tsp",
+                    "display_item": "Black Pepper",
+                    "list": "Staples",
+                    "string": "2 tsp Black Pepper",
+                    "display_amount": "2 tsp"
+                }
+            ],
+            "has_ingredients": true,
+            "ingredient_lists": {
+                "Ingredients": [
+                    {
+                        "number": "4 <Fraction>",
+                        "unit": "lb",
+                        "item": "Ground Beef",
+                        "descriptor": "",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "lb",
+                        "display_item": "Ground Beef",
+                        "list": "Ingredients",
+                        "string": "4 lb Ground Beef",
+                        "display_amount": "4 lb"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "lb",
+                        "item": "Ground Sweet Italian Sausage",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "lb",
+                        "display_item": "Ground Sweet Italian Sausage",
+                        "list": "Ingredients",
+                        "string": "2 lb Ground Sweet Italian Sausage",
+                        "display_amount": "2 lb"
+                    },
+                    {
+                        "number": "120 <Fraction>",
+                        "unit": "oz",
+                        "item": "Red Kidney Beans",
+                        "descriptor": "drained",
+                        "display_number": "8 <Fraction>",
+                        "display_unit": "(15 oz) cans",
+                        "display_item": "Red Kidney Beans",
+                        "list": "Ingredients",
+                        "string": "8 (15 oz) cans Red Kidney Beans",
+                        "display_amount": "8 (15 oz) cans"
+                    },
+                    {
+                        "number": "96 <Fraction>",
+                        "unit": "oz",
+                        "item": "Diced Tomatoes",
+                        "descriptor": "with juice",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "(28 oz) cans",
+                        "display_item": "Diced Tomatoes",
+                        "list": "Ingredients",
+                        "string": "4 (28 oz) cans Diced Tomatoes",
+                        "display_amount": "4 (28 oz) cans"
+                    },
+                    {
+                        "number": "12 <Fraction>",
+                        "unit": "oz",
+                        "item": "Tomato Paste",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "(6 oz) can",
+                        "display_item": "Tomato Paste",
+                        "list": "Ingredients",
+                        "string": "2 (6 oz) can Tomato Paste",
+                        "display_amount": "2 (6 oz) can"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "",
+                        "item": "Sweet Onion",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "",
+                        "display_item": "Sweet Onion",
+                        "list": "Ingredients",
+                        "string": "2 Sweet Onion",
+                        "display_amount": "2"
+                    },
+                    {
+                        "number": "4 <Fraction>",
+                        "unit": "",
+                        "item": "Red Bell Pepper",
+                        "descriptor": "",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "",
+                        "display_item": "Red Bell Peppers",
+                        "list": "Ingredients",
+                        "string": "4 Red Bell Peppers",
+                        "display_amount": "4"
+                    },
+                    {
+                        "number": "8 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Better Than Bouillon Beef",
+                        "descriptor": "",
+                        "display_number": "8 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Better Than Bouillon Beef",
+                        "list": "Ingredients",
+                        "string": "8 tsp Better Than Bouillon Beef",
+                        "display_amount": "8 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tbsp",
+                        "item": "Worcestershire Sauce",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tbsp",
+                        "display_item": "Worcestershire Sauce",
+                        "list": "Ingredients",
+                        "string": "2 tbsp Worcestershire Sauce",
+                        "display_amount": "2 tbsp"
+                    },
+                    {
+                        "number": "1 <Fraction>",
+                        "unit": "cup",
+                        "item": "Beer",
+                        "descriptor": "",
+                        "display_number": "1 <Fraction>",
+                        "display_unit": "cup",
+                        "display_item": "Beer",
+                        "list": "Ingredients",
+                        "string": "1 cup Beer",
+                        "display_amount": "1 cup"
+                    },
+                    {
+                        "number": "24 <Fraction>",
+                        "unit": "oz",
+                        "item": "Frozen Corn",
+                        "descriptor": "",
+                        "display_number": "24 <Fraction>",
+                        "display_unit": "oz",
+                        "display_item": "Frozen Corn",
+                        "list": "Ingredients",
+                        "string": "24 oz Frozen Corn",
+                        "display_amount": "24 oz"
+                    }
+                ],
+                "Staples": [
+                    {
+                        "number": "1/2 <Fraction>",
+                        "unit": "cup",
+                        "item": "Chili Powder",
+                        "descriptor": "",
+                        "display_number": "1/2 <Fraction>",
+                        "display_unit": "cup",
+                        "display_item": "Chili Powder",
+                        "list": "Staples",
+                        "string": "\u00bd cup Chili Powder",
+                        "display_amount": "\u00bd cup"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tbsp",
+                        "item": "Minced Garlic",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tbsp",
+                        "display_item": "Minced Garlic",
+                        "list": "Staples",
+                        "string": "2 tbsp Minced Garlic",
+                        "display_amount": "2 tbsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Cayenne",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Cayenne",
+                        "list": "Staples",
+                        "string": "2 tsp Cayenne",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "4 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Cumin",
+                        "descriptor": "",
+                        "display_number": "4 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Cumin",
+                        "list": "Staples",
+                        "string": "4 tsp Cumin",
+                        "display_amount": "4 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Paprika",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Paprika",
+                        "list": "Staples",
+                        "string": "2 tsp Paprika",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Oregano",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Oregano",
+                        "list": "Staples",
+                        "string": "2 tsp Oregano",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Basil",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Basil",
+                        "list": "Staples",
+                        "string": "2 tsp Basil",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Salt",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Salt",
+                        "list": "Staples",
+                        "string": "2 tsp Salt",
+                        "display_amount": "2 tsp"
+                    },
+                    {
+                        "number": "2 <Fraction>",
+                        "unit": "tsp",
+                        "item": "Black Pepper",
+                        "descriptor": "",
+                        "display_number": "2 <Fraction>",
+                        "display_unit": "tsp",
+                        "display_item": "Black Pepper",
+                        "list": "Staples",
+                        "string": "2 tsp Black Pepper",
+                        "display_amount": "2 tsp"
+                    }
+                ]
+            },
+            "instructions": [
+                {
+                    "text": "Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently, until meat is evenly browned. Drain off excess grease.",
+                    "number": 1
+                },
+                {
+                    "text": "Add in remaining ingredients. Stir to blend, then cover and simmer over low heat for at least 2 hours, stirring occasionally.",
+                    "number": 2
+                }
+            ],
+            "has_instructions": true,
+            "instruction_lists": {
+                "Instructions": [
+                    {
+                        "text": "Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently, until meat is evenly browned. Drain off excess grease.",
+                        "number": 1
+                    },
+                    {
+                        "text": "Add in remaining ingredients. Stir to blend, then cover and simmer over low heat for at least 2 hours, stirring occasionally.",
+                        "number": 2
+                    }
+                ]
+            },
+            "has_description_area": true
+        }
+    ],
+    "url_slug": "test-yaml",
+    "has_image": true,
+    "image": "chili_16x9.jpg",
+    "image_src_path": "data\\recipes\\test-yaml\\chili_16x9.jpg",
+    "url_path": "/test-yaml",
+    "url": "https://recipes.joemay.net/test-yaml",
+    "feedback_url": "https://airtable.com/appKAe8EobJepqaUA/shrsBNxJiO8rjaQmq?prefill_page=Normal+Recipe+yaml&prefill_source_url=https%3A%2F%2Frecipes.joemay.net%2Ftest-yaml",
+    "has_subtitle": true,
+    "image_url": "test-yaml/chili_16x9.jpg",
+    "base_select_class": "display-scale-1x",
+    "has_scales": true
+}
