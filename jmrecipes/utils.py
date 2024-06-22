@@ -11,6 +11,16 @@ from segno import make_qr
 
 
 
+# Project directories
+file_directory = os.path.dirname(os.path.abspath(__file__))
+project_directory = os.path.split(file_directory)[0]
+builds_directory = os.path.join(project_directory, 'builds')
+data_directory = os.path.join(project_directory, 'data')
+jmr_directory = file_directory
+assets_directory = os.path.join(jmr_directory, 'assets')
+templates_directory = os.path.join(jmr_directory, 'templates')
+
+
 # Qr codes
 def make_qr_file(link, filepath):
     qr_code = make_qr(link)
@@ -71,7 +81,7 @@ class jmrEncoder(JSONEncoder):
 def config(section: str, name: str) -> str:
     """Read information from config file."""
 
-    config_path = os.path.join('data', 'config.ini')
+    config_path = os.path.join(data_directory, 'config.ini')
     parser = ConfigParser()
     parser.read(config_path)
     return parser.get(section, name)
@@ -98,7 +108,8 @@ def config_feedback_url() -> str:
 # Templates
 
 def render_template(template_name: str, **context):
-    templates_path = 'templates'
+    file_directory = os.path.dirname(os.path.abspath(__file__))
+    templates_path = os.path.join(file_directory, 'templates')
     environment = Environment(loader=FileSystemLoader(templates_path))
     template = environment.get_template(template_name)
     return template.render(context)
@@ -326,6 +337,3 @@ def sluggify(name: str) -> str:
 
     return name
 
-
-if __name__ == "__main__":
-    build()

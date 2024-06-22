@@ -3,10 +3,10 @@ import datetime
 import shutil
 import json
 from collections import defaultdict
-# from segno import make_qr
 
 from parser import parse_recipe
-from utils import create_dir, make_empty_dir, write_file, render_template, site_title, icon, fraction_to_string, make_url, feedback_url, to_fraction, make_qr_file, pipe, sluggify
+from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
+from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction, make_qr_file, pipe, sluggify
 
 
 
@@ -18,22 +18,20 @@ def build():
 
     ts = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
 
-    data = 'data'
-    builds = 'builds'
-    latest = os.path.join(builds, 'latest')
+    latest = os.path.join(builds_directory, 'latest')
     site_web = os.path.join(latest, 'web')
     site_local = os.path.join(latest, 'local')
     log = os.path.join(latest, 'build-log')
 
-    create_dir(builds)
+    create_dir(builds_directory)
     make_empty_dir(latest)
     create_dir(log)
 
-    site = load_site(data, log)
+    site = load_site(data_directory, log)
     build_site(site, site_web)
     build_site(site, site_local, local=True)
 
-    stamp = os.path.join(builds, ts)
+    stamp = os.path.join(builds_directory, ts)
     shutil.copytree(latest, stamp)
 
 
@@ -619,10 +617,10 @@ def build_site(site: dict, site_path: str, local=False):
     make_summary_page(site, os.path.join(site_path, 'summary.html'))
 
     shutil.copyfile(
-        os.path.join('assets', 'icon.png'), 
+        os.path.join(assets_directory, 'icon.png'), 
         os.path.join(site_path, 'icon.png'))
     shutil.copyfile(
-        os.path.join('assets', 'default_720x540.jpg'), 
+        os.path.join(assets_directory, 'default_720x540.jpg'), 
         os.path.join(site_path, 'default.jpg'))
 
 
