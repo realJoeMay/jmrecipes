@@ -8,6 +8,8 @@ from fractions import Fraction
 from math import floor
 from urllib.parse import urlparse, urlunparse, urlencode
 from segno import make_qr
+from csv import DictReader
+import os
 
 
 
@@ -273,37 +275,35 @@ def feedback_url(page_name: str, source_url: str) -> str:
 def pipe(data: dict, log_path: str, *funcs) -> dict:
     """Pipe data through a sequence of functions.
 
-    Saves data after each function in log files.
+    Optionally saves data after each function in log files.
 
     Args:
         data: Data as a dictionary.
-        log_path: Directory to hold the pipe's log files.
+        log_path: Directory to hold the pipe's log files. Saves no log if empty string.
         *funcs: Functions that will be called on the data.
 
     Returns:
         Stripped down collection data as a dictionary.
     """
 
-    create_dir(log_path)
-    log_file_path = os.path.join(log_path, '0_start.json')
-    write_json_file(data, log_file_path)
-    for i, func in enumerate(funcs, 1):
-        data = func(data)
-        log_file_path = os.path.join(log_path, f'{i}_{func.__name__}.json')
+    has_log = log_path != ''
+
+    if has_log:
+        create_dir(log_path)
+        log_file_path = os.path.join(log_path, '0_start.json')
         write_json_file(data, log_file_path)
 
-    log_file_path = os.path.join(log_path, f'{i+1}_end.json')
-    write_json_file(data, log_file_path)
+    for i, func in enumerate(funcs, 1):
+        data = func(data)
+        if has_log:
+            log_file_path = os.path.join(log_path, f'{i}_{func.__name__}.json')
+            write_json_file(data, log_file_path)
+
+    if has_log:
+        log_file_path = os.path.join(log_path, f'{i+1}_end.json')
+        write_json_file(data, log_file_path)
 
     return data
-
-
-
-
-
-
-
-
 
 
 
@@ -337,3 +337,160 @@ def sluggify(name: str) -> str:
 
     return name
 
+
+# Units
+
+units_path = os.path.join(data_directory, 'units.csv')
+
+def all_units():
+    # print('getting all units now')
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    units = []
+    for row in unit_rows:
+        if 'unit' in row:
+            units.append(row['unit'])
+
+        if 'plural' in row:
+            units.append(row['plural'])
+
+    # remove duplicates
+    return list(set(units))
+
+
+def units_type(type):
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    units = []
+    for row in unit_rows:
+        if 'type' in row and row['type'] == type:
+            if 'unit' in row:
+                units.append(row['unit'])
+
+            if 'plural' in row:
+                units.append(row['plural'])
+
+    # remove duplicates
+    return list(set(units))
+
+
+def volume_units():
+    # print('getting volume units now')
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    units = []
+    for row in unit_rows:
+
+        if 'type' in row and row['type'] == 'volume':
+            if 'unit' in row:
+                units.append(row['unit'])
+
+            if 'plural' in row:
+                units.append(row['plural'])
+
+    # remove duplicates
+    return list(set(units))
+
+
+def weight_units():
+    """"""
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    units = []
+    for row in unit_rows:
+
+        if 'type' in row and row['type'] == 'weight':
+            if 'unit' in row:
+                units.append(row['unit'])
+
+            if 'plural' in row:
+                units.append(row['plural'])
+
+    # remove duplicates
+    return list(set(units))
+
+
+def is_equivalent(unit1: str, unit2: str) -> bool:
+    """Determines if two units are the same or a singular/plural pair."""
+
+    unit1 = unit1.lower()
+    unit2 = unit2.lower()
+
+    if unit1 == unit2:
+        return True
+
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    for row in unit_rows:
+        if 'unit' in row and 'plural' in row:
+            row_unit = row['unit']
+            row_plural = row['plural']
+
+            if unit1 == row_unit and unit2 == row_plural:
+                return True
+            if unit2 == row_unit and unit1 == row_plural:
+                return True
+
+    return False
+
+
+def to_standard(unit):
+
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    for row in unit_rows:
+        if 'unit' in row and row['unit'] == unit:
+            if 'to_standard' in row:
+                return float(row['to_standard'])
+            return 1
+        
+        if 'plural' in row and row['plural'] == unit:
+            if 'to_standard' in row:
+                return float(row['to_standard'])
+            return 1
+        
+    return 1
+
+
+def plural(unit) -> str:
+    """Returns plural version of a unit
+    
+    If unit not found, return unaltered unit
+    """
+
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    for row in unit_rows:
+        if 'unit' in row and row['unit'] == unit and 'plural' in row:
+            return row['plural']
+    
+    return unit
+
+
+def single(unit) -> str:
+    """Returns singular version of a unit
+    
+    If unit not found, return unaltered unit
+    """
+
+    with open(units_path, mode='r') as f:
+        unit_rows = list(DictReader(f))
+
+    for row in unit_rows:
+        if 'plural' in row and row['plural'] == unit and 'unit' in row:
+            return row['unit']
+
+    return unit
+
+
+def numberize_unit(number, unit) -> str:
+    """Returns the unit as singular or plural, based on the number."""
+
+    return plural(unit) if number > 1 else single(unit)

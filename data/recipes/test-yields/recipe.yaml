@@ -1,0 +1,10 @@
+title: Test Yields
+yield:
+- number: 1
+  unit: servings
+- number: 0.5
+  unit: cups
+scale:
+- multiplier: 2
+- multiplier: 3
+- multiplier: 4

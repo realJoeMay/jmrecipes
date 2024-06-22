@@ -7,7 +7,7 @@ from collections import defaultdict
 from parser import parse_recipe
 from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
 from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction, make_qr_file, pipe, sluggify
-
+from utils import numberize_unit
 
 
 def build():
@@ -82,7 +82,7 @@ def load_recipes(recipes_path: str, log_path: str) -> list:
     return recipes
 
 
-def load_recipe(recipe_path: str, log_path: str) -> dict:
+def load_recipe(recipe_path: str, log_path=None) -> dict:
     """Generates recipe data from a folder.
 
     Extracts data from folder, including the data file, image, and folder name 
@@ -110,8 +110,13 @@ def load_recipe(recipe_path: str, log_path: str) -> dict:
         recipe['image'] = image
         recipe['image_src_path'] = os.path.join(recipe_path, image)
 
+    if log_path is None:
+        log_path = ''
+    else:
+        log_path = os.path.join(log_path, recipe['url_slug'])
+
     return pipe(recipe, 
-                os.path.join(log_path, recipe['url_slug']),
+                log_path,
                 set_url,
                 set_title,
                 set_image,
@@ -136,8 +141,12 @@ def set_url(recipe):
 def set_title(recipe: dict) -> dict:
     """Sets values regarding the recipe title and subtitle."""
     
-    recipe['subtitle'] = recipe['subtitle'].lower()
-    recipe['has_subtitle'] = recipe['subtitle'] != ''
+    if 'subtitle' in recipe and recipe['subtitle'] != '':
+        recipe['has_subtitle'] = True
+        recipe['subtitle'] = recipe['subtitle'].lower()
+    else:
+        recipe['has_subtitle'] = False
+
     return recipe
 
     
@@ -205,9 +214,10 @@ def scale_yields(scale, base_yields):
 
     scale['yield'] = []
     for yielb in base_yields:
+        number = yielb['number'] * scale['multiplier']
         scale['yield'].append({
-            'number': yielb['number'] * scale['multiplier'],
-            'unit': yielb['unit'],
+            'number': number,
+            'unit': numberize_unit(number, yielb['unit']),
             'show_yield': yielb['show_yield'],
             'show_serving_size': yielb['show_serving_size']
         })
@@ -215,7 +225,7 @@ def scale_yields(scale, base_yields):
 
 
 def set_yield_displays(scale):
-    
+
     scale['has_visible_yields'] = False
     for yielb in scale['yield']:
         if yielb['show_yield']:

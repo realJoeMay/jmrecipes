@@ -1,0 +1,7 @@
+title: Test
+yield:
+- number: 0.5
+  unit: cup
+scale:
+- multiplier: 2
+- multiplier: 3
