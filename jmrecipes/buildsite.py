@@ -204,6 +204,7 @@ def set_yields(recipe: dict) -> dict:
         scale = scale_yields(scale, recipe['yield'])
         scale = set_yield_displays(scale)
         scale = set_servings(scale)
+        scale = set_serving_size(scale)
         scale['copy_ingredients_sublabel'] = copy_ingredients_sublabel(scale)
 
     return recipe
@@ -217,7 +218,7 @@ def scale_yields(scale, base_yields):
         number = yielb['number'] * scale['multiplier']
         scale['yield'].append({
             'number': number,
-            'unit': numberize_unit(number, yielb['unit']),
+            'unit': numberize_unit(yielb['unit'], number),
             'show_yield': yielb['show_yield'],
             'show_serving_size': yielb['show_serving_size']
         })
@@ -230,7 +231,7 @@ def set_yield_displays(scale):
     for yielb in scale['yield']:
         if yielb['show_yield']:
             scale['has_visible_yields'] = True
-            yielb['display_yield'] = yield_display(yielb)
+            yielb['yield_string'] = yield_display(yielb)
 
     return scale
 
@@ -244,7 +245,7 @@ def yield_display(yielb: dict) -> str:
 
 
 def set_servings(scale):
-    """Sets recipe data regarding servings."""
+    """Sets recipe scale servings data."""
 
     scale['has_servings'] = False
     for yielb in scale['yield']:
@@ -256,6 +257,25 @@ def set_servings(scale):
             unit = 'serving' if number == 1 else 'servings'
             scale['servings_string'] = f'{number} {unit}'
             
+    return scale
+
+
+def set_serving_size(scale):
+    """Sets recipe scale servings size data."""
+
+    scale['has_visible_serving_sizes'] = False
+
+    if scale['has_servings'] is False:
+        return scale
+    
+    for yielb in scale['yield']:
+        if yielb['show_serving_size']:
+            scale['has_visible_serving_sizes'] = True
+            number = yielb['number'] / scale['servings']
+            number_string = fraction_to_string(number)
+            unit = numberize_unit(yielb['unit'], number)
+            yielb['serving_size_string'] = f'{number_string} {unit}'
+
     return scale
 
 

@@ -568,19 +568,33 @@ a.menu-header:hover {
                 {% if scale.has_description_area %}
                 <div class='scale {{ scale.item_class }}'>
                     <div class='description-area'>
+
                         {% if scale.has_visible_yields %}
                         <div class='description-row'>
                             <span class='description-label'>Yield:</span>
                             <span class='description-value'>
                                 {% for yield in scale.yield %}
-                                {% if scale.has_visible_yields %}
-                                <span class=''>{{ yield.display_yield }}</span>
+                                {% if yield.show_yield %}
+                                <span class=''>{{ yield.yield_string }}</span>
                                 {% endif %}
                                 {% endfor %}
                             </span>
                         </div>
-            
                         {% endif %}
+
+                        {% if scale.has_visible_serving_sizes %}
+                        <div class='description-row'>
+                            <span class='description-label'>Serving Size:</span>
+                            <span class='description-value'>
+                                {% for yield in scale.yield %}
+                                {% if yield.show_serving_size %}
+                                <span class=''>{{ yield.serving_size_string }}</span>
+                                {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% endif %}
+
                     </div><!-- description area -->
                 </div><!-- scale -->
                 {% endif %}

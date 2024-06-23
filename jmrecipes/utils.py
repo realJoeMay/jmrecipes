@@ -486,7 +486,7 @@ def single(unit) -> str:
     return unit
 
 
-def numberize_unit(number, unit) -> str:
+def numberize_unit(unit, number) -> str:
     """Returns the unit as singular or plural, based on the number."""
 
     return plural(unit) if number > 1 else single(unit)
