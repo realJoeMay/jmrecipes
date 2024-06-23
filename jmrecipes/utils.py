@@ -10,7 +10,8 @@ from urllib.parse import urlparse, urlunparse, urlencode
 from segno import make_qr
 from csv import DictReader
 import os
-
+import numpy as np
+import pandas as pd
 
 
 # Project directories
@@ -490,3 +491,52 @@ def numberize_unit(unit, number) -> str:
     """Returns the unit as singular or plural, based on the number."""
 
     return plural(unit) if number > 1 else single(unit)
+
+
+# Groceries
+
+def load_groceries():
+    groceries_path = os.path.join(data_directory, 'groceries.xlsx')
+    groceries = pd.read_excel(groceries_path)
+    column_defaults = {
+        'name': '',
+        'category': '',
+        'url': '',
+        'cost': 0,
+        'volume_amount': 0,
+        'volume_unit': '',
+        'weight_amount': 0,
+        'weight_unit': '',
+        'other_amount': 0,
+        'other_unit': '',
+        'discrete_amount': 0,
+        'Calories': 0,
+        'fat': 0,
+        'carbohydrates': 0,
+        'protein': 0,
+        'notes': ''
+    }
+    groceries.fillna(value=column_defaults, inplace=True)
+    return groceries
+
+
+groceries = load_groceries()
+
+
+def grocery_info(ingredient_name):
+    search_name = ingredient_name.lower()
+    matching_items = groceries[groceries.name==search_name]
+
+    if matching_items.empty:
+        return None
+    
+    matching_item = matching_items.iloc[0]
+    grocery_dict = matching_item.to_dict()
+
+    return grocery_dict
+
+
+
+# g = grocery_info('cumin')
+# weight_unit = g['weight_unit']
+# print(weight_unit == float('nan'))

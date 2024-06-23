@@ -7,7 +7,8 @@ from collections import defaultdict
 from parser import parse_recipe
 from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
 from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction, make_qr_file, pipe, sluggify
-from utils import numberize_unit
+from utils import numberize_unit, volume_units, weight_units, to_standard, is_equivalent
+from utils import grocery_info
 
 
 def build():
@@ -337,10 +338,128 @@ def set_ingredients(recipe: dict) -> dict:
         for ingredient in scale['ingredients']:
             ingredient['string'] = ingredient_string(ingredient)
             ingredient['display_amount'] = ingredient_display_amount(ingredient)
+            ingredient = lookup_grocery(ingredient)
+            ingredient['grocery_number'] = grocery_number(ingredient)
     
     recipe = set_ingredient_lists(recipe)
 
     return recipe
+
+
+def lookup_grocery(ingredient):
+
+    ingredient['has_grocery'] = False
+    grocery = grocery_info(ingredient['item'])
+
+    if grocery is None:
+        return ingredient
+    
+    ingredient['has_grocery'] = True
+    ingredient['grocery'] = grocery
+
+    return ingredient
+
+
+def grocery_number(ingredient):
+    """Determines how many grocery items are in the ingredient.
+    
+    Checks for 4 cases: no unit, volume unit, weight unit, any other unit.
+    """
+
+    if ingredient['has_grocery'] is False:
+        return 0
+    
+    ingredient_unit = ingredient['unit']
+
+    if ingredient_unit == '':
+        func = grocery_number_discrete
+    elif ingredient_unit in volume_units():
+        func = grocery_number_volume
+    elif ingredient_unit in weight_units():
+        func = grocery_number_weight
+    else:
+        func = grocery_number_other
+
+    return func(ingredient)
+
+
+def grocery_number_discrete(ingredient):
+    """Number of groceries in ingredient, measured by count."""
+
+    grocery_count = ingredient['grocery']['discrete_amount']
+    if grocery_count == 0:
+        return 0
+    
+    return ingredient['number'] / grocery_count
+
+
+def grocery_number_volume(ingredient):
+    """Number of groceries in ingredient, measured by volume.
+    
+    Returns 0 if any of the following:
+    - grocery data does not include number or unit
+    - listed grocery volume unit is not a known volume unit
+    """
+
+    ingredient_number = ingredient['number']
+    ingredient_unit = ingredient['unit']
+    grocery_number = ingredient['grocery']['volume_amount']
+    grocery_unit = ingredient['grocery']['volume_unit']
+
+    if grocery_number == 0:
+        return 0
+    if grocery_unit == '':
+        return 0
+    if grocery_unit not in volume_units():
+        return 0
+
+    ingredient_unit_to_standard = to_standard(ingredient_unit)
+    grocery_unit_to_standard = to_standard(grocery_unit)
+    return (ingredient_number 
+            * ingredient_unit_to_standard
+            / grocery_number
+            / grocery_unit_to_standard)
+
+
+def grocery_number_weight(ingredient):
+    """Number of groceries in ingredient, measured by weight."""
+
+    ingredient_number = ingredient['number']
+    ingredient_unit = ingredient['unit']
+    grocery_number = ingredient['grocery']['weight_amount']
+    grocery_unit = ingredient['grocery']['weight_unit']
+
+    if grocery_number == 0:
+        return 0
+    if grocery_unit == '':
+        return 0
+    if grocery_unit not in weight_units():
+        return 0
+
+    ingredient_unit_to_standard = to_standard(ingredient_unit)
+    grocery_unit_to_standard = to_standard(grocery_unit)
+    return (ingredient_number 
+            * ingredient_unit_to_standard
+            / grocery_number
+            / grocery_unit_to_standard)
+
+
+def grocery_number_other(ingredient):
+    """Number of groceries in ingredient, measured by an abnormal unit."""
+
+    ingredient_number = ingredient['number']
+    ingredient_unit = ingredient['unit']
+    grocery_number = ingredient['grocery']['other_amount']
+    grocery_unit = ingredient['grocery']['other_unit']
+
+    if grocery_number == 0:
+        return 0
+    if grocery_unit == '':
+        return 0
+    if not is_equivalent(ingredient_unit, grocery_unit):
+        return 0
+
+    return ingredient_number / grocery_number
 
 
 def ingredient_display_amount(ing):

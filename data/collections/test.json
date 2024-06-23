@@ -9,7 +9,8 @@
         "test-yields",
         "test-no-servings",
         "test-no-instructions",
-        "test-times"
+        "test-times",
+        "test-ingredient-match"
     ]
 }
 
