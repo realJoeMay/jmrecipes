@@ -121,6 +121,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_title,
                 set_image,
                 set_scales,
+                set_times,
                 set_yields,
                 set_ingredients,
                 set_instructions,
@@ -187,6 +188,24 @@ def copy_ingredients_sublabel(scale):
         return f'for {scale["servings"]} {unit}'
     
     return f'for {scale["multiplier"]}x'
+
+
+def set_times(recipe: dict) -> dict:
+    """Set recipe attributes related cook times."""
+
+    for time in recipe['times']:
+
+        if 'unit' not in time or time['unit'] == '':
+            time['unit'] = 'minutes' if time['time'] > 1 else 'minute'
+
+        time_string = fraction_to_string(time['time'])
+        time['time_string'] = f'{time_string} {time["unit"]}'
+
+    for scale in recipe['scales']:
+        scale['times'] = recipe['times']
+        scale['has_times'] = bool(scale['times'])
+
+    return recipe
 
 
 def set_yields(recipe: dict) -> dict:
@@ -429,7 +448,10 @@ def set_has_description_area(recipe: dict) -> dict:
 
         if scale['has_visible_yields']:
             scale['has_description_area'] = True
-
+        if scale['has_visible_serving_sizes']:
+            scale['has_description_area'] = True
+        if scale['has_times']:
+            scale['has_description_area'] = True
 
     return recipe
 

@@ -13,6 +13,17 @@
             "show_serving_size": true
         }
     ],
+    "times": [
+        {
+            "name": "Prep Time",
+            "time": 45
+        },
+        {
+            "name": "Cook Time",
+            "time": 2,
+            "unit": "hours"
+        }
+    ],
     "scale": [
         {
             "multiplier": 2

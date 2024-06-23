@@ -103,6 +103,10 @@ def recipe_dict(data: dict) -> dict:
     recipe['title'] = data['title']
     recipe['subtitle'] = data.get('subtitle', '')
 
+    recipe['times'] = []
+    for time in data.get('times', []):
+        recipe['times'].append(parse_time(time))
+
     recipe['yield'] = []
     for d_yield in data.get('yield', []):
         recipe['yield'].append(parse_yield(d_yield))
@@ -139,6 +143,30 @@ def read_multiplier(scale) -> Fraction:
         return to_fraction(scale)
 
     
+def parse_time(time: dict) -> dict:
+    """Formats time data from input file."""
+
+    if not isinstance(time, dict):
+        raise TypeError('time must be a dict.')
+    if 'name' not in time:
+        raise KeyError('time must have a name.')
+    if not isinstance(time['name'], str):
+        raise TypeError('time name must be a string.')
+    if 'time' not in time:
+        raise KeyError('time must have a time.')
+    if not isinstance(time['time'], (int, float)):
+        raise TypeError(f'time time is a {type(time["time"])}, not a number.')
+    if not isinstance(time.get('unit', ''), str):
+        raise TypeError(f'time unit is a {type(time["unit"])}, not a string.')
+    
+    name = time['name']
+    time_time = to_fraction(time['time'])
+    time_data = {
+        'name': name,
+        'time': time_time,
+        'unit': time.get('unit', '')
+    }
+    return time_data
 
 
 def parse_ingredient(data: dict) -> dict:

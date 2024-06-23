@@ -1,0 +1,6 @@
+title: Test Cook Times
+times:
+- name: Prep Time
+  time: 30
+- name: Cook Time
+  time: 60

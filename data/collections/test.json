@@ -8,7 +8,8 @@
         "test-no-subtitle",
         "test-yields",
         "test-no-servings",
-        "test-no-instructions"
+        "test-no-instructions",
+        "test-times"
     ]
 }
 

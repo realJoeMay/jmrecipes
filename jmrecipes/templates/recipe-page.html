@@ -138,6 +138,9 @@ a, a:hover {
     flex-direction: column;
 }
 
+.description-row.times {
+    flex-direction: column;
+}
 
 /* ICONS */
 
@@ -592,6 +595,17 @@ a.menu-header:hover {
                                 {% endif %}
                                 {% endfor %}
                             </span>
+                        </div>
+                        {% endif %}
+
+                        {% if scale.has_times %}
+                        <div class='times'>
+                            {% for time in scale.times %}
+                            <div class='description-row'>
+                                <span class='time-label'>{{ time.name }}:</span>
+                                <span class='time-value'>{{ time.time_string }}</span>
+                            </div>
+                            {% endfor %}
                         </div>
                         {% endif %}
 
