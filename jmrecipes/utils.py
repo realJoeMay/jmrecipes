@@ -269,7 +269,35 @@ def feedback_url(page_name: str, source_url: str) -> str:
     return make_url(domain=components[1], path=components[2], query=query)
 
 
+def sluggify(name: str) -> str:
+    """Converts name to url slug preferred format.
 
+    Slug preferred format has lower-case ascii, digits, and dash "-".
+    - Upper case letters converted to lower case
+    - Spaces and underscores are replaced with dashes
+    - Invalid characters are removed
+    - Any double dashes are removed
+
+    Args:
+        name: String to convert to slug
+
+    Returns:
+        URL slug as a string.
+    """
+
+    slug = name.lower()
+    slug = slug.replace(' ', '-')
+    slug = slug.replace('_', '-')
+
+    valid = 'abcdefghijklmnopqrstuvwxyz0123456789-'
+    for c in slug:
+        if c not in valid:
+            slug = slug.replace(c, '')
+
+    while '--' in slug:
+        slug = slug.replace('--', '-')
+
+    return name
 
 
 def pipe(data: dict, log_path: str, *funcs) -> dict:
@@ -304,38 +332,6 @@ def pipe(data: dict, log_path: str, *funcs) -> dict:
         write_json_file(data, log_file_path)
 
     return data
-
-
-
-def sluggify(name: str) -> str:
-    """Converts name to url slug preferred format.
-
-    Slug preferred format has lower-case ascii, digits, and dash "-".
-    - Upper case letters converted to lower case
-    - Spaces and underscores are replaced with dashes
-    - Invalid characters are removed
-    - Any double dashes are removed
-
-    Args:
-        name: String to convert to slug
-
-    Returns:
-        URL slug as a string.
-    """
-
-    slug = name.lower()
-    slug = slug.replace(' ', '-')
-    slug = slug.replace('_', '-')
-
-    valid = 'abcdefghijklmnopqrstuvwxyz0123456789-'
-    for c in slug:
-        if c not in valid:
-            slug = slug.replace(c, '')
-
-    while '--' in slug:
-        slug = slug.replace('--', '-')
-
-    return name
 
 
 # Units

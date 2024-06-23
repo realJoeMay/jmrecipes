@@ -355,7 +355,7 @@ h3 {
 
                     {% if scale.has_servings %}
                     <span style="margin-top:-3px;">{{ scale.servings }}</span>
-                    <span style="font-size:0.9rem;">Servings</span>
+                    <span style="font-size:0.9rem;">Serving{% if scale.servings > 1 %}s{% endif %}</span>
                     {% else %}
                         {{ scale.label }}
                     {% endif %}

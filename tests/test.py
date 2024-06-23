@@ -15,9 +15,9 @@ from buildsite import load_recipe
 test_data = os.path.join(test_directory, 'data')
 
 
-class TestYieldUnit(unittest.TestCase):
+class TestYields(unittest.TestCase):
 
-    def test_positive_number(self):
+    def test_pluralize_yield_unit(self):
         recipe_dir = os.path.join(test_data, 'test_yield_unit')
         recipe = load_recipe(recipe_dir)
         self.assertEqual(recipe['scales'][0]['yield'][0]['unit'], 'cup')

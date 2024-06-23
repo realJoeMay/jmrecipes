@@ -3,7 +3,12 @@
     "label": "View All Test Recipes",
     "url_path": "test-collection",
     "recipes": [
-        "test-chili"
+        "test-chili",
+        "test-no-banner",
+        "test-no-subtitle",
+        "test-yields",
+        "test-no-servings",
+        "test-no-instructions"
     ]
 }
 
