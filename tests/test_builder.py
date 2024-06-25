@@ -13,10 +13,19 @@ test_data = os.path.join(file_dir, 'data')
 
 
 def test_pluralize_yield_unit():
-    recipe_dir = os.path.join(test_data, 'test_yield_unit')
+    recipe_dir = os.path.join(test_data, 'recipe_yield_unit')
     recipe = buildsite.load_recipe(recipe_dir)
     assert recipe['scales'][0]['yield'][0]['unit'] == 'cup'
     assert recipe['scales'][1]['yield'][0]['unit'] == 'cup'
     assert recipe['scales'][2]['yield'][0]['unit'] == 'cups'
 
+
+def test_ingredient_grocery_amoount():
+    recipe_dir = os.path.join(test_data, 'recipe_grocery_amount')
+    recipe = buildsite.load_recipe(recipe_dir)
+    assert recipe['scales'][0]['ingredients'][0]['grocery_number'] == 0.5
+    assert recipe['scales'][0]['ingredients'][1]['grocery_number'] == 0.5
+    assert recipe['scales'][0]['ingredients'][2]['grocery_number'] == 3
+    assert recipe['scales'][0]['ingredients'][3]['grocery_number'] == 3
+    assert recipe['scales'][0]['ingredients'][4]['grocery_number'] == 0
 

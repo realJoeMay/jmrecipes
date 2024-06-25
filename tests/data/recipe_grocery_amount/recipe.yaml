@@ -1,0 +1,16 @@
+title: Test
+ingredients:
+- number: 8
+  unit: oz
+  item: Test Weight
+- number: 500
+  unit: ml
+  item: Test Volume
+- number: 3
+  item: Test Count
+- number: 3
+  unit: loaves
+  item: Test Other
+- number: 3
+  unit: loaves
+  item: Not a real ingredient

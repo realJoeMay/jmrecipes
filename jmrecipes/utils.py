@@ -12,7 +12,7 @@ import os
 import pandas as pd
 
 
-# Project directories
+# Directories
 file_directory = os.path.dirname(os.path.abspath(__file__))
 project_directory = os.path.split(file_directory)[0]
 builds_directory = os.path.join(project_directory, 'builds')
@@ -22,7 +22,6 @@ assets_directory = os.path.join(jmr_directory, 'assets')
 templates_directory = os.path.join(jmr_directory, 'templates')
 
 
-# directories and files
 def create_dir(path):
     """Create a folder."""
 
@@ -397,6 +396,7 @@ def sluggify(name: str) -> str:
     return name
 
 
+# Pipe
 def pipe(data: dict, log_path: str, *funcs) -> dict:
     """Pipe data through a sequence of functions.
 
@@ -408,7 +408,7 @@ def pipe(data: dict, log_path: str, *funcs) -> dict:
         *funcs: Functions that will be called on the data.
 
     Returns:
-        Stripped down collection data as a dictionary.
+        Data after applying functions as a dictionary.
     """
 
     has_log = log_path != ''
