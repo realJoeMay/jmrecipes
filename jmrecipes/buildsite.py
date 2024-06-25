@@ -4,10 +4,14 @@ import shutil
 import json
 from collections import defaultdict
 
-from parser import parse_recipe
+import parser
+import utils
 from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
-from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction, make_qr_file, pipe, sluggify
-from utils import numberize_unit, volume_units, weight_units, to_standard, is_equivalent
+from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
+# make_qr_file, 
+from utils import pipe, sluggify
+# from utils import numberize_unit, volume_units, weight_units, to_standard, is_equivalent
+# from utils import is_weight, is_volume, numberize
 from utils import grocery_info
 
 
@@ -100,7 +104,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
     file = recipe_file(recipe_path)
     filepath = os.path.join(recipe_path, file)
 
-    recipe = parse_recipe(filepath)
+    recipe = parser.parse_recipe(filepath)
     folder = os.path.basename(recipe_path)
     recipe['url_slug'] = sluggify(folder)
 
@@ -238,7 +242,7 @@ def scale_yields(scale, base_yields):
         number = yielb['number'] * scale['multiplier']
         scale['yield'].append({
             'number': number,
-            'unit': numberize_unit(yielb['unit'], number),
+            'unit': utils.numberize(yielb['unit'], number),
             'show_yield': yielb['show_yield'],
             'show_serving_size': yielb['show_serving_size']
         })
@@ -293,7 +297,7 @@ def set_serving_size(scale):
             scale['has_visible_serving_sizes'] = True
             number = yielb['number'] / scale['servings']
             number_string = fraction_to_string(number)
-            unit = numberize_unit(yielb['unit'], number)
+            unit = utils.numberize(yielb['unit'], number)
             yielb['serving_size_string'] = f'{number_string} {unit}'
 
     return scale
@@ -349,7 +353,7 @@ def set_ingredients(recipe: dict) -> dict:
 def lookup_grocery(ingredient):
 
     ingredient['has_grocery'] = False
-    grocery = grocery_info(ingredient['item'])
+    grocery = utils.grocery_info(ingredient['item'])
 
     if grocery is None:
         return ingredient
@@ -373,9 +377,9 @@ def grocery_number(ingredient):
 
     if ingredient_unit == '':
         func = grocery_number_discrete
-    elif ingredient_unit in volume_units():
+    elif utils.is_volume(ingredient_unit):
         func = grocery_number_volume
-    elif ingredient_unit in weight_units():
+    elif utils.is_weight(ingredient_unit):
         func = grocery_number_weight
     else:
         func = grocery_number_other
@@ -410,11 +414,11 @@ def grocery_number_volume(ingredient):
         return 0
     if grocery_unit == '':
         return 0
-    if grocery_unit not in volume_units():
+    if not utils.is_volume(grocery_unit):
         return 0
 
-    ingredient_unit_to_standard = to_standard(ingredient_unit)
-    grocery_unit_to_standard = to_standard(grocery_unit)
+    ingredient_unit_to_standard = utils.to_standard(ingredient_unit)
+    grocery_unit_to_standard = utils.to_standard(grocery_unit)
     return (ingredient_number 
             * ingredient_unit_to_standard
             / grocery_number
@@ -433,11 +437,11 @@ def grocery_number_weight(ingredient):
         return 0
     if grocery_unit == '':
         return 0
-    if grocery_unit not in weight_units():
+    if not utils.is_weight(grocery_unit):
         return 0
 
-    ingredient_unit_to_standard = to_standard(ingredient_unit)
-    grocery_unit_to_standard = to_standard(grocery_unit)
+    ingredient_unit_to_standard = utils.to_standard(ingredient_unit)
+    grocery_unit_to_standard = utils.to_standard(grocery_unit)
     return (ingredient_number 
             * ingredient_unit_to_standard
             / grocery_number
@@ -456,7 +460,7 @@ def grocery_number_other(ingredient):
         return 0
     if grocery_unit == '':
         return 0
-    if not is_equivalent(ingredient_unit, grocery_unit):
+    if not utils.is_equivalent(ingredient_unit, grocery_unit):
         return 0
 
     return ingredient_number / grocery_number
@@ -774,7 +778,7 @@ def build_site(site: dict, site_path: str, local=False):
     for recipe in site['recipes']:
         recipe_dir = os.path.join(site_path, recipe['url_slug'])
         make_recipe_page(recipe, recipe_dir, local)
-        make_qr_file(recipe['url'], os.path.join(recipe_dir, 'recipe-qr.png'))
+        utils.make_qr_file(recipe['url'], os.path.join(recipe_dir, 'recipe-qr.png'))
         make_print_page(recipe, os.path.join(recipe_dir, 'p'), local)
         if recipe['has_image']:
             shutil.copyfile(
