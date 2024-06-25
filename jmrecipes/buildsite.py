@@ -9,10 +9,10 @@ import utils
 from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
 from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
 # make_qr_file, 
-from utils import pipe, sluggify
+# from utils import pipe, sluggify
 # from utils import numberize_unit, volume_units, weight_units, to_standard, is_equivalent
 # from utils import is_weight, is_volume, numberize
-from utils import grocery_info
+# from utils import grocery_info
 
 
 def build():
@@ -59,7 +59,7 @@ def load_site(data_path: str, log_path: str) -> dict:
         'recipes': load_recipes(recipes_path, log_path),
         'collections': load_collections(collections_path, log_path)
     }
-    return pipe(site,
+    return utils.pipe(site,
                 log_path,
                 link_recipes_collections
                 )
@@ -106,7 +106,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
 
     recipe = parser.parse_recipe(filepath)
     folder = os.path.basename(recipe_path)
-    recipe['url_slug'] = sluggify(folder)
+    recipe['url_slug'] = utils.sluggify(folder)
 
     recipe['has_image'] = False
     image = recipe_image(recipe_path)
@@ -120,7 +120,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
     else:
         log_path = os.path.join(log_path, recipe['url_slug'])
 
-    return pipe(recipe, 
+    return utils.pipe(recipe, 
                 log_path,
                 set_url,
                 set_title,
@@ -685,7 +685,7 @@ def load_collection(file_path: str, log_path: str) -> dict:
     with open(file_path, 'r', encoding='utf8') as f:
         data = json.load(f)
 
-    return pipe(data,
+    return utils.pipe(data,
                 os.path.join(log_path, data['name']),
                 set_homepage,
                 set_href

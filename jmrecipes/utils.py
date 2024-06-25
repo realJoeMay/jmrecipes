@@ -8,9 +8,7 @@ from fractions import Fraction
 from math import floor
 from urllib.parse import urlparse, urlunparse, urlencode
 from segno import make_qr
-# from csv import DictReader
 import os
-# import numpy as np
 import pandas as pd
 
 
@@ -127,6 +125,113 @@ class icon:
     clipboard = '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M280 64h40c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128C0 92.7 28.7 64 64 64h40 9.6C121 27.5 153.3 0 192 0s71 27.5 78.4 64H280zM64 112c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320c8.8 0 16-7.2 16-16V128c0-8.8-7.2-16-16-16H304v24c0 13.3-10.7 24-24 24H192 104c-13.3 0-24-10.7-24-24V112H64zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/></svg>'
     check = '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
     magnifying_glass = '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>'
+
+
+# Units
+def is_weight(unit: str) -> bool:
+    """Returns True if unit is a weight unit, single or plural."""
+
+    weights_df = _units[_units['type'] == 'weight']
+    single_weights = set(weights_df['unit'])
+    plural_weights = set(weights_df['plural'])
+    weights = single_weights.union(plural_weights)
+    return unit in weights
+
+
+def is_volume(unit: str) -> bool:
+    """Returns True if unit is a volume unit, single or plural."""
+
+    volume_df = _units[_units['type'] == 'volume']
+    single_weights = set(volume_df['unit'])
+    plural_weights = set(volume_df['plural'])
+    volumes = single_weights.union(plural_weights)
+    return unit in volumes
+
+
+def is_equivalent(unit1: str, unit2: str) -> bool:
+    """Determines if two units are the same.
+    
+    Units can be same by 3 ways:
+    - unit1 and unit2 are same string
+    - unit2 is plural of unit1
+    - unit1 is plural of unit2
+    """
+
+    unit1 = unit1.lower()
+    unit2 = unit2.lower()
+
+    if unit1 == unit2:
+        return True
+
+    found1 = _units[(_units['unit'] == unit1) & (_units['plural'] == unit2)]
+    found2 = _units[(_units['unit'] == unit2) & (_units['plural'] == unit1)]
+    if found1.empty and found2.empty:
+        return False
+    else:
+        return True
+
+
+def to_standard(unit):
+    """Returns a unit's conversion to standard."""
+
+    unit_mask = _units['unit'] == unit
+    plural_mask = _units['plural'] == unit
+    standard_mask = _units['to_standard'] != 0
+    matching_items = _units[(unit_mask | plural_mask) & standard_mask]
+    if matching_items.empty:
+        return 1
+    matching_item = matching_items.iloc[0]
+    return matching_item['to_standard']
+
+
+def numberize(unit: str, number) -> str:
+    """Returns single or plural unit based on number."""
+
+    return _plural(unit) if number > 1 else _single(unit)
+
+
+def _plural(unit: str) -> str:
+    """Returns plural version of a unit.
+    
+    If unit not found, return original unit.
+    """
+
+    matching_items = _units[_units['unit'] == unit]
+    if matching_items.empty:
+        return unit
+    matching_item = matching_items.iloc[0]    
+    return matching_item['plural']
+
+
+def _single(unit: str) -> str:
+    """Returns singular version of a unit.
+    
+    If unit not found, return original unit.
+    """
+
+    matching_items = _units[_units['plural'] == unit]
+    if matching_items.empty:
+        return unit
+    matching_item = matching_items.iloc[0]    
+    return matching_item['unit']
+
+
+def _load_units() -> list:
+    """Loads list of units from file."""
+
+    path = os.path.join(data_directory, 'units.csv')
+    df = pd.read_csv(path)
+    column_defaults = {
+        'units': '',
+        'plural': '',
+        'type': '',
+        'to_standard': 0
+    }
+    df.fillna(value=column_defaults, inplace=True)
+    return df    
+
+
+_units = _load_units()
 
 
 # Fractions
@@ -326,112 +431,6 @@ def pipe(data: dict, log_path: str, *funcs) -> dict:
     return data
 
 
-# Units
-def is_weight(unit: str) -> bool:
-    """Returns True if unit is a weight unit, single or plural."""
-
-    weights_df = units[units['type'] == 'weight']
-    single_weights = set(weights_df['unit'])
-    plural_weights = set(weights_df['plural'])
-    weights = single_weights.union(plural_weights)
-    return unit in weights
-
-
-def is_volume(unit: str) -> bool:
-    """Returns True if unit is a volume unit, single or plural."""
-
-    volume_df = units[units['type'] == 'volume']
-    single_weights = set(volume_df['unit'])
-    plural_weights = set(volume_df['plural'])
-    volumes = single_weights.union(plural_weights)
-    return unit in volumes
-
-
-def is_equivalent(unit1: str, unit2: str) -> bool:
-    """Determines if two units are the same.
-    
-    Units can be same by 3 ways:
-    - unit1 and unit2 are same string
-    - unit2 is plural of unit1
-    - unit1 is plural of unit2
-    """
-
-    unit1 = unit1.lower()
-    unit2 = unit2.lower()
-
-    if unit1 == unit2:
-        return True
-
-    found1 = units[(units['unit'] == unit1) & (units['plural'] == unit2)]
-    found2 = units[(units['unit'] == unit2) & (units['plural'] == unit1)]
-    if found1.empty and found2.empty:
-        return False
-    else:
-        return True
-
-
-def to_standard(unit):
-    """Returns a unit's conversion to standard."""
-
-    unit_mask = units['unit'] == unit
-    plural_mask = units['plural'] == unit
-    standard_mask = units['to_standard'] != 0
-    matching_items = units[(unit_mask | plural_mask) & standard_mask]
-    if matching_items.empty:
-        return 1
-    matching_item = matching_items.iloc[0]
-    return matching_item['to_standard']
-
-
-def numberize(unit: str, number) -> str:
-    """Returns single or plural unit based on number."""
-
-    return _plural(unit) if number > 1 else _single(unit)
-
-
-def _plural(unit: str) -> str:
-    """Returns plural version of a unit.
-    
-    If unit not found, return original unit.
-    """
-
-    matching_items = units[units['unit'] == unit]
-    if matching_items.empty:
-        return unit
-    matching_item = matching_items.iloc[0]    
-    return matching_item['plural']
-
-
-def _single(unit: str) -> str:
-    """Returns singular version of a unit.
-    
-    If unit not found, return original unit.
-    """
-
-    matching_items = units[units['plural'] == unit]
-    if matching_items.empty:
-        return unit
-    matching_item = matching_items.iloc[0]    
-    return matching_item['unit']
-
-
-def _load_units() -> list:
-    """Loads list of units from file."""
-
-    path = os.path.join(data_directory, 'units.csv')
-    df = pd.read_csv(path)
-    column_defaults = {
-        'units': '',
-        'plural': '',
-        'type': '',
-        'to_standard': 0
-    }
-    df.fillna(value=column_defaults, inplace=True)
-    return df    
-
-
-units = _load_units()
-# units_path = os.path.join(data_directory, 'units.csv')
 
 
 # Groceries
