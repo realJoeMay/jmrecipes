@@ -30,6 +30,7 @@ a, a:visited {
 table {
     width: 100%;
     border-spacing: 0px;
+    border: solid 1px #ddd;
 }
 
 tr:nth-child(even) {background-color: #f2f2f2;}
@@ -92,7 +93,9 @@ th, td {
             <table>
                 <th>Recipe</th>
                 <th>Scale</th>
-                <th>Ingredient</th>            
+                <th>Ingredient</th>
+                <th>Found Grocery</th>
+                <th># of Groceries</th>
                 {% for r in recipes %}
                 {% for s in r.scales %}
                 {% for i in s.ingredients %}
@@ -100,6 +103,12 @@ th, td {
                     <td>{{ r.title }}</td>
                     <td>{{ s.label }}</td>
                     <td>{{ i.string }}</td>
+                    {% if i.has_grocery %}
+                    <td>{{ i.grocery.name }}</td>
+                    {% else %}
+                    <td style="color:red">{{ i.has_grocery }}</td>
+                    {% endif %}                    
+                    <td style="max-width:35px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{% if i.has_grocery %}{{ i.grocery_number }}{% endif %}</td>
                 </tr>
                 {% endfor %}
                 {% endfor %}
