@@ -1,0 +1,6 @@
+title: Test Instruction Lists
+instructions:
+- text: Add Ingredients.
+- text: Let it simmer for 30 minutes.
+- text: Throw it in the freezer.
+  list: For Freezer

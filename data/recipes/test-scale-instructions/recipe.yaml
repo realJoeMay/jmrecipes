@@ -1,0 +1,10 @@
+title: Test Scale Instructions
+scale:
+- multiplier: 2
+instructions:
+- text: Add Ingredients.
+- text: Let it simmer for 30 minutes.
+- text: Throw it in the freezer.
+  scale: 1
+- text: Cut it in half and throw it in the freezer .
+  scale: 2

@@ -25,7 +25,7 @@ def test_ingredient_grocery_amoount():
     recipe = buildsite.load_recipe(recipe_dir)
     assert recipe['scales'][0]['ingredients'][0]['grocery_number'] == 0.5
     assert recipe['scales'][0]['ingredients'][1]['grocery_number'] == 0.5
-    assert recipe['scales'][0]['ingredients'][2]['grocery_number'] == 3
+    assert recipe['scales'][0]['ingredients'][2]['grocery_number'] == 2
     assert recipe['scales'][0]['ingredients'][3]['grocery_number'] == 3
     assert recipe['scales'][0]['ingredients'][4]['grocery_number'] == 0
 

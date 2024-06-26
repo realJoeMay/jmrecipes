@@ -8,11 +8,7 @@ import parser
 import utils
 from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
 from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
-# make_qr_file, 
-# from utils import pipe, sluggify
-# from utils import numberize_unit, volume_units, weight_units, to_standard, is_equivalent
-# from utils import is_weight, is_volume, numberize
-# from utils import grocery_info
+
 
 
 def build():
@@ -59,10 +55,7 @@ def load_site(data_path: str, log_path: str) -> dict:
         'recipes': load_recipes(recipes_path, log_path),
         'collections': load_collections(collections_path, log_path)
     }
-    return utils.pipe(site,
-                log_path,
-                link_recipes_collections
-                )
+    return utils.pipe(site, log_path, link_recipes_collections)
 
 
 def load_recipes(recipes_path: str, log_path: str) -> list:
@@ -351,6 +344,7 @@ def set_ingredients(recipe: dict) -> dict:
 
 
 def lookup_grocery(ingredient):
+    """Returns ingredient with grocery data."""
 
     ingredient['has_grocery'] = False
     grocery = utils.grocery_info(ingredient['item'])
@@ -360,15 +354,11 @@ def lookup_grocery(ingredient):
     
     ingredient['has_grocery'] = True
     ingredient['grocery'] = grocery
-
     return ingredient
 
 
 def grocery_number(ingredient):
-    """Determines how many grocery items are in the ingredient.
-    
-    Checks for 4 cases: no unit, volume unit, weight unit, any other unit.
-    """
+    """Returns how many grocery items are in the ingredient."""
 
     if ingredient['has_grocery'] is False:
         return 0
@@ -497,13 +487,10 @@ def set_ingredient_displays(ing: dict) -> dict:
 
     if ing['display_number'] == 0:
         ing['display_number'] = ing['number']
-
     if ing['display_unit'] == '':
         ing['display_unit'] = ing['unit']
-
     if ing['display_item'] == '':
         ing['display_item'] = ing['item']
-
     return ing
 
 
@@ -527,7 +514,6 @@ def scale_ingredients(base_ingredients, multiplier) -> dict:
             ingredients.append(scale_ingredient(ingredient, multiplier))
         elif to_fraction(ingredient['scale']) == multiplier:        
             ingredients.append(ingredient)
-
     return ingredients
 
 
@@ -548,7 +534,6 @@ def set_ingredient_lists(recipe):
         scale['ingredient_lists'] = defaultdict(list)
         for ingredient in scale['ingredients']:
             scale['ingredient_lists'][ingredient.get('list', 'Ingredients')].append(ingredient)
-
     return recipe
 
 
@@ -559,7 +544,6 @@ def set_instruction_lists(recipe):
         scale['instruction_lists'] = defaultdict(list)
         for step in scale['instructions']:
             scale['instruction_lists'][step.get('list', 'Instructions')].append(step)
-
     return recipe
 
 
@@ -568,14 +552,12 @@ def set_has_description_area(recipe: dict) -> dict:
 
     for scale in recipe['scales']:
         scale['has_description_area'] = False
-
         if scale['has_visible_yields']:
             scale['has_description_area'] = True
         if scale['has_visible_serving_sizes']:
             scale['has_description_area'] = True
         if scale['has_times']:
             scale['has_description_area'] = True
-
     return recipe
 
 
@@ -684,7 +666,6 @@ def load_collection(file_path: str, log_path: str) -> dict:
 
     with open(file_path, 'r', encoding='utf8') as f:
         data = json.load(f)
-
     return utils.pipe(data,
                 os.path.join(log_path, data['name']),
                 set_homepage,
@@ -697,7 +678,6 @@ def set_homepage(collection):
     collection['is_homepage'] = False
     if collection['url_path'] == '':
         collection['is_homepage'] = True
-    
     return collection
 
 
@@ -708,7 +688,6 @@ def set_href(collection):
         collection['href'] = '..'
     else:
         collection['href'] = f'../{collection["url_path"]}'
-
     return collection
 
 
@@ -799,11 +778,11 @@ def build_site(site: dict, site_path: str, local=False):
         os.path.join(site_path, 'default.jpg'))
 
 
-def get_collection_dir(collection, site_path):
+def get_collection_dir(collection: dict, site_path: str) -> str:
+    """Returns directory for a collection page."""
 
     if collection['is_homepage']:
         return site_path
-    
     return os.path.join(site_path, collection['url_path'])
 
 
@@ -841,8 +820,7 @@ def make_print_page(recipe: dict, dir: str, local: bool):
                               r=recipe, 
                               is_local=local,
                               site_title=site_title(),
-                              icon=icon
-                              )
+                              icon=icon)
     write_file(content, file)
 
 
@@ -861,8 +839,7 @@ def make_collection_page(collection: dict, dir: str, local: bool):
                               c=collection,
                               is_local=local,
                               site_title=site_title(),
-                              icon=icon
-                              )
+                              icon=icon)
     write_file(content, file)
 
 
@@ -877,8 +854,7 @@ def make_summary_page(site: dict, page_path: str):
     content = render_template('summary-page.html', 
                               recipes=site['recipes'], 
                               collections=site['collections'],
-                              site_title=site_title()
-                              )
+                              site_title=site_title())
     write_file(content, page_path)
 
 

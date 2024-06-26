@@ -8,9 +8,12 @@
         "test-no-subtitle",
         "test-yields",
         "test-no-servings",
-        "test-no-instructions",
         "test-times",
-        "test-ingredient-match"
+        "test-ingredient-match",
+        "test-instruction-lists",
+        "test-no-instructions",
+        "test-scale-instructions",
+        "test-1-scale"
     ]
 }
 
