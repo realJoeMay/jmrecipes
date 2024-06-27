@@ -55,7 +55,7 @@ def load_site(data_path: str, log_path: str) -> dict:
         'recipes': load_recipes(recipes_path, log_path),
         'collections': load_collections(collections_path, log_path)
     }
-    return utils.pipe(site, log_path, link_recipes_collections)
+    return utils.pipe(site, log_path, link_site, set_summary)
 
 
 def load_recipes(recipes_path: str, log_path: str) -> list:
@@ -113,8 +113,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
     else:
         log_path = os.path.join(log_path, recipe['url_slug'])
 
-    return utils.pipe(recipe, 
-                log_path,
+    return utils.pipe(recipe, log_path,
                 set_url,
                 set_title,
                 set_image,
@@ -147,7 +146,6 @@ def set_title(recipe: dict) -> dict:
         recipe['has_subtitle'] = False
 
     return recipe
-
     
 
 def set_image(recipe: dict) -> dict:
@@ -339,7 +337,6 @@ def set_ingredients(recipe: dict) -> dict:
             ingredient['grocery_number'] = grocery_number(ingredient)
     
     recipe = set_ingredient_lists(recipe)
-
     return recipe
 
 
@@ -469,7 +466,8 @@ def ingredient_display_amount(ing):
     return amount
 
 
-def ingredient_string(ing):
+def ingredient_string(ing: dict) -> str:
+    """Returns string with ingredient number, unit, and item."""
 
     i_str = []
     if ing['display_number']:
@@ -518,13 +516,12 @@ def scale_ingredients(base_ingredients, multiplier) -> dict:
 
 
 def scale_ingredient(ingredient, multiplier):
-    """"""
+    """Returns ingredient info scaled with multiplier."""
 
     scaled = ingredient.copy()
     scaled['number'] = ingredient['number'] * multiplier
     scaled['display_number'] = ingredient['display_number'] * multiplier
     return scaled
-
 
 
 def set_ingredient_lists(recipe):
@@ -564,7 +561,7 @@ def set_has_description_area(recipe: dict) -> dict:
 def set_schema(recipe: dict) -> dict:
     """Add schema to recipe data.
 
-    More about recipe schema. 
+    More about recipe schema:
     https://schema.org/Recipe
 
     Args:
@@ -623,8 +620,7 @@ def recipe_image(recipe_path):
         recipe_path: A directory to search in.
 
     Returns:
-        Filename of the recipe data file as a string, or empty string if no 
-        image found.
+        Filename of the image file as a string, or empty string if no image.
     """
     
     for file in os.listdir(recipe_path):
@@ -691,7 +687,7 @@ def set_href(collection):
     return collection
 
 
-def link_recipes_collections(site: dict) -> dict:
+def link_site(site: dict) -> dict:
     """Adds collections data to recipes and vice versa.
     
     Args:
@@ -741,6 +737,53 @@ def info_for_recipe(collection: dict) -> dict:
 
     keys = ('name', 'url_path', 'label', 'href')
     return {k: collection[k] for k in keys if k in collection}
+
+
+def set_summary(site: dict) -> dict:
+    """Adds summary data to site."""
+
+    site['summary'] = {
+        'recipes': summary_recipes(site),
+        'collections': summary_collections(site),
+        'ingredients': summary_ingredients(site)
+        }
+    return site
+
+
+def summary_recipes(site):
+    recipes = []
+    for recipe in site['recipes']:
+        recipes.append({
+            'title': recipe['title'],
+            'collections': [c['name'] for c in recipe['collections']]
+        })
+    return recipes
+
+
+def summary_collections(site):
+    collections = []
+    for collection in site['collections']:
+        collections.append({
+            'name': collection['name'],
+            'recipes': [r['title'] for r in collection['recipes']]
+        })
+    return collections
+
+
+def summary_ingredients(site):
+    ingredients = []
+    for recipe in site['recipes']:
+        for scale in recipe['scales']:
+            for ingredient in scale['ingredients']:
+                ingredients.append({
+                    'recipe': recipe['title'],
+                    'scale': scale['label'],
+                    'ingredient': ingredient['string'],
+                    'found_grocery': ingredient['has_grocery'],
+                    'number_groceries': round(ingredient.get('grocery_number',
+                                                             0),5)
+                })
+    return ingredients
 
 
 def build_site(site: dict, site_path: str, local=False):
@@ -852,8 +895,9 @@ def make_summary_page(site: dict, page_path: str):
     """
 
     content = render_template('summary-page.html', 
-                              recipes=site['recipes'], 
-                              collections=site['collections'],
+                              recipes=site['summary']['recipes'], 
+                              collections=site['summary']['collections'],
+                              ingredients=site['summary']['ingredients'],
                               site_title=site_title())
     write_file(content, page_path)
 

@@ -62,13 +62,13 @@ th, td {
                     <td>{{ r.title }}</td>
                     <td>
                         {% for c in r.collections %}
-                        <div>{{ c.name }}</div>
+                        <div>{{ c }}</div>
                         {% endfor %}
                     </td>
                 </tr>
                 {% endfor %}
             </table>            
-        </div>
+        </div><!-- recipes -->
 
         <h2>Collections</h2>
         <div>
@@ -80,13 +80,13 @@ th, td {
                     <td>{{ c.name }}</td>
                     <td>
                         {% for r in c.recipes %}
-                        <div>{{ r.title }}</div>
+                        <div>{{ r }}</div>
                         {% endfor %}
                     </td>
                 </tr>
                 {% endfor %}
             </table>            
-        </div>
+        </div><!-- collections -->
 
         <h2>Ingredients</h2>
         <div>
@@ -96,25 +96,18 @@ th, td {
                 <th>Ingredient</th>
                 <th>Found Grocery</th>
                 <th># of Groceries</th>
-                {% for r in recipes %}
-                {% for s in r.scales %}
-                {% for i in s.ingredients %}
+                {% for i in ingredients %}
                 <tr>
-                    <td>{{ r.title }}</td>
-                    <td>{{ s.label }}</td>
-                    <td>{{ i.string }}</td>
-                    {% if i.has_grocery %}
-                    <td>{{ i.grocery.name }}</td>
-                    {% else %}
-                    <td style="color:red">{{ i.has_grocery }}</td>
-                    {% endif %}                    
-                    <td style="max-width:35px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{% if i.has_grocery %}{{ i.grocery_number }}{% endif %}</td>
+                    <td>{{ i.recipe }}</td>
+                    <td>{{ i.scale }}</td>
+                    <td>{{ i.ingredient }}</td>
+                    <td>{{ i.found_grocery }}</td>
+                    <td>{% if i.found_grocery %}{{ i.number_groceries }}{% endif %}</td>
                 </tr>
                 {% endfor %}
-                {% endfor %}
-                {% endfor %}
             </table>
-        </div>
+        </div><!-- ingredients -->
+
     </div><!-- summary -->
     
 

@@ -424,10 +424,6 @@ def pipe(data: dict, log_path: str, *funcs) -> dict:
             log_file_path = os.path.join(log_path, f'{i}_{func.__name__}.json')
             write_json_file(data, log_file_path)
 
-    if has_log:
-        log_file_path = os.path.join(log_path, f'{i+1}_end.json')
-        write_json_file(data, log_file_path)
-
     return data
 
 
