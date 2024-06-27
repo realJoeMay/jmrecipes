@@ -331,6 +331,12 @@ def fraction_to_string(my_fraction: Fraction) -> str:
     return amount_display
 
 
+def format_currency(cost) -> str:
+    """Gives cost as a nicely formatted string."""
+    
+    return '${:.2f}'.format(float(cost))
+
+
 # URLs
 def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragment=None):
     """Makes a url from components."""
@@ -345,12 +351,10 @@ def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragm
         params = ''
     if fragment is None:
         fragment = ''
-
     if query is None:
         query = ''
     else:
         query = urlencode(query)
-
     return urlunparse([scheme, domain, path, params, query, fragment])
 
 

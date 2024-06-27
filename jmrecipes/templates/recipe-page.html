@@ -587,7 +587,7 @@ a.menu-header:hover {
 
                         {% if scale.has_visible_serving_sizes %}
                         <div class='description-row'>
-                            <span class='description-label'>Serving Size:</span>
+                            <span class='desrciption-label'>Serving Size:</span>
                             <span class='description-value'>
                                 {% for yield in scale.yield %}
                                 {% if yield.show_serving_size %}
@@ -606,6 +606,13 @@ a.menu-header:hover {
                                 <span class='time-value'>{{ time.time_string }}</span>
                             </div>
                             {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if scale.cost %}
+                        <div class='description-row'>
+                            <span class='desrciption-label'>Cost:</span>
+                            <span class='desrciption-value'>{{ scale.cost_string }}</span>
                         </div>
                         {% endif %}
 

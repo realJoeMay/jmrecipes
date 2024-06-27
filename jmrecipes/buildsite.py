@@ -12,10 +12,7 @@ from utils import site_title, feedback_url, icon, fraction_to_string, make_url, 
 
 
 def build():
-    """Execute a build of the recipe site.
-    
-    Loads site data and creates a recipe website. Also creates a local version of site.
-    """
+    """Loads site data and creates a recipe website."""
 
     ts = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
 
@@ -121,6 +118,8 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_times,
                 set_yields,
                 set_ingredients,
+                set_cost,
+                set_ingredient_lists,
                 set_instructions,
                 set_has_description_area,
                 set_schema
@@ -294,6 +293,71 @@ def set_serving_size(scale):
     return scale
 
 
+def set_cost(recipe):
+    """Sets cost data for ingredients and recipe."""
+
+    for scale in recipe['scales']:
+        for ingredient in scale['ingredients']:
+            ingredient = set_ingredient_cost(ingredient)
+        scale = set_scale_cost(scale)
+
+    return recipe
+
+
+def set_ingredient_cost(ingredient):
+    """Set cost data for ingredient.
+    
+    If cost is already set, then type is explicit. Otherwise, tries to 
+    calculate from grocery information. Saves cost as 0 if any there is no 
+    matching grocery item or no grocery amount.
+
+    Args:
+        ingredient: Directory for a recipe's data.
+
+    Returns:
+        ingredient data as a dictionary with keys 'cost', 'cost_string' and 
+        'cost_info'
+    """
+
+    if 'cost' in ingredient:
+        ingredient['cost_info'] = 'explicit'
+    elif not ingredient['has_grocery']:
+        ingredient['cost'] = 0
+        ingredient['cost_info'] = 'no grocery'
+    elif ingredient['grocery_number'] == 0:
+        ingredient['cost'] = 0
+        ingredient['cost_info'] = 'no grocery amount'
+    elif ingredient['grocery']['cost'] == 0:
+        ingredient['cost'] = 0
+        ingredient['cost_info'] = 'no grocery cost'
+    else:
+        ingredient['cost'] = (ingredient['grocery_number'] 
+                          * ingredient['grocery']['cost'])
+        ingredient['cost_info'] = 'calulated'
+
+    ingredient['cost_string'] = utils.format_currency(ingredient['cost'])
+    return ingredient
+
+
+def set_scale_cost(scale):
+    """Set cost data for recipe scale.
+    
+    Sums cost of each ingredient. 
+
+    Args:
+        scale: Dictionary for a recipe scale's data.
+
+    Returns:
+        Scale data as a dictionary with keys 'cost' and 'cost_string'
+    """
+
+    scale['cost'] = 0
+    for ingredient in scale['ingredients']:
+        scale['cost'] += ingredient['cost']    
+    scale['cost_string'] = utils.format_currency(scale['cost'])
+    return scale
+
+
 def set_instructions(recipe):
     """Sets recipe data regarding instructions."""
 
@@ -336,7 +400,7 @@ def set_ingredients(recipe: dict) -> dict:
             ingredient = lookup_grocery(ingredient)
             ingredient['grocery_number'] = grocery_number(ingredient)
     
-    recipe = set_ingredient_lists(recipe)
+    # recipe = set_ingredient_lists(recipe)
     return recipe
 
 
@@ -555,6 +619,8 @@ def set_has_description_area(recipe: dict) -> dict:
             scale['has_description_area'] = True
         if scale['has_times']:
             scale['has_description_area'] = True
+        if scale['cost']:
+            scale['has_description_area'] = True
     return recipe
 
 
@@ -670,6 +736,7 @@ def load_collection(file_path: str, log_path: str) -> dict:
 
 
 def set_homepage(collection):
+    """Add homepage data to collection."""
     
     collection['is_homepage'] = False
     if collection['url_path'] == '':
@@ -751,6 +818,8 @@ def set_summary(site: dict) -> dict:
 
 
 def summary_recipes(site):
+    """Returns summary data for recipes."""
+
     recipes = []
     for recipe in site['recipes']:
         recipes.append({
@@ -761,6 +830,8 @@ def summary_recipes(site):
 
 
 def summary_collections(site):
+    """Returns summary data for collections."""
+    
     collections = []
     for collection in site['collections']:
         collections.append({
@@ -771,6 +842,8 @@ def summary_collections(site):
 
 
 def summary_ingredients(site):
+    """Returns summary data for ingredients."""    
+
     ingredients = []
     for recipe in site['recipes']:
         for scale in recipe['scales']:
