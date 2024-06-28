@@ -1,0 +1,9 @@
+title: Test Weird Scale
+scale:
+- multiplier: 2
+ingredients:
+- number: '2'
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
+  scale: 2

@@ -300,6 +300,7 @@ def set_cost(recipe):
         for ingredient in scale['ingredients']:
             ingredient = set_ingredient_cost(ingredient)
         scale = set_scale_cost(scale)
+        scale['show_cost'] = bool(scale['cost'] > 0)
 
     return recipe
 

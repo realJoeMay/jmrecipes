@@ -13,7 +13,8 @@
         "test-instruction-lists",
         "test-no-instructions",
         "test-scale-instructions",
-        "test-1-scale"
+        "test-1-scale",
+        "test-weird-scale"
     ]
 }
 
