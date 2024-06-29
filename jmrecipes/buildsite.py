@@ -119,6 +119,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_yields,
                 set_ingredients,
                 set_cost,
+                set_ingredient_details,
                 set_ingredient_lists,
                 set_instructions,
                 set_has_description_area,
@@ -294,13 +295,24 @@ def set_serving_size(scale):
 
 
 def set_cost(recipe):
-    """Sets cost data for ingredients and recipe."""
+    """Sets cost data for ingredients and scales."""
+
+    # Set default
+    if 'hide_cost' not in recipe:
+        recipe['hide_cost'] = False
 
     for scale in recipe['scales']:
         for ingredient in scale['ingredients']:
             ingredient = set_ingredient_cost(ingredient)
-        scale = set_scale_cost(scale)
-        scale['show_cost'] = bool(scale['cost'] > 0)
+
+        if 'explicit_cost' in recipe:
+            scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
+        else:
+            scale['cost'] = sum_ingredient_cost(scale)
+
+        scale['cost_string'] = utils.format_currency(scale['cost'])
+        scale['has_visible_cost'] = (not recipe['hide_cost']
+                                     and bool(scale['cost'] > 0))
 
     return recipe
 
@@ -333,30 +345,27 @@ def set_ingredient_cost(ingredient):
         ingredient['cost_info'] = 'no grocery cost'
     else:
         ingredient['cost'] = (ingredient['grocery_number'] 
-                          * ingredient['grocery']['cost'])
-        ingredient['cost_info'] = 'calulated'
+                              * ingredient['grocery']['cost'])
+        ingredient['cost_info'] = 'calculated'
 
     ingredient['cost_string'] = utils.format_currency(ingredient['cost'])
     return ingredient
 
 
-def set_scale_cost(scale):
-    """Set cost data for recipe scale.
+def sum_ingredient_cost(scale: dict):
+    """Returns the cost of a scale by adding each ingredient.
     
-    Sums cost of each ingredient. 
-
     Args:
         scale: Dictionary for a recipe scale's data.
 
     Returns:
-        Scale data as a dictionary with keys 'cost' and 'cost_string'
+        Scale cost as float.
     """
 
-    scale['cost'] = 0
+    cost = 0
     for ingredient in scale['ingredients']:
-        scale['cost'] += ingredient['cost']    
-    scale['cost_string'] = utils.format_currency(scale['cost'])
-    return scale
+        cost += ingredient['cost']
+    return cost
 
 
 def set_instructions(recipe):
@@ -589,6 +598,33 @@ def scale_ingredient(ingredient, multiplier):
     return scaled
 
 
+def set_ingredient_details(recipe):
+    """Sets ingredient detail info."""
+
+    explicit_cost = 'explicit_cost' in recipe
+    cost_hidden = recipe['hide_cost']
+
+    for scale in recipe['scales']:
+
+
+
+        scale['has_cost_detail'] = (has_cost_detail(scale) 
+                                    and not cost_hidden 
+                                    and not explicit_cost)
+        scale['has_any_detail'] = (scale['has_cost_detail'])
+
+    return recipe
+
+
+def has_cost_detail(scale):
+    """True if there is cost detail for a scale."""
+
+    for ingredient in scale['ingredients']:
+        if ingredient['cost']:
+            return True
+    return False
+
+
 def set_ingredient_lists(recipe):
     """Groups ingredients into ingredient lists."""
     
@@ -613,15 +649,10 @@ def set_has_description_area(recipe: dict) -> dict:
     """Sets recipe data regarding the description area."""
 
     for scale in recipe['scales']:
-        scale['has_description_area'] = False
-        if scale['has_visible_yields']:
-            scale['has_description_area'] = True
-        if scale['has_visible_serving_sizes']:
-            scale['has_description_area'] = True
-        if scale['has_times']:
-            scale['has_description_area'] = True
-        if scale['cost']:
-            scale['has_description_area'] = True
+        scale['has_description_area'] = (scale['has_visible_yields']
+                                         or scale['has_visible_serving_sizes']
+                                         or scale['has_times']
+                                         or scale['has_visible_cost'])
     return recipe
 
 

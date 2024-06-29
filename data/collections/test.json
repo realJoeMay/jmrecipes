@@ -14,7 +14,9 @@
         "test-no-instructions",
         "test-scale-instructions",
         "test-1-scale",
-        "test-weird-scale"
+        "test-weird-scale",
+        "test-hide-cost",
+        "test-cost-explicit"
     ]
 }
 

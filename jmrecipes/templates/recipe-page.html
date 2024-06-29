@@ -419,6 +419,18 @@ a.menu-header:hover {
     font-weight: 400;
 }
 
+/* DETAILS */
+
+.detail-cost {
+    display: none;
+    font-style: italic;
+    color: #555;
+}
+
+.show-detail-cost .detail-cost {
+    display: block;
+}
+
 
 /* INSTRUCTIONS */
 
@@ -473,20 +485,48 @@ a.menu-header:hover {
                     {% for scale in r.scales %}
                     <div class="menu-button menu-button-scale {{ scale.button_class }} {% if scale.multiplier == 1 %}selected{% endif %}" onclick="{{ scale.js_function_name }}()">
     
-                    {% if scale.has_servings %}
-                    <span style="margin-top:-3px;">{{ scale.servings }}</span>
-                    <span style="font-size:0.9rem;">Serving{% if scale.servings > 1 %}s{% endif %}</span>
-                    {% else %}
+                        {% if scale.has_servings %}
+                        <span style="margin-top:-3px;">{{ scale.servings }}</span>
+                        <span style="font-size:0.9rem;">Serving{% if scale.servings > 1 %}s{% endif %}</span>
+                        {% else %}
                         {{ scale.label }}
-                    {% endif %}
+                        {% endif %}
 
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-              </div>
             </div>
 
             <div class="menu-section-break"></div>
             {% endif %}
+
+
+            {% for scale in r.scales %}
+            {% if scale.has_any_detail %}
+            <div class='menu-details scale {{ scale.item_class }}'>
+                <div class='menu-scale'>
+                    <h3 class='menu-header'>Ingredient Detail</h3>
+                    <div class='menu-content menu-button-section'>
+
+                        <div class="menu-button menu-button-detail menu-button-detail-none selected" onclick="detailNone()">None</div>
+
+                        {% if scale.has_cost_detail %}
+                        <div class="menu-button menu-button-detail menu-button-detail-cost" onclick="detailCost()">Cost
+                            <span style="margin-top:-3px;"></span>
+                            <span style="font-size:0.9rem;"></span>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-section-break scale {{ scale.item_class }}"></div>
+            {% endif %}
+            {% endfor %}
+    
+
+
 
 
             {% for scale in r.scales %}
@@ -509,7 +549,9 @@ a.menu-header:hover {
             </div>
             {% endif %}
             {% endfor %}
-    
+
+
+
 
         
             <div class='menu_print'>
@@ -609,7 +651,7 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
-                        {% if scale.cost %}
+                        {% if scale.has_visible_cost %}
                         <div class='description-row'>
                             <span class='desrciption-label'>Cost:</span>
                             <span class='desrciption-value'>{{ scale.cost_string }}</span>
@@ -646,7 +688,9 @@ a.menu-header:hover {
                             <span class="ingredient-item-descriptor">{{ ingredient.descriptor }}</span>
                             {% endif %}
                         </div>
-                        {% endif %}    
+                        {% endif %}
+
+                        <div class="detail-cost">{{ ingredient.cost_string }}</div>
 
                     </div><!-- ingredient -->
     
@@ -741,6 +785,35 @@ function {{ scale.js_function_name }}() {
 {% endfor %}
 
 pageBody.classList.add("{{ r.base_select_class }}");
+
+
+
+// Ingredient Details
+
+function detailClear() {
+    var menuButtons = document.querySelectorAll(".menu-button-detail");
+    menuButtons.forEach((button) => {
+        button.classList.remove("selected");
+    })
+    pageBody.classList.remove("show-detail-cost");
+}
+
+function detailNone() {
+    detailClear();
+    var menuButtons = document.querySelectorAll(".menu-button-detail-none");
+    menuButtons.forEach((button) => {
+        button.classList.add("selected");
+    })
+}
+
+function detailCost() {
+    detailClear();
+    var menuButtons = document.querySelectorAll(".menu-button-detail-cost");
+    menuButtons.forEach((button) => {
+        button.classList.add("selected");
+    })
+    pageBody.classList.add("show-detail-cost");
+}
 
 
 

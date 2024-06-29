@@ -128,6 +128,13 @@ def recipe_dict(data: dict) -> dict:
             'multiplier': read_multiplier(scale)
         })
 
+    if 'cost' in data:
+        recipe['explicit_cost'] = data['cost']
+
+    if 'hide_cost' in data:
+        recipe['hide_cost'] = data['hide_cost']
+
+
     return recipe
 
 

@@ -1,0 +1,9 @@
+title: Test Cost Explicit
+cost: 5.25
+scale:
+- multiplier: 2
+ingredients:
+- number: 2
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
