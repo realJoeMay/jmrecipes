@@ -302,17 +302,26 @@ def set_cost(recipe):
         recipe['hide_cost'] = False
 
     for scale in recipe['scales']:
+        # ingredient cost
         for ingredient in scale['ingredients']:
             ingredient = set_ingredient_cost(ingredient)
 
+        # scale cost
         if 'explicit_cost' in recipe:
             scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
         else:
             scale['cost'] = sum_ingredient_cost(scale)
-
         scale['cost_string'] = utils.format_currency(scale['cost'])
         scale['has_visible_cost'] = (not recipe['hide_cost']
                                      and bool(scale['cost'] > 0))
+        
+        # scale cost per serving
+        if scale['has_servings'] and scale['servings'] != 0:
+            scale['cost_per_serving'] = scale['cost'] / scale['servings']
+            scale['cost_per_serving_string'] = utils.format_currency(scale['cost_per_serving'])            
+        scale['has_visible_cost_per_serving'] = (scale['has_visible_cost']
+                                                 and scale['has_servings']
+                                                 and scale['servings'] != 1)
 
     return recipe
 

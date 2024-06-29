@@ -1,5 +1,7 @@
 title: Test Cost Explicit
 cost: 5.25
+yield:
+- number: 1
 scale:
 - multiplier: 2
 ingredients:

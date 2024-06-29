@@ -142,6 +142,11 @@ a, a:hover {
     flex-direction: column;
 }
 
+.scale-cost-per-serving {
+    color: #888;
+    font-style: italic;
+}
+
 /* ICONS */
 
 .icon-wrapper {
@@ -654,7 +659,12 @@ a.menu-header:hover {
                         {% if scale.has_visible_cost %}
                         <div class='description-row'>
                             <span class='desrciption-label'>Cost:</span>
-                            <span class='desrciption-value'>{{ scale.cost_string }}</span>
+                            <span class='desrciption-value'>
+                                {{ scale.cost_string }}
+                                {% if scale.has_visible_cost_per_serving %}
+                                <span class="scale-cost-per-serving">({{ scale.cost_per_serving_string }} per serving)</span>
+                                {% endif %}
+                            </span>
                         </div>
                         {% endif %}
 
