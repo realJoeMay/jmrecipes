@@ -111,12 +111,12 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
         log_path = os.path.join(log_path, recipe['url_slug'])
 
     return utils.pipe(recipe, log_path,
+                set_defaults,
                 set_url,
                 set_subtitle,
                 set_image,
                 set_scales,
                 set_times,
-                set_yield_defaults,
                 scale_yields,
                 set_servings,
                 set_visible_yields,
@@ -125,13 +125,29 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 scale_ingredients,
                 set_ingredient_outputs,
                 lookup_groceries,
-                set_cost,
+                set_ingredient_costs,
+                set_recipe_costs,
+                set_recipe_cost_per_serving,
                 set_ingredient_details,
                 set_ingredient_lists,
                 set_instructions,
                 set_has_description_area,
                 set_schema
                 )
+
+
+def set_defaults(recipe):
+
+    for yielb in recipe['yield']:
+        if yielb['show_yield'] == '':
+            yielb['show_yield'] = True
+        if yielb['show_serving_size'] == '':
+            yielb['show_serving_size'] = False
+
+    if 'hide_cost' not in recipe:
+        recipe['hide_cost'] = False
+
+    return recipe
 
 
 def set_url(recipe):
@@ -407,7 +423,7 @@ def ingredient_display_amount(ingredient):
     return ' '.join(amount)
 
 
-def lookup_groceries(recipe: dict) -> dict:
+def lookup_groceries(recipe):
     """Looks up grocery info for each ingredient."""
 
     for scale in recipe['scales']:
@@ -427,7 +443,11 @@ def lookup_grocery(ingredient):
         return ingredient
     
     ingredient['has_grocery'] = True
-    ingredient['grocery'] = grocery
+    grocery_keys = ["name", "cost", "volume_amount", "volume_unit", 
+                    "weight_amount", "weight_unit", "other_amount", 
+                    "other_unit", "discrete_amount", "Calories", "fat", 
+                    "carbohydrates", "protein"]
+    ingredient['grocery'] = {k: grocery[k] for k in grocery_keys}
     return ingredient
 
 
@@ -530,19 +550,19 @@ def grocery_number_other(ingredient):
     return ingredient_number / grocery_number
 
 
-def set_cost(recipe):
-    """Sets cost data for ingredients and scales."""
-
-    # Set default
-    if 'hide_cost' not in recipe:
-        recipe['hide_cost'] = False
+def set_ingredient_costs(recipe):
+    """"""
 
     for scale in recipe['scales']:
-        # ingredient cost
         for ingredient in scale['ingredients']:
             ingredient = set_ingredient_cost(ingredient)
+    return recipe
 
-        # scale cost
+
+def set_recipe_costs(recipe):
+    """Set recipe cost for each scale."""
+
+    for scale in recipe['scales']:
         if 'explicit_cost' in recipe:
             scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
         else:
@@ -550,11 +570,16 @@ def set_cost(recipe):
         scale['cost_string'] = utils.format_currency(scale['cost'])
         scale['has_visible_cost'] = (not recipe['hide_cost']
                                      and bool(scale['cost'] > 0))
-        
-        # scale cost per serving
+    return recipe
+
+
+def set_recipe_cost_per_serving(recipe):
+    """Sets cost per serving data for each scale."""
+
+    for scale in recipe['scales']:
         if scale['has_servings'] and scale['servings'] != 0:
             scale['cost_per_serving'] = scale['cost'] / scale['servings']
-            scale['cost_per_serving_string'] = utils.format_currency(scale['cost_per_serving'])            
+            scale['cost_per_serving_string'] = utils.format_currency(scale['cost_per_serving'])
         scale['has_visible_cost_per_serving'] = (scale['has_visible_cost']
                                                  and scale['has_servings']
                                                  and scale['servings'] != 1)
