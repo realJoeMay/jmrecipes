@@ -112,11 +112,16 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
 
     return utils.pipe(recipe, log_path,
                 set_url,
-                set_title,
+                set_subtitle,
                 set_image,
                 set_scales,
                 set_times,
-                set_yields,
+                set_yield_defaults,
+                scale_yields,
+                set_servings,
+                set_visible_yields,
+                set_visible_serving_sizes,
+                set_copy_ingredients_sublabel,
                 set_ingredients,
                 set_cost,
                 set_ingredient_details,
@@ -136,8 +141,8 @@ def set_url(recipe):
     return recipe
 
 
-def set_title(recipe: dict) -> dict:
-    """Sets values regarding the recipe title and subtitle."""
+def set_subtitle(recipe: dict) -> dict:
+    """Sets values regarding the recipe subtitle."""
     
     if 'subtitle' in recipe and recipe['subtitle'] != '':
         recipe['has_subtitle'] = True
@@ -159,7 +164,7 @@ def set_image(recipe: dict) -> dict:
 
 
 def set_scales(recipe: dict) -> dict:
-    """Sets recipe data regarding the recipe scales."""
+    """Sets basic data for each recipe scale."""
 
     for i, scale in enumerate(recipe['scales'], 1):
         label = str(scale['multiplier'].limit_denominator(100)) + 'x'
@@ -172,18 +177,6 @@ def set_scales(recipe: dict) -> dict:
     recipe['base_select_class'] = recipe['scales'][0]['select_class']
     recipe['has_scales'] = len(recipe['scales']) > 1
     return recipe
-
-
-def copy_ingredients_sublabel(scale):
-
-    if scale['multiplier'] == 1:
-        return ''
-    
-    if scale['has_servings']:
-        unit = 'serving' if scale['servings'] ==1 else 'servings'
-        return f'for {scale["servings"]} {unit}'
-    
-    return f'for {scale["multiplier"]}x'
 
 
 def set_times(recipe: dict) -> dict:
@@ -204,54 +197,71 @@ def set_times(recipe: dict) -> dict:
     return recipe
 
 
-def set_yields(recipe: dict) -> dict:
-    """Set recipe attributes related to yield."""
+def set_yield_defaults(recipe):
+    """Set default values for each yield."""
 
-    # set defaults
     for yielb in recipe['yield']:
         if yielb['show_yield'] == '':
             yielb['show_yield'] = True
         if yielb['show_serving_size'] == '':
             yielb['show_serving_size'] = False
-
-    # todo make nicer
-    for scale in recipe['scales']:
-        scale = scale_yields(scale, recipe['yield'])
-        scale = set_yield_displays(scale)
-        scale = set_servings(scale)
-        scale = set_serving_size(scale)
-        scale['copy_ingredients_sublabel'] = copy_ingredients_sublabel(scale)
-
     return recipe
 
 
-def scale_yields(scale, base_yields):
-    """Add yield data to recipe scales."""
+def scale_yields(recipe):
+    """Add yield section to each recipe scale."""
 
-    scale['yield'] = []
-    for yielb in base_yields:
-        number = yielb['number'] * scale['multiplier']
-        scale['yield'].append({
-            'number': number,
-            'unit': utils.numberize(yielb['unit'], number),
-            'show_yield': yielb['show_yield'],
-            'show_serving_size': yielb['show_serving_size']
-        })
+    for scale in recipe['scales']:
+        scale['yield'] = []
+        for yielb in recipe['yield']:
+            number = yielb['number'] * scale['multiplier']
+            scale['yield'].append({
+                'number': number,
+                'unit': utils.numberize(yielb['unit'], number),
+                'show_yield': yielb['show_yield'],
+                'show_serving_size': yielb['show_serving_size']})
+    return recipe
+
+
+def set_servings(recipe):
+    """Set servings data for each scale in recipe."""
+
+    for scale in recipe['scales']:
+        set_servings_scale(scale)
+    return recipe
+
+
+def set_servings_scale(scale):
+    """Set servings data for a recipe scale."""
+
+    scale['has_servings'] = False
+    for yielb in scale['yield']:
+        if yielb['unit'].lower() in ('serving', 'servings'):
+            scale['servings'] = yielb['number']
+            scale['has_servings'] = True
     return scale
 
 
-def set_yield_displays(scale):
+def set_visible_yields(recipe):
+    """Sets yield data to show on page."""
+
+    for scale in recipe['scales']:
+        scale = set_visible_yields_scale(scale)
+    return recipe
+
+
+def set_visible_yields_scale(scale):
+    """Sets yield data for a recipe scale to show on page."""
 
     scale['has_visible_yields'] = False
     for yielb in scale['yield']:
         if yielb['show_yield']:
             scale['has_visible_yields'] = True
-            yielb['yield_string'] = yield_display(yielb)
-
+            yielb['yield_string'] = yield_string(yielb)
     return scale
 
 
-def yield_display(yielb: dict) -> str:
+def yield_string(yielb: dict) -> str:
     """Returns string for a yield."""
 
     number = fraction_to_string(yielb["number"])
@@ -259,24 +269,16 @@ def yield_display(yielb: dict) -> str:
     return display
 
 
-def set_servings(scale):
-    """Sets recipe scale servings data."""
+def set_visible_serving_sizes(recipe):
+    """"""
 
-    scale['has_servings'] = False
-    for yielb in scale['yield']:
-        if yielb['unit'].lower() in ('serving', 'servings'):
-            scale['servings'] = yielb['number']
-            scale['has_servings'] = True
-            
-            number = fraction_to_string(yielb['number'])
-            unit = 'serving' if number == 1 else 'servings'
-            scale['servings_string'] = f'{number} {unit}'
-            
-    return scale
+    for scale in recipe['scales']:
+        scale = set_serving_size(scale)
+    return recipe
 
 
 def set_serving_size(scale):
-    """Sets recipe scale servings size data."""
+    """Sets servings size data for a recipe scale to show on page."""
 
     scale['has_visible_serving_sizes'] = False
 
@@ -290,8 +292,27 @@ def set_serving_size(scale):
             number_string = fraction_to_string(number)
             unit = utils.numberize(yielb['unit'], number)
             yielb['serving_size_string'] = f'{number_string} {unit}'
-
     return scale
+
+
+def set_copy_ingredients_sublabel(recipe: dict) -> dict:
+    """Set sublabel of copy ingredients button for each scale."""
+
+    for scale in recipe['scales']:
+        scale['copy_ingredients_sublabel'] = copy_ingredients_sublabel(scale)
+    return recipe
+
+
+def copy_ingredients_sublabel(scale) -> str:
+
+    if scale['multiplier'] == 1:
+        return ''
+    
+    if scale['has_servings']:
+        unit = 'serving' if scale['servings'] ==1 else 'servings'
+        return f'for {scale["servings"]} {unit}'
+    
+    return f'for {scale["multiplier"]}x'
 
 
 def set_cost(recipe):
@@ -322,7 +343,6 @@ def set_cost(recipe):
         scale['has_visible_cost_per_serving'] = (scale['has_visible_cost']
                                                  and scale['has_servings']
                                                  and scale['servings'] != 1)
-
     return recipe
 
 
@@ -345,7 +365,7 @@ def set_ingredient_cost(ingredient):
         ingredient['cost_info'] = 'explicit'
     elif not ingredient['has_grocery']:
         ingredient['cost'] = 0
-        ingredient['cost_info'] = 'no grocery'
+        ingredient['cost_info'] = 'no grocery item'
     elif ingredient['grocery_number'] == 0:
         ingredient['cost'] = 0
         ingredient['cost_info'] = 'no grocery amount'
@@ -420,6 +440,95 @@ def set_ingredients(recipe: dict) -> dict:
             ingredient['grocery_number'] = grocery_number(ingredient)
     
     # recipe = set_ingredient_lists(recipe)
+    return recipe
+
+
+def set_ingredient_displays(ing: dict) -> dict:
+    """Fill missing ingredient display data."""
+
+    if ing['display_number'] == 0:
+        ing['display_number'] = ing['number']
+    if ing['display_unit'] == '':
+        ing['display_unit'] = ing['unit']
+    if ing['display_item'] == '':
+        ing['display_item'] = ing['item']
+    return ing
+
+
+def scale_ingredients(base_ingredients, multiplier) -> dict:
+    """Get list of ingredients for a recipe scale.
+
+    Base ingredients are scaled using a multiplier. If the base ingredient has 
+    an explicit scale, the ingredient is copied without multiplying.
+
+    Args:
+        base_ingredients: Ingredient data as a directory.
+        multiplier: A scale's multiplier as a fraction.
+
+    Returns:
+        List of ingredient dictionaries.
+    """
+
+    ingredients = []
+    for ingredient in base_ingredients:
+        if 'scale' not in ingredient:
+            ingredients.append(scale_ingredient(ingredient, multiplier))
+        elif to_fraction(ingredient['scale']) == multiplier:        
+            ingredients.append(ingredient)
+    return ingredients
+
+
+def scale_ingredient(ingredient, multiplier):
+    """Returns ingredient info scaled with multiplier."""
+
+    scaled = ingredient.copy()
+    scaled['number'] = ingredient['number'] * multiplier
+    scaled['display_number'] = ingredient['display_number'] * multiplier
+    return scaled
+
+
+def ingredient_string(ing: dict) -> str:
+    """Returns string with ingredient number, unit, and item."""
+
+    i_str = []
+    if ing['display_number']:
+        i_str.append(fraction_to_string(ing['display_number']))
+    if ing['display_unit']:
+        i_str.append((ing['display_unit']))
+    if ing['display_item']:
+        i_str.append((ing['display_item']))
+    string = ' '.join(i_str)
+    return string
+
+
+def ingredient_display_amount(ing):
+    """Return string with ingredient number and unit."""
+
+    display_amount = []
+    if ing['display_number']:
+        display_amount.append(fraction_to_string(ing['display_number']))
+    if ing['display_unit']:
+        display_amount.append((ing['display_unit']))
+    amount = ' '.join(display_amount)
+    
+    return amount
+
+
+def set_ingredient_details(recipe):
+    """Sets ingredient detail info."""
+
+    explicit_cost = 'explicit_cost' in recipe
+    cost_hidden = recipe['hide_cost']
+
+    for scale in recipe['scales']:
+
+
+
+        scale['has_cost_detail'] = (has_cost_detail(scale) 
+                                    and not cost_hidden 
+                                    and not explicit_cost)
+        scale['has_any_detail'] = (scale['has_cost_detail'])
+
     return recipe
 
 
@@ -536,95 +645,6 @@ def grocery_number_other(ingredient):
     return ingredient_number / grocery_number
 
 
-def ingredient_display_amount(ing):
-    """Return string with ingredient number and unit."""
-
-    display_amount = []
-    if ing['display_number']:
-        display_amount.append(fraction_to_string(ing['display_number']))
-    if ing['display_unit']:
-        display_amount.append((ing['display_unit']))
-    amount = ' '.join(display_amount)
-    
-    return amount
-
-
-def ingredient_string(ing: dict) -> str:
-    """Returns string with ingredient number, unit, and item."""
-
-    i_str = []
-    if ing['display_number']:
-        i_str.append(fraction_to_string(ing['display_number']))
-    if ing['display_unit']:
-        i_str.append((ing['display_unit']))
-    if ing['display_item']:
-        i_str.append((ing['display_item']))
-    string = ' '.join(i_str)
-    return string
-
-
-def set_ingredient_displays(ing: dict) -> dict:
-    """Fill missing ingredient display data."""
-
-    if ing['display_number'] == 0:
-        ing['display_number'] = ing['number']
-    if ing['display_unit'] == '':
-        ing['display_unit'] = ing['unit']
-    if ing['display_item'] == '':
-        ing['display_item'] = ing['item']
-    return ing
-
-
-def scale_ingredients(base_ingredients, multiplier) -> dict:
-    """Get list of ingredients for a recipe scale.
-
-    Base ingredients are scaled using a multiplier. If the base ingredient has 
-    an explicit scale, the ingredient is copied without multiplying.
-
-    Args:
-        base_ingredients: Ingredient data as a directory.
-        multiplier: A scale's multiplier as a fraction.
-
-    Returns:
-        List of ingredient dictionaries.
-    """
-
-    ingredients = []
-    for ingredient in base_ingredients:
-        if 'scale' not in ingredient:
-            ingredients.append(scale_ingredient(ingredient, multiplier))
-        elif to_fraction(ingredient['scale']) == multiplier:        
-            ingredients.append(ingredient)
-    return ingredients
-
-
-def scale_ingredient(ingredient, multiplier):
-    """Returns ingredient info scaled with multiplier."""
-
-    scaled = ingredient.copy()
-    scaled['number'] = ingredient['number'] * multiplier
-    scaled['display_number'] = ingredient['display_number'] * multiplier
-    return scaled
-
-
-def set_ingredient_details(recipe):
-    """Sets ingredient detail info."""
-
-    explicit_cost = 'explicit_cost' in recipe
-    cost_hidden = recipe['hide_cost']
-
-    for scale in recipe['scales']:
-
-
-
-        scale['has_cost_detail'] = (has_cost_detail(scale) 
-                                    and not cost_hidden 
-                                    and not explicit_cost)
-        scale['has_any_detail'] = (scale['has_cost_detail'])
-
-    return recipe
-
-
 def has_cost_detail(scale):
     """True if there is cost detail for a scale."""
 
@@ -668,14 +688,7 @@ def set_has_description_area(recipe: dict) -> dict:
 def set_schema(recipe: dict) -> dict:
     """Add schema to recipe data.
 
-    More about recipe schema:
-    https://schema.org/Recipe
-
-    Args:
-        recipe: Recipe data as a directory.
-
-    Returns:
-        Recipe data as a dictionary.
+    More about recipe schema: https://schema.org/Recipe
     """
 
     schema = {
@@ -687,8 +700,9 @@ def set_schema(recipe: dict) -> dict:
     if recipe['has_image']:
         schema['image'] = recipe['image']
 
-    if recipe['scales'][0]['has_servings']:
-        schema['recipeYield'] = recipe['scales'][0]['servings_string']
+    # servings = servings_schema(recipe)
+    if servings_schema(recipe):
+        schema['recipeYield'] = servings_schema(recipe)
 
     if recipe['scales'][0]['has_ingredients']:
         schema['recipeIngredient'] = []
@@ -697,6 +711,17 @@ def set_schema(recipe: dict) -> dict:
 
     recipe['schema_string'] = json.dumps(schema)
     return recipe
+
+
+def servings_schema(recipe):
+    """Returns schema string for servings. Empty string if no servings."""
+
+    if recipe['scales'][0]['has_servings'] is False:
+        return ''
+
+    number = recipe['scales'][0]['servings']
+    unit = 'serving' if number == 1 else 'servings'
+    return f'{number} {unit}'
 
 
 def recipe_file(recipe_path: str) -> str:
