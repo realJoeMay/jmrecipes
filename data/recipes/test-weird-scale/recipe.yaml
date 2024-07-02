@@ -1,4 +1,6 @@
 title: Test Weird Scale
+yield:
+- number: 2
 scale:
 - multiplier: 2
 ingredients:

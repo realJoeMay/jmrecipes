@@ -127,6 +127,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 lookup_groceries,
                 set_ingredient_costs,
                 set_recipe_costs,
+                set_ingredients_cost_per_serving,
                 set_recipe_cost_per_serving,
                 set_ingredient_details,
                 set_ingredient_lists,
@@ -551,38 +552,11 @@ def grocery_number_other(ingredient):
 
 
 def set_ingredient_costs(recipe):
-    """"""
+    """Sets cost data for each ingredient."""
 
     for scale in recipe['scales']:
         for ingredient in scale['ingredients']:
             ingredient = set_ingredient_cost(ingredient)
-    return recipe
-
-
-def set_recipe_costs(recipe):
-    """Set recipe cost for each scale."""
-
-    for scale in recipe['scales']:
-        if 'explicit_cost' in recipe:
-            scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
-        else:
-            scale['cost'] = sum_ingredient_cost(scale)
-        scale['cost_string'] = utils.format_currency(scale['cost'])
-        scale['has_visible_cost'] = (not recipe['hide_cost']
-                                     and bool(scale['cost'] > 0))
-    return recipe
-
-
-def set_recipe_cost_per_serving(recipe):
-    """Sets cost per serving data for each scale."""
-
-    for scale in recipe['scales']:
-        if scale['has_servings'] and scale['servings'] != 0:
-            scale['cost_per_serving'] = scale['cost'] / scale['servings']
-            scale['cost_per_serving_string'] = utils.format_currency(scale['cost_per_serving'])
-        scale['has_visible_cost_per_serving'] = (scale['has_visible_cost']
-                                                 and scale['has_servings']
-                                                 and scale['servings'] != 1)
     return recipe
 
 
@@ -621,6 +595,21 @@ def set_ingredient_cost(ingredient):
     return ingredient
 
 
+
+def set_recipe_costs(recipe):
+    """Set recipe cost for each scale."""
+
+    for scale in recipe['scales']:
+        if 'explicit_cost' in recipe:
+            scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
+        else:
+            scale['cost'] = sum_ingredient_cost(scale)
+        scale['cost_string'] = utils.format_currency(scale['cost'])
+        scale['has_visible_cost'] = (not recipe['hide_cost']
+                                     and bool(scale['cost'] > 0))
+    return recipe
+
+
 def sum_ingredient_cost(scale: dict):
     """Returns the cost of a scale by adding each ingredient.
     
@@ -635,6 +624,35 @@ def sum_ingredient_cost(scale: dict):
     for ingredient in scale['ingredients']:
         cost += ingredient['cost']
     return cost
+
+
+def set_ingredients_cost_per_serving(recipe):
+    """Sets cost per serving data for each ingredient."""
+
+    for scale in recipe['scales']:
+        if scale['has_servings']:
+            servings = scale['servings']
+        else:
+            servings = 1
+
+        for ingredient in scale['ingredients']:
+            ingredient['cost_per_serving'] = ingredient['cost'] / servings
+            ingredient['cost_per_serving_string'] = utils.format_currency(ingredient['cost_per_serving'])
+     
+    return recipe
+
+
+def set_recipe_cost_per_serving(recipe):
+    """Sets cost per serving data for each scale."""
+
+    for scale in recipe['scales']:
+        if scale['has_servings'] and scale['servings'] != 0:
+            scale['cost_per_serving'] = scale['cost'] / scale['servings']
+            scale['cost_per_serving_string'] = utils.format_currency(scale['cost_per_serving'])
+        scale['has_visible_cost_per_serving'] = (scale['has_visible_cost']
+                                                 and scale['has_servings']
+                                                 and scale['servings'] != 1)
+    return recipe
 
 
 def set_instructions(recipe):
@@ -672,12 +690,15 @@ def set_ingredient_details(recipe):
 
     for scale in recipe['scales']:
 
-
-
         scale['has_cost_detail'] = (has_cost_detail(scale) 
                                     and not cost_hidden 
                                     and not explicit_cost)
-        scale['has_any_detail'] = (scale['has_cost_detail'])
+        
+        scale['has_cost_per_serving_detail'] = (scale['has_cost_detail']
+                                                and scale['has_servings'])
+                            
+        scale['has_any_detail'] = (scale['has_cost_detail']
+                                   or scale['has_cost_per_serving_detail'])
 
     return recipe
 
