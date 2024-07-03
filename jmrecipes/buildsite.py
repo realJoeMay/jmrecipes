@@ -140,9 +140,11 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
 def set_defaults(recipe):
 
     for yielb in recipe['yield']:
-        if yielb['show_yield'] == '':
+        if 'unit' not in yielb:
+            yielb['unit'] = 'servings'
+        if 'show_yield' not in yielb:
             yielb['show_yield'] = True
-        if yielb['show_serving_size'] == '':
+        if 'show_serving_size' not in yielb:
             yielb['show_serving_size'] = False
 
     if 'hide_cost' not in recipe:

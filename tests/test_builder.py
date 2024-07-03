@@ -29,3 +29,14 @@ def test_ingredient_grocery_amoount():
     assert recipe['scales'][0]['ingredients'][3]['grocery_number'] == 3
     assert recipe['scales'][0]['ingredients'][4]['grocery_number'] == 0
 
+
+def test_parse_yield_as_number():
+    recipe_dir = os.path.join(test_data, 'recipe_yield_as_number')
+    recipe = buildsite.load_recipe(recipe_dir)
+    assert recipe['scales'][0]['servings'] == 2
+
+
+def test_parse_yield_as_list():
+    recipe_dir = os.path.join(test_data, 'recipe_yield_as_list')
+    recipe = buildsite.load_recipe(recipe_dir)
+    assert recipe['scales'][0]['servings'] == 3

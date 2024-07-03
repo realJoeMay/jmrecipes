@@ -1,0 +1,6 @@
+title: Test
+yield:
+- number: 3
+  unit: servings
+- number: 5
+  unit: cups
