@@ -427,15 +427,28 @@ a.menu-header:hover {
 /* DETAILS */
 
 .detail-cost,
-.detail-cost-per-serving {
+.detail-cost-per-serving,
+.detail-nutrition-per-serving {
     display: none;
     font-style: italic;
     color: #555;
 }
 
 .show-detail-cost .detail-cost,
-.show-detail-cost-per-serving .detail-cost-per-serving {
+.show-detail-cost-per-serving .detail-cost-per-serving,
+.show-detail-nutrition-per-serving .detail-nutrition-per-serving {
     display: block;
+}
+
+.detail-nutrition-per-serving {
+    margin: 0px 0 8px 6px;
+    font-size: 0.9rem;
+}
+
+.nutrition {
+    display: grid;
+    grid-template-columns: 0fr 1fr;
+    column-gap: 8px;
 }
 
 
@@ -524,6 +537,13 @@ a.menu-header:hover {
                         {% if scale.has_cost_per_serving_detail %}
                         <div class="menu-button menu-button-detail menu-button-detail-cost-per-serving" onclick="detailCostPerServing()">
                             <span style="margin-top:-3px;">Cost</span>
+                            <span style="font-size:0.8rem;">per serving</span>
+                        </div>
+                        {% endif %}
+
+                        {% if scale.has_nutrition_per_serving_detail %}
+                        <div class="menu-button menu-button-detail menu-button-detail-nutrition-per-serving" onclick="detailNutritionPerServing()">
+                            <span style="margin-top:-3px;">Nutrition</span>
                             <span style="font-size:0.8rem;">per serving</span>
                         </div>
                         {% endif %}
@@ -709,6 +729,21 @@ a.menu-header:hover {
                         <div class="detail-cost">{{ ingredient.cost_string }}</div>
                         <div class="detail-cost-per-serving">{{ ingredient.cost_per_serving_string }}</div>
 
+                        {% if ingredient.has_nutrition %}
+                        <div class="detail-nutrition-per-serving">
+                            <div class="nutrition">
+                                <div class="calories value">{{ ingredient.nutrition.calories }}</div>
+                                <div class="calories label">Calories</div>
+                                <div class="calories value">{{ ingredient.nutrition.fat }}g</div>
+                                <div class="fat label">fat</div>
+                                <div class="fat value">{{ ingredient.nutrition.carbohydrates }}g</div>
+                                <div class="carbs label">carbs</div>
+                                <div class="calories value">{{ ingredient.nutrition.protein }}g</div>
+                                <div class="protein label">protein</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
                     </div><!-- ingredient -->
     
                 {% endfor %}
@@ -814,6 +849,7 @@ function detailClear() {
     })
     pageBody.classList.remove("show-detail-cost");
     pageBody.classList.remove("show-detail-cost-per-serving");
+    pageBody.classList.remove("show-detail-nutrition-per-serving");
 }
 
 function detailNone() {
@@ -842,6 +878,14 @@ function detailCostPerServing() {
     pageBody.classList.add("show-detail-cost-per-serving");
 }
 
+function detailNutritionPerServing() {
+    detailClear();
+    var menuButtons = document.querySelectorAll(".menu-button-detail-nutrition-per-serving");
+    menuButtons.forEach((button) => {
+        button.classList.add("selected");
+    })
+    pageBody.classList.add("show-detail-nutrition-per-serving");
+}
 
 
 // Copy Ingredients

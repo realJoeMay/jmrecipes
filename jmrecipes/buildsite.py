@@ -125,12 +125,13 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 scale_ingredients,
                 set_ingredient_outputs,
                 lookup_groceries,
-                set_ingredient_costs,
-                set_recipe_costs,
+                set_ingredients_cost,
                 set_ingredients_cost_per_serving,
-                set_recipe_cost_per_serving,
+                set_ingredients_nutrition,
                 set_ingredient_details,
                 set_ingredient_lists,
+                set_recipe_costs,
+                set_recipe_cost_per_serving,
                 set_instructions,
                 set_has_description_area,
                 set_schema
@@ -553,7 +554,7 @@ def grocery_number_other(ingredient):
     return ingredient_number / grocery_number
 
 
-def set_ingredient_costs(recipe):
+def set_ingredients_cost(recipe):
     """Sets cost data for each ingredient."""
 
     for scale in recipe['scales']:
@@ -597,6 +598,65 @@ def set_ingredient_cost(ingredient):
     return ingredient
 
 
+def set_ingredients_cost_per_serving(recipe):
+    """Sets cost per serving data for each ingredient."""
+
+    for scale in recipe['scales']:
+        if scale['has_servings']:
+            servings = scale['servings']
+        else:
+            servings = 1
+
+        for ingredient in scale['ingredients']:
+            ingredient['cost_per_serving'] = ingredient['cost'] / servings
+            ingredient['cost_per_serving_string'] = utils.format_currency(ingredient['cost_per_serving'])
+     
+    return recipe
+
+
+def set_ingredients_nutrition(recipe):
+    """Sets nutrition data for each ingredient."""
+
+    for scale in recipe['scales']:
+        for ingredient in scale['ingredients']:
+            ingredient['has_nutrition'] = ingredient_has_nutrition(ingredient, scale['has_servings'])
+            if ingredient['has_nutrition']:
+                ingredient['nutrition'] = ingredient_nutrition(ingredient, scale['servings'])
+    return recipe
+
+
+def ingredient_nutrition(ingredient, servings):
+    """Returns nutrition per serving for an ingredient."""
+
+    return {
+        'calories': round(ingredient['grocery']['Calories'] 
+                     * ingredient['grocery_number'] 
+                     / servings),
+        'fat': round(ingredient['grocery']['fat'] 
+                * ingredient['grocery_number'] 
+                / servings),
+        'carbohydrates': round(ingredient['grocery']['carbohydrates'] 
+                          * ingredient['grocery_number'] 
+                          / servings),
+        'protein': round(ingredient['grocery']['protein'] 
+                    * ingredient['grocery_number'] 
+                    / servings)
+    }
+
+
+def ingredient_has_nutrition(ingredient, has_servings):
+    """Return True if ingredient will havenutrition information."""
+
+    # if explicit
+    if has_servings is False:
+        return False
+
+    if ingredient['has_grocery'] is False:
+        return False
+
+    return True
+
+
 
 def set_recipe_costs(recipe):
     """Set recipe cost for each scale."""
@@ -628,20 +688,6 @@ def sum_ingredient_cost(scale: dict):
     return cost
 
 
-def set_ingredients_cost_per_serving(recipe):
-    """Sets cost per serving data for each ingredient."""
-
-    for scale in recipe['scales']:
-        if scale['has_servings']:
-            servings = scale['servings']
-        else:
-            servings = 1
-
-        for ingredient in scale['ingredients']:
-            ingredient['cost_per_serving'] = ingredient['cost'] / servings
-            ingredient['cost_per_serving_string'] = utils.format_currency(ingredient['cost_per_serving'])
-     
-    return recipe
 
 
 def set_recipe_cost_per_serving(recipe):
@@ -682,8 +728,6 @@ def number_steps(recipe):
     return recipe
 
 
-
-
 def set_ingredient_details(recipe):
     """Sets ingredient detail info."""
 
@@ -698,19 +742,31 @@ def set_ingredient_details(recipe):
         
         scale['has_cost_per_serving_detail'] = (scale['has_cost_detail']
                                                 and scale['has_servings'])
+        
+        scale['has_nutrition_per_serving_detail'] = has_nutrition_detail(scale)
                             
         scale['has_any_detail'] = (scale['has_cost_detail']
-                                   or scale['has_cost_per_serving_detail'])
+                                   or scale['has_cost_per_serving_detail']
+                                   or scale['has_nutrition_per_serving_detail'])
 
     return recipe
 
 
 
 def has_cost_detail(scale):
-    """True if there is cost detail for a scale."""
+    """True if any ingredient has cost detail."""
 
     for ingredient in scale['ingredients']:
         if ingredient['cost']:
+            return True
+    return False
+
+
+def has_nutrition_detail(scale):
+    """True if any ingredient has nutrition detail."""
+
+    for ingredient in scale['ingredients']:
+        if ingredient['has_nutrition']:
             return True
     return False
 
