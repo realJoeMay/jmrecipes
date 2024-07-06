@@ -660,7 +660,7 @@ a.menu-header:hover {
 
                         {% if scale.has_visible_serving_sizes %}
                         <div class='description-row'>
-                            <span class='desrciption-label'>Serving Size:</span>
+                            <span class='description-label'>Serving Size:</span>
                             <span class='description-value'>
                                 {% for yield in scale.yield %}
                                 {% if yield.show_serving_size %}
@@ -684,13 +684,29 @@ a.menu-header:hover {
 
                         {% if scale.has_visible_cost %}
                         <div class='description-row'>
-                            <span class='desrciption-label'>Cost:</span>
-                            <span class='desrciption-value'>
+                            <span class='description-label'>Cost:</span>
+                            <span class='description-value'>
                                 {{ scale.cost_string }}
                                 {% if scale.has_visible_cost_per_serving %}
                                 <span class="scale-cost-per-serving">({{ scale.cost_per_serving_string }} per serving)</span>
                                 {% endif %}
                             </span>
+                        </div>
+                        {% endif %}
+
+                        {% if scale.has_visible_nutrition_per_serving %}
+                        <div class=''>
+                            <span class='description-label'>Nutrition per serving</span>
+                            <div class="nutrition">
+                                <div class="calories value">{{ scale.nutrition.calories }}</div>
+                                <div class="calories label">Calories</div>
+                                <div class="calories value">{{ scale.nutrition.fat }}g</div>
+                                <div class="fat label">fat</div>
+                                <div class="fat value">{{ scale.nutrition.carbohydrates }}g</div>
+                                <div class="carbs label">carbs</div>
+                                <div class="calories value">{{ scale.nutrition.protein }}g</div>
+                                <div class="protein label">protein</div>
+                            </div>    
                         </div>
                         {% endif %}
 

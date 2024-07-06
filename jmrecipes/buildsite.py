@@ -132,6 +132,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_ingredient_lists,
                 set_recipe_costs,
                 set_recipe_cost_per_serving,
+                set_recipe_nutrition,
                 set_instructions,
                 set_has_description_area,
                 set_schema
@@ -701,6 +702,41 @@ def set_recipe_cost_per_serving(recipe):
                                                  and scale['has_servings']
                                                  and scale['servings'] != 1)
     return recipe
+
+
+def set_recipe_nutrition(recipe):
+
+    for scale in recipe['scales']:
+        scale['nutrition'] = sum_ingredient_nutrition(scale)
+
+        scale['has_visible_nutrition_per_serving'] = (has_nutrients(scale['nutrition']))
+
+    return recipe
+
+
+def sum_ingredient_nutrition(scale):
+
+    sum = {
+        'calories': 0,
+        'fat': 0,
+        'protein': 0,
+        'carbohydrates': 0
+    }
+    for ingredient in scale['ingredients']:
+        if ingredient['has_nutrition']:
+            for nutrient in sum:
+                sum[nutrient] += ingredient['nutrition'][nutrient]
+
+    return sum
+
+
+def has_nutrients(nutrition: dict):
+    """Return True if any item in nutrition is nonzero."""
+
+    for value in nutrition.values():
+        if value > 0:
+            return True
+    return False
 
 
 def set_instructions(recipe):
