@@ -128,11 +128,11 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_ingredients_cost,
                 set_ingredients_cost_per_serving,
                 set_ingredients_nutrition,
-                set_ingredient_details,
                 set_ingredient_lists,
                 set_recipe_costs,
                 set_recipe_cost_per_serving,
                 set_recipe_nutrition,
+                set_ingredient_details,
                 set_instructions,
                 set_has_description_area,
                 set_schema
@@ -251,6 +251,7 @@ def set_servings(recipe):
 
     for scale in recipe['scales']:
         set_servings_scale(scale)
+    recipe['has_servings'] = recipe['scales'][0]['has_servings']
     return recipe
 
 
@@ -262,7 +263,7 @@ def set_servings_scale(scale):
         if yielb['unit'].lower() in ('serving', 'servings'):
             scale['servings'] = yielb['number']
             scale['has_servings'] = True
-    return scale
+    # return scale
 
 
 def set_visible_yields(recipe):
@@ -689,8 +690,6 @@ def sum_ingredient_cost(scale: dict):
     return cost
 
 
-
-
 def set_recipe_cost_per_serving(recipe):
     """Sets cost per serving data for each scale."""
 
@@ -706,12 +705,35 @@ def set_recipe_cost_per_serving(recipe):
 
 def set_recipe_nutrition(recipe):
 
+    if not recipe['has_servings']:
+        for scale in recipe['scales']:
+            scale['has_visible_nutrition_per_serving'] = False
+            scale['nutrition_source'] = 'none'
+        return recipe
+
+    if 'explicit_nutrition' in recipe:
+        for scale in recipe['scales']:
+            multiplier = scale['multiplier'] / scale['servings']
+            scale['nutrition'] = scale_nutrition(recipe['explicit_nutrition'], multiplier)
+            scale['has_visible_nutrition_per_serving'] = True
+            scale['nutrition_source'] = 'explicit'
+        return recipe
+
+    # nutrition not explicit
     for scale in recipe['scales']:
         scale['nutrition'] = sum_ingredient_nutrition(scale)
-
         scale['has_visible_nutrition_per_serving'] = (has_nutrients(scale['nutrition']))
-
+        scale['nutrition_source'] = 'ingredients'
     return recipe
+
+
+def scale_nutrition(nutrition, multiplier):
+
+    scaled = {}
+    for nutrient in nutrition:
+        scaled[nutrient] = round(float(nutrition[nutrient] * multiplier))
+
+    return scaled
 
 
 def sum_ingredient_nutrition(scale):
@@ -768,22 +790,29 @@ def set_ingredient_details(recipe):
     """Sets ingredient detail info."""
 
     explicit_cost = 'explicit_cost' in recipe
+    explicit_nutrition = 'explicit_nutrition' in recipe
     cost_hidden = recipe['hide_cost']
 
     for scale in recipe['scales']:
 
-        scale['has_cost_detail'] = (has_cost_detail(scale) 
-                                    and not cost_hidden 
-                                    and not explicit_cost)
+        scale['has_cost_detail'] = (
+            has_cost_detail(scale) 
+            and not cost_hidden 
+            and not explicit_cost)
         
-        scale['has_cost_per_serving_detail'] = (scale['has_cost_detail']
-                                                and scale['has_servings'])
+        scale['has_cost_per_serving_detail'] = (
+            scale['has_cost_detail']
+            and scale['has_servings'])
         
-        scale['has_nutrition_per_serving_detail'] = has_nutrition_detail(scale)
+        scale['has_nutrition_per_serving_detail'] = (
+            has_nutrition_detail(scale)
+            and scale['has_servings']
+            and not explicit_nutrition)
                             
-        scale['has_any_detail'] = (scale['has_cost_detail']
-                                   or scale['has_cost_per_serving_detail']
-                                   or scale['has_nutrition_per_serving_detail'])
+        scale['has_any_detail'] = (
+            scale['has_cost_detail'] 
+            or scale['has_cost_per_serving_detail'] 
+            or scale['has_nutrition_per_serving_detail'])
 
     return recipe
 

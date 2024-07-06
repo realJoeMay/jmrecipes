@@ -132,6 +132,9 @@ def recipe_dict(data: dict) -> dict:
     if 'hide_cost' in data:
         recipe['hide_cost'] = data['hide_cost']
 
+    if 'nutrition' in data:
+        recipe['explicit_nutrition'] = parse_nutrition(data['nutrition'])
+
 
     return recipe
 
@@ -255,3 +258,13 @@ def parse_step(data):
             step['list'] = data['list']
         return step
     
+
+def parse_nutrition(nutrition):
+
+
+    return {
+        'calories': nutrition.get('calories', 0),
+        'fat': nutrition.get('fat', 0),
+        'protein': nutrition.get('protein', 0),
+        'carbohydrates': nutrition.get('carbohydrates', 0),
+    }

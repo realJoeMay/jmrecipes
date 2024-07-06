@@ -16,7 +16,8 @@
         "test-1-scale",
         "test-weird-scale",
         "test-hide-cost",
-        "test-cost-explicit"
+        "test-cost-explicit",
+        "test-explicit-nutrition"
     ]
 }
 
