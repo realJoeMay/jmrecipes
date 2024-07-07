@@ -823,6 +823,17 @@ def set_ingredient_details(recipe):
             scale['has_cost_detail'] 
             or scale['has_cost_per_serving_detail'] 
             or scale['has_nutrition_per_serving_detail'])
+        
+    recipe['has_cost_detail'] = False
+    recipe['has_cost_per_serving_detail'] = False
+    recipe['has_nutrition_per_serving_detail'] = False
+    for scale in recipe['scales']:
+        if scale['has_cost_detail']:
+            recipe['has_cost_detail'] = True
+        if scale['has_cost_per_serving_detail']:
+            recipe['has_cost_per_serving_detail'] = True
+        if scale['has_nutrition_per_serving_detail']:
+            recipe['has_nutrition_per_serving_detail'] = True
 
     return recipe
 

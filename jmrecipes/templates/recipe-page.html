@@ -961,23 +961,29 @@ document.addEventListener("keydown", function(e) {
     }
     {% endfor %}
 
-    // qwer for ingredient details
+    // Press qwer for ingredient details
     if (e.code === "KeyQ") {
         detailNone();
     }
+
+    {% if r.has_cost_detail %}
     if (e.code === "KeyW") {
         detailCost();
     }
+    {% endif %}
+
+    {% if r.has_cost_per_serving_detail %}
     if (e.code === "KeyE") {
         detailCostPerServing();
     }
+    {% endif %}
+
+    {% if r.has_nutrition_per_serving_detail %}
     if (e.code === "KeyR") {
         detailNutritionPerServing();
     }
+    {% endif %}
     
-    
-    
-
 });
 
 

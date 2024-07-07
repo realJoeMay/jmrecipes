@@ -229,7 +229,6 @@ def parse_ingredient(data: dict) -> dict:
         ingredient['scale'] = data['scale']
     if 'nutrition' in data:
         ingredient['explicit_nutrition'] = parse_nutrition(data['nutrition'])
-
     return ingredient
 
 
@@ -245,16 +244,22 @@ def parse_instructions(data):
 def parse_step(data):
     """Formats instructions data from input file."""
 
+    if not isinstance(data, (str, dict)):
+        raise TypeError('Instructions step must be a string or dictionary.')
+    
+    if isinstance(data, dict) and 'text' not in data:
+        raise KeyError('Instructions step must include "text" field.')
+
     if isinstance(data, str):
         return {'text': data}
         
-    if isinstance(data, dict) and 'text' in data:
-        step = {'text': data['text']}
-        if 'scale' in data:
-            step['scale'] = data['scale']
-        if 'list' in data:
-            step['list'] = data['list']
-        return step
+    # data is dict with 'text'
+    step = {'text': data['text']}
+    if 'scale' in data:
+        step['scale'] = data['scale']
+    if 'list' in data:
+        step['list'] = data['list']
+    return step
 
 
 def parse_scales(data):
