@@ -100,7 +100,7 @@ def recipe_dict(data: dict) -> dict:
     """
 
     recipe = {}
-    recipe['title'] = data['title']
+    recipe['title'] = parse_title(data)
     recipe['subtitle'] = data.get('subtitle', '')
     recipe['times'] = parse_times(data)
     recipe['yield'] = parse_yield(data)
@@ -118,6 +118,15 @@ def recipe_dict(data: dict) -> dict:
         recipe['hide_nutrition'] = bool(data['hide_nutrition'])
 
     return recipe
+
+
+def parse_title(data):
+    """Returns recipe title from input file."""
+
+    if 'title' not in data:
+        raise KeyError('Recipe must have a title')
+    
+    return data['title']
 
 
 def parse_times(data):
