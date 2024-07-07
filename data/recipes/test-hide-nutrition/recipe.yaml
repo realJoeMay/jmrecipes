@@ -1,0 +1,11 @@
+title: Test Hide Nutrition
+yield:
+- number: 4
+scale:
+- multiplier: 2
+ingredients:
+- number: 2
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
+hide_nutrition: true

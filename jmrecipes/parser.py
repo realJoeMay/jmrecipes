@@ -122,19 +122,16 @@ def recipe_dict(data: dict) -> dict:
     recipe['scales'] = []
     recipe['scales'].append({'multiplier': Fraction(1)})
     for scale in data.get('scale',[]):
-        recipe['scales'].append({
-            'multiplier': read_multiplier(scale)
-        })
+        recipe['scales'].append({'multiplier': read_multiplier(scale)})
 
     if 'cost' in data:
         recipe['explicit_cost'] = data['cost']
-
-    if 'hide_cost' in data:
-        recipe['hide_cost'] = data['hide_cost']
-
     if 'nutrition' in data:
         recipe['explicit_nutrition'] = parse_nutrition(data['nutrition'])
-
+    if 'hide_cost' in data:
+        recipe['hide_cost'] = bool(data['hide_cost'])
+    if 'hide_nutrition' in data:
+        recipe['hide_nutrition'] = bool(data['hide_nutrition'])
 
     return recipe
 

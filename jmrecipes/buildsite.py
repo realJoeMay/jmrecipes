@@ -151,6 +151,8 @@ def set_defaults(recipe):
 
     if 'hide_cost' not in recipe:
         recipe['hide_cost'] = False
+    if 'hide_nutrition' not in recipe:
+        recipe['hide_nutrition'] = False
 
     return recipe
 
@@ -705,10 +707,14 @@ def set_recipe_cost_per_serving(recipe):
 
 def set_recipe_nutrition(recipe):
 
+    if recipe['hide_nutrition']:
+        for scale in recipe['scales']:
+            scale['has_visible_nutrition_per_serving'] = False
+        return recipe
+
     if not recipe['has_servings']:
         for scale in recipe['scales']:
             scale['has_visible_nutrition_per_serving'] = False
-            scale['nutrition_source'] = 'none'
         return recipe
 
     if 'explicit_nutrition' in recipe:
@@ -792,6 +798,7 @@ def set_ingredient_details(recipe):
     explicit_cost = 'explicit_cost' in recipe
     explicit_nutrition = 'explicit_nutrition' in recipe
     cost_hidden = recipe['hide_cost']
+    nutrition_hidden = recipe['hide_nutrition']
 
     for scale in recipe['scales']:
 
@@ -807,7 +814,8 @@ def set_ingredient_details(recipe):
         scale['has_nutrition_per_serving_detail'] = (
             has_nutrition_detail(scale)
             and scale['has_servings']
-            and not explicit_nutrition)
+            and not explicit_nutrition
+            and not nutrition_hidden)
                             
         scale['has_any_detail'] = (
             scale['has_cost_detail'] 
