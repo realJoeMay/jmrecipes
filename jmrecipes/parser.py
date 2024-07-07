@@ -102,27 +102,11 @@ def recipe_dict(data: dict) -> dict:
     recipe = {}
     recipe['title'] = data['title']
     recipe['subtitle'] = data.get('subtitle', '')
-
-    recipe['times'] = []
-    for time in data.get('times', []):
-        recipe['times'].append(parse_time(time))
-
-    recipe['yield'] = (parse_yield(data))
-
-    recipe['ingredients'] = []
-    if 'ingredients' in data:
-        for ingredient in data['ingredients']:
-            recipe['ingredients'].append(parse_ingredient(ingredient))
-
-    recipe['instructions'] = []
-    if 'instructions' in data:
-        for step in data['instructions']:
-            recipe['instructions'].append(parse_step(step))
-
-    recipe['scales'] = []
-    recipe['scales'].append({'multiplier': Fraction(1)})
-    for scale in data.get('scale',[]):
-        recipe['scales'].append({'multiplier': read_multiplier(scale)})
+    recipe['times'] = parse_times(data)
+    recipe['yield'] = parse_yield(data)
+    recipe['ingredients'] = parse_ingredients(data)
+    recipe['instructions'] = parse_instructions(data)
+    recipe['scales'] = parse_scales(data) 
 
     if 'cost' in data:
         recipe['explicit_cost'] = data['cost']
@@ -136,58 +120,17 @@ def recipe_dict(data: dict) -> dict:
     return recipe
 
 
-def parse_yield(data):
+def parse_times(data):
+    """Sets time data from input file."""
 
-# todo work on this
-    if 'yield' not in data:
-        return []
-    
-    yield_data = data['yield']
-    
-    if not isinstance(yield_data, (int, float, list)):
-        raise TypeError('Yield data must be a number or a list.')
-
-    if isinstance(yield_data, (int, float)):
-        return [{'number': yield_data}]
-
-    # yield is list
-    yields = []
-    for yield_item in data['yield']:
-        yields.append(parse_yield_item(yield_item))
-    return yields
+    times = []
+    for time in data.get('times', []):
+        times.append(parse_time(time))
+    return times
 
 
-def parse_yield_item(data):
-    """Formats yield data from input file."""
-
-    if 'number' not in data:
-        raise KeyError('Yield data must have number field.')
-    
-    yielb = {'number': to_fraction(data['number'])}
-    if 'unit' in data:
-        yielb['unit'] = data['unit']
-    if 'show_yield' in data:
-        yielb['show_yield'] = bool(data['show_yield'])
-    if 'show_serving_size' in data:
-        yielb['show_serving_size'] = bool(data['show_serving_size'])
-    
-    return yielb
-
-
-def read_multiplier(scale) -> Fraction:
-    """Returns multiplier of a scale."""
-
-    if not isinstance(scale, (int, float, str, dict)):
-        raise TypeError('Scale must be a dict or number.')
-
-    if isinstance(scale, dict):
-        return to_fraction(scale['multiplier'])
-    if isinstance(scale, (int, float, str)):
-        return to_fraction(scale)
-
-    
 def parse_time(time: dict) -> dict:
-    """Formats time data from input file."""
+    """Formats a time entry."""
 
     if not isinstance(time, dict):
         raise TypeError('time must be a dict.')
@@ -212,15 +155,55 @@ def parse_time(time: dict) -> dict:
     return time_data
 
 
+def parse_yield(data):
+    """Sets yield data from input file."""
+# todo work on this
+    if 'yield' not in data:
+        return []
+    
+    yield_data = data['yield']
+    
+    if not isinstance(yield_data, (int, float, list)):
+        raise TypeError('Yield data must be a number or a list.')
+
+    if isinstance(yield_data, (int, float)):
+        return [{'number': yield_data}]
+
+    # yield is list
+    yields = []
+    for yield_item in data['yield']:
+        yields.append(parse_yield_item(yield_item))
+    return yields
+
+
+def parse_yield_item(data):
+    """Formats yield data from input file."""
+
+    if 'number' not in data:
+        raise KeyError('Yield data must have number field.')
+
+    yielb = {'number': to_fraction(data['number'])}
+    if 'unit' in data:
+        yielb['unit'] = data['unit']
+    if 'show_yield' in data:
+        yielb['show_yield'] = bool(data['show_yield'])
+    if 'show_serving_size' in data:
+        yielb['show_serving_size'] = bool(data['show_serving_size'])
+    
+    return yielb
+
+
+def parse_ingredients(data):
+    """Sets ingredients data from input file."""
+
+    ingredients = []
+    for ingredient in data.get('ingredients', []):
+        ingredients.append(parse_ingredient(ingredient))
+    return ingredients
+
+
 def parse_ingredient(data: dict) -> dict:
-    """Formats ingredient data from input file.
-
-    Args:
-        data: Ingredient input data as dictionary.
-
-    Returns:
-        Ingredient data as dictionary.
-    """
+    """Formats ingredient data from input file."""
 
     ingredient = {
         'number': to_fraction(data.get('number', 0)),
@@ -239,6 +222,13 @@ def parse_ingredient(data: dict) -> dict:
     return ingredient
 
 
+def parse_instructions(data):
+    """Sets instructions data from input file."""
+
+    instructions = []
+    for step in data.get('instructions', []):
+        instructions.append(parse_step(step))
+    return instructions
 
 
 def parse_step(data):
@@ -254,10 +244,31 @@ def parse_step(data):
         if 'list' in data:
             step['list'] = data['list']
         return step
+
+
+def parse_scales(data):
+    """Formats scale data from input file, including base scale."""
+
+    scales = [{'multiplier': Fraction(1)}]
+    for scale in data.get('scale', []):
+        scales.append({'multiplier': read_multiplier(scale)})
+    return scales
+
+
+def read_multiplier(scale) -> Fraction:
+    """Returns multiplier of a scale."""
+
+    if not isinstance(scale, (int, float, str, dict)):
+        raise TypeError('Scale must be a dict or number.')
+
+    if isinstance(scale, dict):
+        return to_fraction(scale['multiplier'])
+    if isinstance(scale, (int, float, str)):
+        return to_fraction(scale)
     
 
 def parse_nutrition(nutrition):
-
+    """Formats nutrition data from input file."""
 
     return {
         'calories': nutrition.get('calories', 0),
