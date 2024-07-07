@@ -1,4 +1,4 @@
-title: Test Explicit Nutrition
+title: Test Recipe Nutrition Explicit
 yield:
 - number: 4
   unit: servings
@@ -6,7 +6,7 @@ nutrition:
   calories: 100
   fat: 5
   protein: 5
-  carbs: 5
+  carbohydrates: 5
 scale:
 - multiplier: 2
 - multiplier: 3

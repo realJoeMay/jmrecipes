@@ -1,0 +1,24 @@
+title: Test Ingredient Explicit Nutrition
+yield:
+- number: 4
+  unit: servings
+scale:
+- multiplier: 2
+- multiplier: 3
+ingredients:
+- number: 2
+  unit: lb
+  item: Ground Beef
+  nutrition:
+    calories: 100
+    fat: 5
+    protein: 5
+    carbohydrates: 5
+- number: 2
+  unit: lb
+  item: Not Grocery
+  nutrition:
+    calories: 200
+    fat: 20
+    protein: 20
+    carbohydrates: 20

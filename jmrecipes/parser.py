@@ -227,6 +227,8 @@ def parse_ingredient(data: dict) -> dict:
         ingredient['list'] = data['list']
     if 'scale' in data:
         ingredient['scale'] = data['scale']
+    if 'nutrition' in data:
+        ingredient['explicit_nutrition'] = parse_nutrition(data['nutrition'])
 
     return ingredient
 

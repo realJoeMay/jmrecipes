@@ -629,37 +629,37 @@ def set_ingredients_nutrition(recipe):
     return recipe
 
 
+def ingredient_has_nutrition(ingredient, has_servings):
+    """Return True if ingredient will have nutrition information."""
+
+    # explicit or not, requires servings
+    if not has_servings:
+        return False
+    
+    return 'explicit_nutrition' in ingredient or ingredient['has_grocery']
+
+
 def ingredient_nutrition(ingredient, servings):
     """Returns nutrition per serving for an ingredient."""
 
+    if 'explicit_nutrition' in ingredient:
+        calories = ingredient['explicit_nutrition']['calories']
+        fat = ingredient['explicit_nutrition']['fat']
+        protein = ingredient['explicit_nutrition']['protein']
+        carbohydrates = ingredient['explicit_nutrition']['carbohydrates']
+    else:
+        grocery_number = ingredient['grocery_number']
+        calories = ingredient['grocery']['Calories'] * grocery_number
+        fat = ingredient['grocery']['fat'] * grocery_number
+        protein = ingredient['grocery']['carbohydrates'] * grocery_number
+        carbohydrates = ingredient['grocery']['protein'] * grocery_number
+
     return {
-        'calories': round(ingredient['grocery']['Calories'] 
-                     * ingredient['grocery_number'] 
-                     / servings),
-        'fat': round(ingredient['grocery']['fat'] 
-                * ingredient['grocery_number'] 
-                / servings),
-        'carbohydrates': round(ingredient['grocery']['carbohydrates'] 
-                          * ingredient['grocery_number'] 
-                          / servings),
-        'protein': round(ingredient['grocery']['protein'] 
-                    * ingredient['grocery_number'] 
-                    / servings)
+        'calories': round(calories / servings),
+        'fat': round(fat / servings),
+        'carbohydrates': round(carbohydrates / servings),
+        'protein': round(protein / servings)
     }
-
-
-def ingredient_has_nutrition(ingredient, has_servings):
-    """Return True if ingredient will havenutrition information."""
-
-    # if explicit
-    if has_servings is False:
-        return False
-
-    if ingredient['has_grocery'] is False:
-        return False
-
-    return True
-
 
 
 def set_recipe_costs(recipe):
