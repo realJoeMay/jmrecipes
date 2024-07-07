@@ -1,0 +1,9 @@
+title: Test Nutrition 0
+yield:
+- number: 4
+scale:
+- multiplier: 2
+ingredients:
+- number: 2
+  unit: tsp
+  item: Salt

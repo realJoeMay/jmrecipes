@@ -706,6 +706,7 @@ def set_recipe_cost_per_serving(recipe):
 
 
 def set_recipe_nutrition(recipe):
+    """Set recipe nutrition for each scale."""
 
     if recipe['hide_nutrition']:
         for scale in recipe['scales']:
@@ -814,6 +815,7 @@ def set_ingredient_details(recipe):
         scale['has_nutrition_per_serving_detail'] = (
             has_nutrition_detail(scale)
             and scale['has_servings']
+            and scale['has_visible_nutrition_per_serving']
             and not explicit_nutrition
             and not nutrition_hidden)
                             

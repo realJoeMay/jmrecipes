@@ -18,7 +18,8 @@
         "test-hide-cost",
         "test-hide-nutrition",
         "test-cost-explicit",
-        "test-explicit-nutrition"
+        "test-explicit-nutrition",
+        "test-nutrition-0"
     ]
 }
 
