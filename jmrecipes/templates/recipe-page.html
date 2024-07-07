@@ -961,6 +961,23 @@ document.addEventListener("keydown", function(e) {
     }
     {% endfor %}
 
+    // qwer for ingredient details
+    if (e.code === "KeyQ") {
+        detailNone();
+    }
+    if (e.code === "KeyW") {
+        detailCost();
+    }
+    if (e.code === "KeyE") {
+        detailCostPerServing();
+    }
+    if (e.code === "KeyR") {
+        detailNutritionPerServing();
+    }
+    
+    
+    
+
 });
 
 
