@@ -490,6 +490,20 @@ a.menu-header:hover {
 }
 
 
+/* Notes */
+
+.note {
+    padding-bottom: 12px;
+}
+
+/* .notes-section.notes {
+    row-gap: 12px;
+} */
+
+.note:last-child {
+    padding-bottom: 0;
+}
+
     </style>
 </head>
 <body>
@@ -790,6 +804,32 @@ a.menu-header:hover {
                 </div>
                 {% endfor %}
 
+            </div>
+            {% endif %}
+            {% endfor %}
+
+
+            {% for scale in r.scales %}
+            {% if scale.has_notes_box %}
+            <div class="scale {{ scale.item_class }}">
+                <div class="recipe-box recipe-box-notes">
+                    <h2 class='box-title'>Notes</h2>
+
+                    {% if scale.has_notes %}
+                    {% for note in scale.notes %}
+                    <div class="note">{{ note.text }}</div>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if r.has_sources %}
+                    <div class="note sources">
+                        {% for source in r.sources %}
+                        <div class="source">Source: {{ source.html }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                </div>
             </div>
             {% endif %}
             {% endfor %}

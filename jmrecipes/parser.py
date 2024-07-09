@@ -116,6 +116,10 @@ def recipe_dict(data: dict) -> dict:
         recipe['hide_cost'] = bool(data['hide_cost'])
     if 'hide_nutrition' in data:
         recipe['hide_nutrition'] = bool(data['hide_nutrition'])
+    if 'sources' in data:
+        recipe['sources'] = parse_sources(data)
+    if 'notes' in data:
+        recipe['notes'] = parse_notes(data)
 
     return recipe
 
@@ -292,3 +296,56 @@ def parse_nutrition(nutrition):
         'protein': nutrition.get('protein', 0),
         'carbohydrates': nutrition.get('carbohydrates', 0),
     }
+
+
+def parse_sources(data):
+    """Returns sources data from input dictionary."""
+
+    sources_data = data['sources']
+    if not isinstance(sources_data, (list)):
+        raise TypeError('Sources must be a list.')
+    
+    sources = []
+    for source in sources_data:
+        sources.append(parse_source(source))
+
+
+    return sources
+
+
+def parse_source(source):
+    """Returns formatted source data from input file."""
+    
+    out = {}
+    if 'name' in source and source['name']:
+        out['name'] = source['name']
+    if 'url' in source:
+        out['url'] = source['url']
+    return out
+
+
+def parse_notes(data):
+    """Returns notes data from input dictionary."""
+
+    notes_data = data['notes']
+    if not isinstance(notes_data, list):
+        raise TypeError('Notes must be a list.')
+    
+    notes = []
+    for note in notes_data:
+        notes.append(parse_note(note))
+    return notes
+
+
+def parse_note(note_data):
+    """Returns formatted note data from input file."""
+
+    if not isinstance(note_data, dict):
+        raise TypeError('Note must be a dictionary.')
+    if 'text' not in note_data:
+        raise KeyError('Note must have text.')
+    
+    note = {'text': note_data['text']}
+    if 'scale' in note_data:
+        note['scale'] = to_fraction(note_data['scale'])
+    return note

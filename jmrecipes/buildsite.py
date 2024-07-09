@@ -3,6 +3,7 @@ import datetime
 import shutil
 import json
 from collections import defaultdict
+from urllib.parse import urlparse
 
 import parser
 import utils
@@ -135,6 +136,9 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_ingredient_details,
                 set_instructions,
                 set_has_description_area,
+                set_sources,
+                scale_notes,
+                set_notes,
                 set_schema
                 )
 
@@ -838,7 +842,6 @@ def set_ingredient_details(recipe):
     return recipe
 
 
-
 def has_cost_detail(scale):
     """True if any ingredient has cost detail."""
 
@@ -885,6 +888,71 @@ def set_has_description_area(recipe: dict) -> dict:
                                          or scale['has_visible_serving_sizes']
                                          or scale['has_times']
                                          or scale['has_visible_cost'])
+    return recipe
+
+
+def set_sources(recipe):
+    """"""
+
+    if 'sources' not in recipe:
+        recipe['has_sources'] = False
+        return recipe
+    
+    for source in recipe['sources']:
+        source['html'] = source_html(source)
+
+    recipe['has_sources'] = True
+
+    return recipe
+
+
+def source_html(source):
+    """Returns html for a source."""
+
+    if 'name' in source and 'url' in source:
+        return source_link(source['name'], source['url'])
+    elif  'name' in source and 'url' not in source:
+        return source['name']
+    elif  'name' not in source and 'url' in source:
+        name = urlparse(source['url']).netloc
+        return source_link(name, source['url'])
+    else:
+        return ''
+
+
+def source_link(name, url):
+
+    return f'<a href="{url}" target="_blank">{name}</a>'
+
+
+def scale_notes(recipe):
+    """Set notes for each scale."""
+
+    if 'notes' not in recipe:
+        for scale in recipe['scales']:
+            scale['notes'] = []
+        return recipe
+    
+    for scale in recipe['scales']:
+        scale['notes'] = notes_for_scale(recipe['notes'], scale)
+    return recipe
+
+
+def notes_for_scale(notes, scale):
+    """Returns notes for a scale."""
+
+    scale_notes = []
+    for note in notes:
+        if 'scale' not in note or note['scale'] == scale['multiplier']:
+            scale_notes.append(note)
+    return scale_notes
+
+
+def set_notes(recipe):
+
+    for scale in recipe['scales']:
+        scale['has_notes'] = bool(scale['notes'])
+        scale['has_notes_box'] = recipe['has_sources'] or scale['has_notes']
     return recipe
 
 
