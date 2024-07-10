@@ -115,6 +115,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_defaults,
                 set_url,
                 set_subtitle,
+                set_description,
                 set_image,
                 set_scales,
                 set_times,
@@ -180,7 +181,14 @@ def set_subtitle(recipe: dict) -> dict:
         recipe['has_subtitle'] = False
 
     return recipe
-    
+
+
+def set_description(recipe):
+    """Sets values regarding the recipe description."""
+
+    recipe['has_description'] = 'description' in recipe
+    return recipe
+
 
 def set_image(recipe: dict) -> dict:
     """Sets recipe data regarding the image."""
@@ -887,7 +895,8 @@ def set_has_description_area(recipe: dict) -> dict:
         scale['has_description_area'] = (scale['has_visible_yields']
                                          or scale['has_visible_serving_sizes']
                                          or scale['has_times']
-                                         or scale['has_visible_cost'])
+                                         or scale['has_visible_cost']
+                                         or recipe['has_description'])
     return recipe
 
 

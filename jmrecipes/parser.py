@@ -108,6 +108,8 @@ def recipe_dict(data: dict) -> dict:
     recipe['instructions'] = parse_instructions(data)
     recipe['scales'] = parse_scales(data) 
 
+    if 'description' in data:
+        recipe['description'] = data['description']
     if 'cost' in data:
         recipe['explicit_cost'] = data['cost']
     if 'nutrition' in data:

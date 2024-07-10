@@ -21,7 +21,8 @@
         "test-explicit-nutrition",
         "test-nutrition-0",
         "test-ingredient-nutrition-explicit",
-        "test-notes"
+        "test-notes",
+        "test-description"
     ]
 }
 

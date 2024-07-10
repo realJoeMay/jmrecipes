@@ -496,10 +496,6 @@ a.menu-header:hover {
     padding-bottom: 12px;
 }
 
-/* .notes-section.notes {
-    row-gap: 12px;
-} */
-
 .note:last-child {
     padding-bottom: 0;
 }
@@ -658,6 +654,10 @@ a.menu-header:hover {
                 {% if scale.has_description_area %}
                 <div class='scale {{ scale.item_class }}'>
                     <div class='description-area'>
+
+                        {% if r.has_description %}
+                        <div class='description-row'>{{ r.description }}</div>
+                        {% endif %}
 
                         {% if scale.has_visible_yields %}
                         <div class='description-row'>
