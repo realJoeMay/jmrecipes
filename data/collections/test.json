@@ -22,7 +22,8 @@
         "test-nutrition-0",
         "test-ingredient-nutrition-explicit",
         "test-notes",
-        "test-description"
+        "test-description",
+        "test-recipe-parent",
+        "test-recipe-child"
     ]
 }
-

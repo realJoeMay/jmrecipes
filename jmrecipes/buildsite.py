@@ -53,7 +53,13 @@ def load_site(data_path: str, log_path: str) -> dict:
         'recipes': load_recipes(recipes_path, log_path),
         'collections': load_collections(collections_path, log_path)
     }
-    return utils.pipe(site, log_path, link_site, set_summary)
+    return utils.pipe(site, log_path,
+                      set_ingredients_as_recipes,
+                      set_recipes_used_in,
+                      update_description_areas,
+                      set_ingredient_lists,
+                      link_recipes_collections,
+                      set_summary)
 
 
 def load_recipes(recipes_path: str, log_path: str) -> list:
@@ -130,7 +136,6 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_ingredients_cost,
                 set_ingredients_cost_per_serving,
                 set_ingredients_nutrition,
-                set_ingredient_lists,
                 set_recipe_costs,
                 set_recipe_cost_per_serving,
                 set_recipe_nutrition,
@@ -868,16 +873,6 @@ def has_nutrition_detail(scale):
     return False
 
 
-def set_ingredient_lists(recipe):
-    """Groups ingredients into ingredient lists."""
-    
-    for scale in recipe['scales']:
-        scale['ingredient_lists'] = defaultdict(list)
-        for ingredient in scale['ingredients']:
-            scale['ingredient_lists'][ingredient.get('list', 'Ingredients')].append(ingredient)
-    return recipe
-
-
 def set_instruction_lists(recipe):
     """Groups instruction steps into step lists."""
     
@@ -1100,7 +1095,96 @@ def set_href(collection):
     return collection
 
 
-def link_site(site: dict) -> dict:
+def set_ingredients_as_recipes(site):
+    """Sets data for site ingredients as recipes."""
+
+    for recipe in site['recipes']:
+        for scale in recipe['scales']:
+            for ingredient in scale['ingredients']:
+                ingredient = set_ingredient_as_recipe(ingredient, site['recipes'])
+
+    return site
+
+
+def set_ingredient_as_recipe(ingredient, recipes):
+    """Sets data for ingredient as recipe."""
+
+    if 'recipe-slug' not in ingredient:
+        ingredient['is_recipe'] = False
+        return ingredient
+    
+    ingredient['is_recipe'] = True
+    ingredient['recipe_url'] = '../' + ingredient['recipe-slug']
+
+    return ingredient
+
+
+def set_recipes_used_in(site):
+    """Sets data for recipe used in another recipe."""
+
+    for recipe in site['recipes']:
+        recipe['used_in_any'] = False
+
+    for parent_recipe in site['recipes']:
+        for scale in parent_recipe['scales']:
+            for ingredient in scale['ingredients']:
+                if ingredient['is_recipe']:
+                    child_recipe = recipe_from_slug(ingredient['recipe-slug'], site['recipes'])
+                    child_recipe['used_in_any'] = True
+                    child_recipe = add_used_in(child_recipe, parent_recipe)
+
+    # remove duplicates
+    for recipe in site['recipes']:
+        if recipe['used_in_any']:
+            recipe['used_in'] = [dict(t) for t in {tuple(d.items()) for d in recipe['used_in']}]
+
+    return site
+
+
+def recipe_from_slug(slug, recipes):
+    """Returns recipe dictionary that matches url-slug."""
+
+    for recipe in recipes:
+        if recipe['url_slug'] == slug:
+            return recipe
+        
+    raise ValueError(f'Could not find recipe with slug: {slug}')
+
+
+def add_used_in(child_recipe, parent_recipe):
+    
+    if 'used_in' not in child_recipe:
+        child_recipe['used_in'] = []
+
+    child_recipe['used_in'].append({
+        'title': parent_recipe['title'],
+        'slug': parent_recipe['url_slug']
+    })    
+    return child_recipe
+
+
+def update_description_areas(site):
+    """Sets description area on recipes based on new info."""
+
+    for recipe in site['recipes']:
+        if recipe['used_in_any']:
+            for scale in recipe['scales']:
+                scale['has_description_area'] = True
+    return site
+
+
+def set_ingredient_lists(site):
+    """Groups ingredients into ingredient lists."""
+
+    for recipe in site['recipes']:
+        for scale in recipe['scales']:
+            scale['ingredient_lists'] = defaultdict(list)
+            for ingredient in scale['ingredients']:
+                scale['ingredient_lists'][ingredient.get('list', 'Ingredients')].append(ingredient)
+    return site
+
+
+def link_recipes_collections(site: dict) -> dict:
     """Adds collections data to recipes and vice versa.
     
     Args:

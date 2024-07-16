@@ -412,6 +412,8 @@ a.menu-header:hover {
 }
 
 .ingredient-item {
+    display: flex;
+    flex-direction: row;
     line-height: 1.4;
     font-weight: 600;
     color: #343434;
@@ -422,6 +424,17 @@ a.menu-header:hover {
     color: #888;
     font-style: italic;
     font-weight: 400;
+}
+
+.child-recipe-link {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+}
+
+.child-recipe-link svg {
+    width: 0.9rem;
+    fill: #146EBE;
 }
 
 /* DETAILS */
@@ -724,6 +737,17 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
+                        {% if r.used_in_any %}
+                        <div class='description-row'>
+                            <span class='description-label'>Used in:</span>
+                            <span class='description-value'>
+                                {% for parent_recipe in r.used_in %}
+                                <a href="../{{ parent_recipe.slug }}{% if is_local %}/index.html{% endif %}" target="_blank" class="parent-recipe-link">{{ parent_recipe.title }}</a>
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% endif %}
+
                     </div><!-- description area -->
                 </div><!-- scale -->
                 {% endif %}
@@ -752,6 +776,9 @@ a.menu-header:hover {
                             {{ ingredient.display_item }}
                             {% if ingredient.descriptor %}
                             <span class="ingredient-item-descriptor">{{ ingredient.descriptor }}</span>
+                            {% endif %}
+                            {% if ingredient.is_recipe %}
+                            <a href="{{ ingredient.recipe_url }}{% if is_local %}/index.html{% endif %}" target="_blank" class="child-recipe-link">{{ icon.link }}</a>
                             {% endif %}
                         </div>
                         {% endif %}
