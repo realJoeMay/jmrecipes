@@ -6,6 +6,6 @@ scale:
 - multiplier: 2
 ingredients:
 - number: '2'
-  unit: lb
-  item: Ground Beef
+  unit: pint
+  item: Child Recipe
   recipe: test-recipe-child

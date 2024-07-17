@@ -54,8 +54,9 @@ def load_site(data_path: str, log_path: str) -> dict:
         'collections': load_collections(collections_path, log_path)
     }
     return utils.pipe(site, log_path,
-                      set_ingredients_as_recipes,
+                      set_ingredient_as_recipe_links,
                       set_recipes_used_in,
+                      set_ingredient_as_recipe_quantities,
                       update_description_areas,
                       set_ingredient_lists,
                       link_recipes_collections,
@@ -130,6 +131,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                 set_visible_yields,
                 set_visible_serving_sizes,
                 set_copy_ingredients_sublabel,
+                set_ingredient_type,
                 scale_ingredients,
                 set_ingredient_outputs,
                 lookup_groceries,
@@ -357,6 +359,12 @@ def copy_ingredients_sublabel(scale) -> str:
     
     return f'for {scale["multiplier"]}x'
 
+
+def set_ingredient_type(recipe):
+
+    for ingredient in recipe['ingredients']:
+        ingredient['is_recipe'] = 'recipe_slug' in ingredient
+    return recipe
 
 def scale_ingredients(recipe):
     """Add ingredients list to each recipe scale."""
@@ -1095,28 +1103,30 @@ def set_href(collection):
     return collection
 
 
-def set_ingredients_as_recipes(site):
+def set_ingredient_as_recipe_links(site):
     """Sets data for site ingredients as recipes."""
 
     for recipe in site['recipes']:
         for scale in recipe['scales']:
             for ingredient in scale['ingredients']:
-                ingredient = set_ingredient_as_recipe(ingredient, site['recipes'])
+                if ingredient['is_recipe']:
+                    ingredient['recipe_url'] = '../' + ingredient['recipe_slug']
+                    # ingredient = set_ingredient_as_recipe(ingredient, site['recipes'])
 
     return site
 
 
-def set_ingredient_as_recipe(ingredient, recipes):
-    """Sets data for ingredient as recipe."""
+# def set_ingredient_as_recipe(ingredient, recipes):
+#     """Sets data for ingredient as recipe."""
 
-    if 'recipe-slug' not in ingredient:
-        ingredient['is_recipe'] = False
-        return ingredient
+#     # if 'recipe_slug' not in ingredient:
+#     #     ingredient['is_recipe'] = False
+#     #     return ingredient
     
-    ingredient['is_recipe'] = True
-    ingredient['recipe_url'] = '../' + ingredient['recipe-slug']
+#     # ingredient['is_recipe'] = True
+#     ingredient['recipe_url'] = '../' + ingredient['recipe_slug']
 
-    return ingredient
+#     return ingredient
 
 
 def set_recipes_used_in(site):
@@ -1129,7 +1139,7 @@ def set_recipes_used_in(site):
         for scale in parent_recipe['scales']:
             for ingredient in scale['ingredients']:
                 if ingredient['is_recipe']:
-                    child_recipe = recipe_from_slug(ingredient['recipe-slug'], site['recipes'])
+                    child_recipe = recipe_from_slug(ingredient['recipe_slug'], site['recipes'])
                     child_recipe['used_in_any'] = True
                     child_recipe = add_used_in(child_recipe, parent_recipe)
 
@@ -1142,7 +1152,7 @@ def set_recipes_used_in(site):
 
 
 def recipe_from_slug(slug, recipes):
-    """Returns recipe dictionary that matches url-slug."""
+    """Returns recipe dictionary that matches slug."""
 
     for recipe in recipes:
         if recipe['url_slug'] == slug:
@@ -1161,6 +1171,41 @@ def add_used_in(child_recipe, parent_recipe):
         'slug': parent_recipe['url_slug']
     })    
     return child_recipe
+
+
+def set_ingredient_as_recipe_quantities(site):
+
+    recipes = site['recipes']
+    for recipe in recipes:
+        for scale in recipe['scales']:
+            for ingredient in scale['ingredients']:
+                if ingredient['is_recipe']:
+                    ingredient = set_recipe_quantity(ingredient, recipes)
+    return site
+
+
+def set_recipe_quantity(ingredient, recipes):
+
+    number = ingredient['number']
+    unit = ingredient['unit']
+    recipe = recipe_from_slug(ingredient['recipe_slug'], recipes)
+    ingredient['recipe_quantity'] = recipe_quantity(number, unit, recipe)
+    return ingredient
+
+
+def recipe_quantity(amount, unit, recipe):
+    print(amount, unit)
+    for yielb in recipe['yield']:
+        yield_unit = yielb['unit']
+        print(yield_unit)
+        if utils.is_volume(unit) and utils.is_volume(yield_unit):
+            print('found matching volume')
+            return (amount
+                    * utils.to_standard(unit)
+                    / utils.to_standard(yield_unit)
+                    / yielb['number'])
+
+    return 0
 
 
 def update_description_areas(site):
