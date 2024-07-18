@@ -40,3 +40,9 @@ def test_parse_yield_as_list():
     recipe_dir = os.path.join(test_data, 'recipe_yield_as_list')
     recipe = buildsite.load_recipe(recipe_dir)
     assert recipe['scales'][0]['servings'] == 3
+
+
+def test_nested_recipe_quantity():
+    site_dir = os.path.join(test_data, 'site_nested_recipe_quantity')
+    site = buildsite.load_site(site_dir, '')
+    assert site

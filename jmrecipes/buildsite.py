@@ -34,12 +34,12 @@ def build():
     shutil.copytree(latest, stamp)
 
 
-def load_site(data_path: str, log_path: str) -> dict:
+def load_site(data_path, log_path=None) -> dict:
     """Loads site data from directory.
     
     Args:
         data_path: Directory with site data files.
-        log: Directory to save log files.
+        log: Directory to save site level log files.
 
     Returns:
         Site data as a dictionary.
@@ -49,9 +49,20 @@ def load_site(data_path: str, log_path: str) -> dict:
 
     recipes_path = os.path.join(data_path, 'recipes')
     collections_path = os.path.join(data_path, 'collections')
+    has_log = log_path is not None
+
+    if has_log:
+        recipes_log_path = os.path.join(log_path, 'recipes')
+        collections_log_path = os.path.join(log_path, 'collections')
+        recipes = load_recipes(recipes_path, log_path=recipes_log_path)
+        collections = load_collections(collections_path, log_path=collections_log_path)
+    else:
+        recipes = load_recipes(recipes_path)
+        collections = load_collections(collections_path)
+
     site = {
-        'recipes': load_recipes(recipes_path, log_path),
-        'collections': load_collections(collections_path, log_path)
+        'recipes': recipes,
+        'collections': collections
     }
     return utils.pipe(site, log_path,
                       set_ingredient_as_recipe_links,
@@ -63,25 +74,32 @@ def load_site(data_path: str, log_path: str) -> dict:
                       set_summary)
 
 
-def load_recipes(recipes_path: str, log_path: str) -> list:
+def load_recipes(recipes_path, log_path=None) -> list:
     """Loads data for recipes.
     
     Args:
         recipes_path: Directory that contains recipe data folders.
-        log: Directory to save log files.
+        log: Directory to save recipes level log files.
 
     Returns:
         Recipes data as a list of dictionaries, one for each recipe.
     """
 
-    recipes_log_path = os.path.join(log_path, 'recipes')
-    create_dir(recipes_log_path)
+    has_log = log_path is not None
+    if has_log:
+        create_dir(log_path)
+
     recipes = []
     for folder in os.listdir(recipes_path):
         recipe_path = os.path.join(recipes_path, folder)
-        recipe_log_path = os.path.join(recipes_log_path, folder)
-        create_dir(recipe_log_path)
-        recipes.append(load_recipe(recipe_path, recipes_log_path))
+        
+        if has_log:
+            recipe_log_path = os.path.join(log_path, folder)
+            create_dir(recipe_log_path)
+            recipes.append(load_recipe(recipe_path, log_path))
+        else:
+            recipes.append(load_recipe(recipe_path))
+
     return recipes
 
 
@@ -93,11 +111,13 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
     
     Args:
         recipe_path: Directory for a recipe's data.
-        log_path: Directory to save log files.
+        log_path: Directory to save recipe pipe log files.
 
     Returns:
         Recipes data as a dictionary.
     """
+
+    # has_log = log_path is not None
 
     file = recipe_file(recipe_path)
     filepath = os.path.join(recipe_path, file)
@@ -1044,44 +1064,55 @@ def recipe_image(recipe_path):
     return ''
 
 
-def load_collections(collections_path: str, log_path: str) -> list:
+def load_collections(collections_path, log_path=None) -> list:
     """Generates data for collections.
     
     Args:
         collections_path: Directory that contains collections data files.
-        log_path: Directory to save log files.
+        log_path: Directory to save collection level log files.
 
     Returns:
         Collections data as a list of dictionaries.
     """
 
-    c_log_path = os.path.join(log_path, 'collections')
-    create_dir(c_log_path)
+    has_log = log_path is not None
+    if has_log:
+        create_dir(log_path)
+
     collections = []
     for file in os.listdir(collections_path):
-        file_path = os.path.join(collections_path, file)    
-        collections.append(load_collection(file_path, c_log_path))
+        file_path = os.path.join(collections_path, file)
+
+        if has_log:
+            collection_log_path = os.path.join(log_path, file)
+            collections.append(load_collection(file_path, collection_log_path))
+        else:
+            collections.append(load_collection(file_path))
     return collections
 
 
-def load_collection(file_path: str, log_path: str) -> dict:
+def load_collection(file_path, log_path=None) -> dict:
     """Generates data for a collection.
     
     Args:
         file_path: Directory that contains collections data files.
-        log_path: Directory to save log files.
+        log_path: Directory to save collection pipe log files.
 
     Returns:
         Collection data as a dictionary.
     """
 
+    has_log = log_path is not None
+    if not has_log:
+        log_path = ''
+
     with open(file_path, 'r', encoding='utf8') as f:
         data = json.load(f)
     return utils.pipe(data,
-                os.path.join(log_path, data['name']),
-                set_homepage,
-                set_href
-                )
+                      log_path,
+                      set_homepage,
+                      set_href
+                      )
 
 
 def set_homepage(collection):
@@ -1194,12 +1225,9 @@ def set_recipe_quantity(ingredient, recipes):
 
 
 def recipe_quantity(amount, unit, recipe):
-    print(amount, unit)
     for yielb in recipe['yield']:
         yield_unit = yielb['unit']
-        print(yield_unit)
         if utils.is_volume(unit) and utils.is_volume(yield_unit):
-            print('found matching volume')
             return (amount
                     * utils.to_standard(unit)
                     / utils.to_standard(yield_unit)

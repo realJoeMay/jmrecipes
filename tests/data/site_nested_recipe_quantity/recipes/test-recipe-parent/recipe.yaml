@@ -1,0 +1,11 @@
+title: Test Recipe Parent
+yield:
+- number: 12
+  unit: servings
+scale:
+- multiplier: 2
+ingredients:
+- number: '2'
+  unit: pint
+  item: Child Recipe
+  recipe: test-recipe-child-1
