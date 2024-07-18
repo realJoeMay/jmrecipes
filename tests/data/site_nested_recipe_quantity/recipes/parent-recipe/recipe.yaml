@@ -5,7 +5,7 @@ yield:
 scale:
 - multiplier: 2
 ingredients:
-- number: '2'
+- number: '3'
   unit: pint
   item: Child Recipe
-  recipe: test-recipe-child-1
+  recipe: child-recipe-1

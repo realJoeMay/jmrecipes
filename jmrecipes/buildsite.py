@@ -56,15 +56,17 @@ def load_site(data_path, log_path=None) -> dict:
         collections_log_path = os.path.join(log_path, 'collections')
         recipes = load_recipes(recipes_path, log_path=recipes_log_path)
         collections = load_collections(collections_path, log_path=collections_log_path)
+        pipe_log_path = log_path
     else:
         recipes = load_recipes(recipes_path)
         collections = load_collections(collections_path)
+        pipe_log_path = ''
 
     site = {
         'recipes': recipes,
         'collections': collections
     }
-    return utils.pipe(site, log_path,
+    return utils.pipe(site, pipe_log_path,
                       set_ingredient_as_recipe_links,
                       set_recipes_used_in,
                       set_ingredient_as_recipe_quantities,
