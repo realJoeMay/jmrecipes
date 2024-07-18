@@ -1,0 +1,8 @@
+title: Recipe Child
+yield:
+- number: 4
+  unit: oz
+ingredients:
+- number: 0.5
+  unit: cups
+  item: Ground Beef

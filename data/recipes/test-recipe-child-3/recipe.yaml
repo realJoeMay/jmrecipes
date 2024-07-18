@@ -1,11 +1,7 @@
 title: Test Recipe Child
 yield:
-- number: 4
-  unit: servings
-- number: 2
-  unit: cups
-scale:
-- multiplier: 2
+- number: 1
+  unit: loaf
 ingredients:
 - number: '2'
   unit: lb

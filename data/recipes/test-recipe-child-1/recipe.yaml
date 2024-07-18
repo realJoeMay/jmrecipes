@@ -1,0 +1,8 @@
+title: Test Recipe Child
+yield:
+- number: 2
+  unit: cups
+ingredients:
+- number: '2'
+  unit: lb
+  item: Ground Beef

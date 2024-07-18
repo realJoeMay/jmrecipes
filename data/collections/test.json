@@ -24,6 +24,8 @@
         "test-notes",
         "test-description",
         "test-recipe-parent",
-        "test-recipe-child"
+        "test-recipe-child-1",
+        "test-recipe-child-2",
+        "test-recipe-child-3"
     ]
 }

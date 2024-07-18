@@ -1,5 +1,6 @@
 import os
 import sys
+import pytest
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.split(file_dir)[0]
@@ -45,7 +46,9 @@ def test_parse_yield_as_list():
 def test_nested_recipe_quantity():
     site_dir = os.path.join(test_data, 'site_nested_recipe_quantity')
     site = buildsite.load_site(site_dir)
-    assert site['recipes'][-1]['scales'][0]['ingredients'][0]['recipe_quantity'] == 12
-
-
-test_nested_recipe_quantity()
+    qty_volume = site['recipes'][-1]['scales'][0]['ingredients'][0]['recipe_quantity']
+    qty_weight = site['recipes'][-1]['scales'][0]['ingredients'][1]['recipe_quantity']
+    qty_units = site['recipes'][-1]['scales'][0]['ingredients'][2]['recipe_quantity']
+    assert qty_volume == 12
+    assert qty_weight == pytest.approx(6)
+    assert qty_units == 2

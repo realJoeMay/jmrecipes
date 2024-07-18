@@ -1229,11 +1229,14 @@ def set_recipe_quantity(ingredient, recipes):
 def recipe_quantity(amount, unit, recipe):
     for yielb in recipe['yield']:
         yield_unit = yielb['unit']
-        if utils.is_volume(unit) and utils.is_volume(yield_unit):
+        if (utils.is_volume(unit) and utils.is_volume(yield_unit) 
+            or utils.is_weight(unit) and utils.is_weight(yield_unit)):
             return (amount
                     * utils.to_standard(unit)
                     / utils.to_standard(yield_unit)
                     / yielb['number'])
+        elif utils.is_equivalent(unit, yield_unit):
+            return amount / yielb['number']
 
     return 0
 

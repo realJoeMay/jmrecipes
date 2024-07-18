@@ -7,5 +7,13 @@ scale:
 ingredients:
 - number: '3'
   unit: pint
-  item: Child Recipe
+  item: Child Recipe 1
   recipe: child-recipe-1
+- number: 3/2
+  unit: lb
+  item: Child Recipe 2
+  recipe: child-recipe-2
+- number: 2
+  unit: loaves
+  item: Child Recipe 3
+  recipe: child-recipe-3
