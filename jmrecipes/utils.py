@@ -333,14 +333,61 @@ def fraction_to_string(my_fraction: Fraction) -> str:
 
 
 def format_currency(cost) -> str:
-    """Gives cost as a nicely formatted string."""
+    """Formats a cost value as a currency string.
+
+    This function converts a numeric cost value into a string formatted as currency. 
+    The cost is rounded to two decimal places and prefixed with a dollar sign.
+
+    Args:
+        cost (float): The numeric cost value to be formatted. This value is converted 
+            to a float before formatting.
+
+    Returns:
+        str: The formatted currency string.
+
+    Example:
+        format_currency(1234.567) 
+        # Output: '$1234.57'
+        
+        format_currency(5) 
+        # Output: '$5.00'
+
+    Raises:
+        ValueError: If the `cost` cannot be converted to a float.
+    """
     
     return '${:.2f}'.format(float(cost))
 
 
 # URLs
-def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragment=None):
-    """Makes a url from components."""
+def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragment=None) -> str:
+    """Constructs a URL from components.
+
+    Args:
+        scheme (str, optional): The URL scheme (e.g., 'http', 'https'). Defaults to 'https'.
+        domain (str, optional): The domain name of the URL. Defaults to the result of the `site_domain` function.
+        path (str, optional): The path component of the URL. Defaults to an empty string.
+        params (str, optional): The parameters component of the URL. Defaults to an empty string.
+        query (dict, optional): The query parameters as a dictionary. If provided, it is URL-encoded.
+        fragment (str, optional): The fragment component of the URL. Defaults to an empty string.
+
+    Returns:
+        str: The constructed URL as a string.
+
+    Example:
+        make_url(
+            scheme='https',
+            domain='example.com',
+            path='path/to/resource',
+            query={'key': 'value', 'key2': 'value2'},
+            fragment='section1'
+        )
+        # Output: 'https://example.com/path/to/resource?key=value&key2=value2#section1'
+
+    Notes:
+        - The `site_domain` function is expected to return a default domain if `domain` is not provided.
+        - The `urlencode` function is used to encode the query parameters.
+    """
 
     if scheme is None:
         scheme = 'https'

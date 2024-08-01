@@ -1,0 +1,9 @@
+title: Recipe 2
+yield:
+- number: 4
+  unit: oz
+ingredients:
+- number: '3'
+  unit: pint
+  item: Recipe 1
+  recipe: recipe-1

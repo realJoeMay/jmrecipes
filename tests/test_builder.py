@@ -52,3 +52,11 @@ def test_nested_recipe_quantity():
     assert qty_volume == 12
     assert qty_weight == pytest.approx(6)
     assert qty_units == 2
+
+
+def test_nested_recipe_loop_error():
+    site_dir = os.path.join(test_data, 'site_nested_recipe_loop_error')
+    with pytest.raises(ValueError, match='Cyclic recipe reference found'):
+        site = buildsite.load_site(site_dir)
+
+

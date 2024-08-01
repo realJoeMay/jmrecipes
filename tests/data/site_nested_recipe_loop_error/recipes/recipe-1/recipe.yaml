@@ -1,0 +1,11 @@
+title: Recipe 1
+yield:
+- number: 12
+  unit: servings
+scale:
+- multiplier: 2
+ingredients:
+- number: '3'
+  unit: pint
+  item: Recipe 2
+  recipe: recipe-2
