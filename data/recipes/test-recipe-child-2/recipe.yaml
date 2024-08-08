@@ -1,5 +1,7 @@
-title: Test Recipe Child
+title: Test Recipe Child 2
 yield:
+- number: 1
+  unit: serving
 - number: 8
   unit: oz
 ingredients:

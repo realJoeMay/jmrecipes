@@ -1,0 +1,16 @@
+title: Test Ingredient Cost Explicit
+yield:
+- number: 4
+  unit: servings
+scale:
+- multiplier: 2
+- multiplier: 3
+ingredients:
+- number: 2
+  unit: lb
+  item: Ground Beef
+  cost: 100
+- number: 2
+  unit: lb
+  item: Not Grocery
+  cost: 25

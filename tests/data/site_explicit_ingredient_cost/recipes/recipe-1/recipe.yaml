@@ -1,5 +1,4 @@
 title: Test Cost Explicit
-cost: 100
 yield:
 - number: 1
 scale:
@@ -9,3 +8,4 @@ ingredients:
   item: Ground Beef
   list: Ingredients
   unit: lb
+  cost: 100

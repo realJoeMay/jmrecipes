@@ -1,5 +1,7 @@
-title: Test Recipe Child
+title: Test Recipe Child 1
 yield:
+- number: 2
+  unit: servings
 - number: 2
   unit: cups
 ingredients:

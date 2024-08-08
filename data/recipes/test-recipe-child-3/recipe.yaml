@@ -1,5 +1,7 @@
-title: Test Recipe Child
+title: Test Recipe Child 3
 yield:
+- number: 4
+  unit: servings
 - number: 1
   unit: loaf
 ingredients:
