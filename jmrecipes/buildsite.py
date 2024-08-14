@@ -12,14 +12,6 @@ from utils import site_title, feedback_url, icon, fraction_to_string, make_url, 
 
 
 
-class ReferenceLoopError(Exception):
-    """Raised when a reference loop (cyclic reference) is detected."""
-    def __init__(self, message="Reference loop detected"):
-        self.message = message
-        super().__init__(self.message)
-
-
-
 def build():
     """Loads site data and creates a recipe website."""
 
@@ -81,7 +73,8 @@ def load_site(data_path, log_path=None) -> dict:
                       set_costs,
                       set_costs_per_serving,
                       set_cost_strings,
-                      set_recipes_nutrition,
+                      set_nutrition,
+                      set_nutrition_flags,
                       set_ingredient_details,
                       set_description_areas,
                       set_ingredient_lists,
@@ -168,7 +161,6 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                       scale_ingredients,
                       set_ingredient_outputs,
                       lookup_groceries,
-                      set_ingredients_nutrition,
                       set_instructions,
                       set_sources,
                       scale_notes,
@@ -636,9 +628,15 @@ def lookup_grocery(ingredient):
     ingredient['has_grocery'] = True
     grocery_keys = ["name", "cost", "volume_amount", "volume_unit", 
                     "weight_amount", "weight_unit", "other_amount", 
-                    "other_unit", "discrete_amount", "Calories", "fat", 
+                    "other_unit", "discrete_amount", "calories", "fat", 
                     "carbohydrates", "protein"]
     ingredient['grocery'] = {k: grocery[k] for k in grocery_keys}
+    ingredient['grocery']['nutrition'] = {
+        'calories': ingredient['grocery'].pop('calories'),
+        'fat': ingredient['grocery'].pop('fat'),
+        'carbohydrates': ingredient['grocery'].pop('carbohydrates'),
+        'protein': ingredient['grocery'].pop('protein')
+    }
     return ingredient
 
 
@@ -739,87 +737,6 @@ def grocery_number_other(ingredient):
         return 0
 
     return ingredient_number / grocery_number
-
-
-# def set_ingredients_cost(recipe):
-#     """Sets cost data for each ingredient."""
-
-#     for ingredient in scaled_ingredients_in_recipe(recipe):
-#         ingredient = set_ingredient_cost(ingredient)
-#     return recipe
-
-
-# def set_ingredient_cost(ingredient):
-#     """Set cost data for ingredient.
-    
-#     If cost is already set, then type is explicit. Otherwise, tries to 
-#     calculate from grocery information. Saves cost as 0 if any there is no 
-#     matching grocery item or no grocery amount.
-
-#     Args:
-#         ingredient (dict): The ingredient data. 
-
-#     Returns:
-#         dict: The updated ingredient dictionary including 'cost' and 
-#         'cost_final' keys. 
-#     """
-
-#     if 'cost' in ingredient:
-#         ingredient['cost_info'] = 'explicit'
-#         print('am i here?')
-        
-#     elif not ingredient['has_grocery']:
-#         ingredient['cost'] = 0
-#     else:
-#         ingredient['cost'] = (ingredient['grocery_number'] 
-#                               * ingredient['grocery']['cost'])
-
-#     ingredient['cost_final'] = 'recipe_slug' not in ingredient
-#     return ingredient
-
-
-def set_ingredients_nutrition(recipe):
-    """Sets nutrition data for each ingredient."""
-
-    for scale in recipe['scales']:
-        for ingredient in scale['ingredients']:
-            ingredient['has_nutrition'] = ingredient_has_nutrition(ingredient, scale['has_servings'])
-            if ingredient['has_nutrition']:
-                ingredient['nutrition'] = ingredient_nutrition(ingredient, scale['servings'])
-    return recipe
-
-
-def ingredient_has_nutrition(ingredient, has_servings):
-    """Return True if ingredient will have nutrition information."""
-
-    # explicit or not, requires servings
-    if not has_servings:
-        return False
-    
-    return 'explicit_nutrition' in ingredient or ingredient['has_grocery']
-
-
-def ingredient_nutrition(ingredient, servings):
-    """Returns nutrition per serving for an ingredient."""
-
-    if 'explicit_nutrition' in ingredient:
-        calories = ingredient['explicit_nutrition']['calories']
-        fat = ingredient['explicit_nutrition']['fat']
-        protein = ingredient['explicit_nutrition']['protein']
-        carbohydrates = ingredient['explicit_nutrition']['carbohydrates']
-    else:
-        grocery_number = ingredient['grocery_number']
-        calories = ingredient['grocery']['Calories'] * grocery_number
-        fat = ingredient['grocery']['fat'] * grocery_number
-        protein = ingredient['grocery']['protein'] * grocery_number
-        carbohydrates = ingredient['grocery']['carbohydrates'] * grocery_number
-
-    return {
-        'calories': round(calories / servings),
-        'fat': round(fat / servings),
-        'carbohydrates': round(carbohydrates / servings),
-        'protein': round(protein / servings)
-    }
 
 
 def scale_nutrition(nutrition, multiplier):
@@ -1353,15 +1270,160 @@ def set_cost_strings(site):
     return site
 
 
-def set_recipes_nutrition(site):
-    """Set recipe nutrition for each scale."""
+def set_nutrition(site):
+    """Set nutrition for each ingredients and recipe scale."""
+
+    for ingredient in ingredients_in(site):
+        ingredient['nutrition_final'] = False
+
+    for scale in scales_in(site):
+        scale['nutrition_final'] = False
+
+    for ingredient in ingredients_in(site, keys='explicit_nutrition'):
+        ingredient['nutrition'] = ingredient['explicit_nutrition']
+        ingredient['has_nutrition'] = True
+        ingredient['nutrition_final'] = True
+    
+    for recipe, scale, ingredient in ingredients_in(site, values={'is_grocery': True, 'nutrition_final': False}, include='rs'):
+        if not ingredient['has_grocery']:
+            ingredient['nutrition'] = empty_nutrition()
+            ingredient['has_nutrition'] = False
+        else:
+            ingredient['nutrition'] = multiply_nutrition(
+                ingredient['grocery']['nutrition'], 
+                ingredient['grocery_number']
+                )
+            ingredient['has_nutrition'] = True
+        ingredient['nutrition_final'] = True
+
+    for recipe, scale in scales_in(site, include='r'):
+        if 'explicit_nutrition' in recipe:
+            scale['nutrition'] = multiply_nutrition(recipe['explicit_nutrition'], scale['multiplier'])
+            scale['nutrition_final'] = True
+
+
+    # todo remove recipes
+    recipes = site['recipes']
+    while recipes_nutrition_pending_count(site):
+        calculate_ingredient_nutrition(recipes)
+        pre_pending_count = recipes_nutrition_pending_count(site)
+        calculate_recipes_nutrition(recipes)
+        post_pending_count = recipes_nutrition_pending_count(site)
+        if pre_pending_count == post_pending_count:
+            raise ValueError('Cyclic recipe reference found')
+
+    return site
+
+# todo has_nutrition to flags
+
+
+def recipes_nutrition_pending_count(site):
+    """Number of recipe scales that do not have nutrition_final set to True."""
+
+    count = 0
+    for scale in scales_in(site):
+        if not scale['nutrition_final']:
+            count += 1
+    return count
+
+
+def calculate_ingredient_nutrition(recipes):
+    """Go through each ingredient and try to calculate nutritions. All nonrecipe ingredients already have cost_final = True"""
+
+# todo ingredients_in()
+    for recipe in recipes:
+        for scale in recipe['scales']:
+            for ingredient in scale['ingredients']:
+                if ingredient['is_recipe']:
+                    child_recipe = recipe_from_slug(ingredient['recipe_slug'], recipes)
+                    if child_recipe['scales'][0]['nutrition_final']:
+                        ingredient['recipe_nutrition'] = child_recipe['scales'][0]['nutrition']
+                        ingredient['nutrition'] = multiply_nutrition(ingredient['recipe_nutrition'], ingredient['recipe_quantity'])
+                        ingredient['has_nutrition'] = True
+                        ingredient['nutrition_final'] = True
+
+
+def calculate_recipes_nutrition(recipes):
+    """Each recipe scale - if every ingredient nutrition is final, sum to get scale cost."""
+
+# todo scale_in
+    for recipe in recipes:
+        for scale in recipe['scales']:
+            if not scale['nutrition_final'] and ingredients_nutrition_final(scale):
+                scale['nutrition'] = sum_ingredient_nutrition(scale)
+                scale['nutrition_final'] = True
+
+
+def ingredients_nutrition_final(scale):
+    """Checks if all ingredients in a scale have their final costs set.
+
+    This function iterates through the ingredients in the given 
+    `scale` and returns `True` if all ingredients have `cost_final` 
+    set, otherwise it returns `False`.
+
+    Args:
+        scale (dict): The scale dictionary containing a list of 
+        ingredients. Each ingredient should have the key 'cost_final'.
+
+    Returns:
+        bool: `True` if each ingredient's `cost_final` evaluates to 
+                True. Otherwise, False.
+    """
+
+    for ingredient in scale['ingredients']:
+        if not ingredient['nutrition_final']:
+            return False
+    return True
+
+
+def sum_ingredient_nutrition(scale: dict):
+    """Returns the cost of a scale by adding each ingredient.
+    
+    Args:
+        scale: Dictionary for a recipe scale's data.
+
+    Returns:
+        Scale cost as float.
+    """
+
+    nutrition = empty_nutrition()
+    for ingredient in scale['ingredients']:
+        nutrition['calories'] += ingredient['nutrition']['calories']
+        nutrition['fat'] += ingredient['nutrition']['fat']
+        nutrition['protein'] += ingredient['nutrition']['protein']
+        nutrition['carbohydrates'] += ingredient['nutrition']['carbohydrates']
+    return nutrition
+
+
+
+
+def multiply_nutrition(nutrition, multiplier):
+
+    return {
+        'calories': nutrition['calories'] * multiplier,
+        'fat': nutrition['fat'] * multiplier,
+        'carbohydrates': nutrition['carbohydrates'] * multiplier,
+        'protein': nutrition['protein'] * multiplier
+    }
+
+
+def empty_nutrition():
+    return {
+        'calories': 0,
+        'fat': 0,
+        'carbohydrates': 0,
+        'protein': 0
+    }
+
+
+def set_nutrition_flags(site):
 
     for recipe in site['recipes']:
-        recipe = set_recipe_nutrition(recipe)
+        recipe = set_recipe_nutrition_flags(recipe)
     return site
 
 
-def set_recipe_nutrition(recipe):
+def set_recipe_nutrition_flags(recipe):
     """Set recipe nutrition for each scale."""
 
     if recipe['hide_nutrition']:
@@ -1379,12 +1441,12 @@ def set_recipe_nutrition(recipe):
             multiplier = scale['multiplier'] / scale['servings']
             scale['nutrition'] = scale_nutrition(recipe['explicit_nutrition'], multiplier)
             scale['has_visible_nutrition_per_serving'] = True
-            scale['nutrition_source'] = 'explicit'
+            # scale['nutrition_source'] = 'explicit'
         return recipe
 
     # nutrition not explicit
     for scale in recipe['scales']:
-        scale['nutrition'] = sum_ingredient_nutrition(scale)
+        # scale['nutrition'] = sum_ingredient_nutrition(scale)
         scale['has_visible_nutrition_per_serving'] = (has_nutrients(scale['nutrition']))
         scale['nutrition_source'] = 'ingredients'
 

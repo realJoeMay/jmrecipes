@@ -511,7 +511,7 @@ def _load_groceries():
         'other_amount': 0,
         'other_unit': '',
         'discrete_amount': 0,
-        'Calories': 0,
+        'calories': 0,
         'fat': 0,
         'carbohydrates': 0,
         'protein': 0,
