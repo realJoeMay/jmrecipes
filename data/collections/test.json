@@ -19,7 +19,7 @@
         "test-hide-cost",
         "test-hide-nutrition",
         "test-cost-explicit",
-        "test-explicit-nutrition",
+        "test-recipe-nutrition-explicit",
         "test-nutrition-0",
         "test-ingredient-explicit-cost",
         "test-ingredient-explicit-nutrition",
