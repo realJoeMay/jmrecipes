@@ -74,7 +74,7 @@ def load_site(data_path, log_path=None) -> dict:
                       set_costs_per_serving,
                       set_cost_strings,
                       set_nutrition,
-                      set_nutrition_flags,
+                      set_display_nutrition,
                       set_ingredient_details,
                       set_description_areas,
                       set_ingredient_lists,
@@ -1397,14 +1397,24 @@ def sum_ingredient_nutrition(scale: dict):
 
 
 
-def multiply_nutrition(nutrition, multiplier):
+def multiply_nutrition(nutrition, multiplier, round_result=False):
 
-    return {
+    multiplied = {
         'calories': nutrition['calories'] * multiplier,
         'fat': nutrition['fat'] * multiplier,
         'carbohydrates': nutrition['carbohydrates'] * multiplier,
         'protein': nutrition['protein'] * multiplier
     }
+
+    if round_result:
+        multiplied = {
+            'calories': round(multiplied['calories']),
+            'fat': round(multiplied['fat']),
+            'carbohydrates': round(multiplied['carbohydrates']),
+            'protein': round(multiplied['protein'])
+        }
+
+    return multiplied
 
 
 def empty_nutrition():
@@ -1416,41 +1426,37 @@ def empty_nutrition():
     }
 
 
-def set_nutrition_flags(site):
+def set_display_nutrition(site):
+    """Sets nutrition_display for each scale and each ingredient."""
 
-    for recipe in site['recipes']:
-        recipe = set_recipe_nutrition_flags(recipe)
+    for scale, ingredient in ingredients_in(site, include='s'):
+        servings = scale.get('servings', 1)
+        ingredient['nutrition_display'] = multiply_nutrition(
+            ingredient['nutrition'], 1 / servings, round_result=True)
+
+    for recipe, scale in scales_in(site, include='r'):
+        servings = scale.get('servings', 1)
+        scale['nutrition_display'] = multiply_nutrition(
+            scale['nutrition'], 1 / servings, round_result=True)
+        scale['has_visible_nutrition'] = scale_has_visible_nutrition(scale, recipe)
+        scale['is_nutrition_per_serving'] = servings != 1
+
     return site
 
 
-def set_recipe_nutrition_flags(recipe):
-    """Set recipe nutrition for each scale."""
+def scale_has_visible_nutrition(scale, recipe):
+    """Returns True if a scale has nutrition """
 
     if recipe['hide_nutrition']:
-        for scale in recipe['scales']:
-            scale['has_visible_nutrition_per_serving'] = False
-        return recipe
-
-    if not recipe['has_servings']:
-        for scale in recipe['scales']:
-            scale['has_visible_nutrition_per_serving'] = False
-        return recipe
-
+        return False
+    
+    if not scale['has_servings']:
+        return False
+    
     if 'explicit_nutrition' in recipe:
-        for scale in recipe['scales']:
-            multiplier = scale['multiplier'] / scale['servings']
-            scale['nutrition'] = scale_nutrition(recipe['explicit_nutrition'], multiplier)
-            scale['has_visible_nutrition_per_serving'] = True
-            # scale['nutrition_source'] = 'explicit'
-        return recipe
+        return True
 
-    # nutrition not explicit
-    for scale in recipe['scales']:
-        # scale['nutrition'] = sum_ingredient_nutrition(scale)
-        scale['has_visible_nutrition_per_serving'] = (has_nutrients(scale['nutrition']))
-        scale['nutrition_source'] = 'ingredients'
-
-    return recipe
+    return has_nutrients(scale['nutrition'])
 
 
 def set_ingredient_details(site):
@@ -1483,7 +1489,7 @@ def set_recipe_ingredient_details(recipe):
         scale['has_nutrition_per_serving_detail'] = (
             has_nutrition_detail(scale)
             and scale['has_servings']
-            and scale['has_visible_nutrition_per_serving']
+            and scale['has_visible_nutrition']
             and not explicit_nutrition
             and not nutrition_hidden)
                             
@@ -1781,57 +1787,6 @@ def scales_in(container, include=None):
                 scales.append(tuple(item_list))
 
     return scales
-
-
-# def scaled_ingredients_in_site(site: dict, include: str = None) -> list:
-#     """Returns a list of scaled ingredients from the site.
-
-#     This function extracts ingredients from each recipe's scales. The `include` 
-#     parameter determines whether the recipe and scale information should be 
-#     included in the returned list.
-
-#     Args:
-#         site (dict): The site data containing recipes and their respective scales 
-#             and ingredients. 
-            
-#         include (str, optional): A string that specifies what additional information 
-#             to include in the returned tuples. If 'r' is included, the recipe information
-#             is included. If 's' is included, the scale information is included. 
-#             Defaults to None, meaning only the ingredient information is included.
-
-#     Returns:
-#         list: A list of ingredient dictionaries, or a list of tuples containing 
-#         optional recipe, scale, and ingredient information. If 'r' is in 
-#         `include`, the recipe dictionary is included in each tuple. If 's' is 
-#         in `include`, the scale dictionary is included in each tuple. The 
-#         order of items in the tuple is (recipe, scale, ingredient). 
-
-#     Raises:
-#         KeyError: If the 'recipes' key is not present in the `site` dictionary.
-#         KeyError: If the 'scales' key is not present in a recipe dictionary.
-#         KeyError: If the 'ingredients' key is not present in a scale dictionary.
-#     """
-
-#     if include is None:
-#         include = ''
-
-#     ingredients = []
-#     for recipe in site['recipes']:
-#         for scale in recipe['scales']:
-#             for ingredient in scale['ingredients']:
-#                 item_list = []
-#                 if 'r' in include:
-#                     item_list.append(recipe)
-#                 if 's' in include:
-#                     item_list.append(scale)
-#                 item_list.append(ingredient)
-
-#                 if len(item_list) == 1:
-#                     ingredients.append(item_list[0])
-#                 else:
-#                     ingredients.append(tuple(item_list))
-                
-#     return ingredients
 
 
 def build_site(site: dict, site_path: str, local=False):

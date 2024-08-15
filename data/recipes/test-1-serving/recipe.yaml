@@ -1,0 +1,35 @@
+title: Test 1 Serving
+subtitle: it's pretty good
+yield:
+- number: 1
+  unit: servings
+- number: 24
+  show_serving_size: true
+  show_yield: false
+  unit: cups
+scale:
+- multiplier: 2
+ingredients:
+- number: '2'
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
+- number: '1'
+  item: Ground Sweet Italian Sausage
+  list: Ingredients
+  unit: lb
+- number: '60'
+  descriptor: drained
+  display_number: '4'
+  display_unit: (15 oz) cans
+  item: Red Kidney Beans
+  list: Ingredients
+  unit: oz
+instructions:
+- text: Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently,
+    until meat is evenly browned. Drain off excess grease.
+- text: Add in remaining ingredients. Stir to blend, then cover and simmer over low
+    heat for at least 2 hours, stirring occasionally.
+sources:
+- name: Boilermaker Chili
+  url: https://www.allrecipes.com/recipe/78299/boilermaker-tailgate-chili/

@@ -566,8 +566,12 @@ a.menu-header:hover {
 
                         {% if scale.has_nutrition_per_serving_detail %}
                         <div class="menu-button menu-button-detail menu-button-detail-nutrition-per-serving" onclick="detailNutritionPerServing()">
+                            {% if scale.is_nutrition_per_serving %}
                             <span style="margin-top:-3px;">Nutrition</span>
                             <span style="font-size:0.8rem;">per serving</span>
+                            {% else %}
+                            Nutrition
+                            {% endif %}
                         </div>
                         {% endif %}
 
@@ -721,17 +725,17 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
-                        {% if scale.has_visible_nutrition_per_serving %}
+                        {% if scale.has_visible_nutrition %}
                         <div class=''>
-                            <span class='description-label'>Nutrition per serving</span>
+                            <span class='description-label'>Nutrition{% if scale.is_nutrition_per_serving %} per serving{% endif %}</span>
                             <div class="nutrition">
-                                <div class="calories value">{{ scale.nutrition.calories }}</div>
+                                <div class="calories value">{{ scale.nutrition_display.calories }}</div>
                                 <div class="calories label">Calories</div>
-                                <div class="calories value">{{ scale.nutrition.fat }}g</div>
+                                <div class="calories value">{{ scale.nutrition_display.fat }}g</div>
                                 <div class="fat label">fat</div>
-                                <div class="fat value">{{ scale.nutrition.carbohydrates }}g</div>
+                                <div class="fat value">{{ scale.nutrition_display.carbohydrates }}g</div>
                                 <div class="carbs label">carbs</div>
-                                <div class="calories value">{{ scale.nutrition.protein }}g</div>
+                                <div class="calories value">{{ scale.nutrition_display.protein }}g</div>
                                 <div class="protein label">protein</div>
                             </div>    
                         </div>
@@ -789,13 +793,13 @@ a.menu-header:hover {
                         {% if ingredient.has_nutrition %}
                         <div class="detail-nutrition-per-serving">
                             <div class="nutrition">
-                                <div class="calories value">{{ ingredient.nutrition.calories }}</div>
+                                <div class="calories value">{{ ingredient.nutrition_display.calories }}</div>
                                 <div class="calories label">Calories</div>
-                                <div class="calories value">{{ ingredient.nutrition.fat }}g</div>
+                                <div class="calories value">{{ ingredient.nutrition_display.fat }}g</div>
                                 <div class="fat label">fat</div>
-                                <div class="fat value">{{ ingredient.nutrition.carbohydrates }}g</div>
+                                <div class="fat value">{{ ingredient.nutrition_display.carbohydrates }}g</div>
                                 <div class="carbs label">carbs</div>
-                                <div class="calories value">{{ ingredient.nutrition.protein }}g</div>
+                                <div class="calories value">{{ ingredient.nutrition_display.protein }}g</div>
                                 <div class="protein label">protein</div>
                             </div>
                         </div>
