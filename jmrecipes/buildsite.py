@@ -163,33 +163,22 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                       lookup_groceries,
                       set_instructions,
                       set_sources,
-                      scale_notes,
                       set_notes,
                       set_schema
                       )
 
 
-def set_defaults(recipe: dict) -> dict:
-    """Sets default values for certain keys in the recipe dictionary.
+def set_defaults(recipe):
+    """Sets default values for keys if not already set.
+    
+    Sets the following default values:
+    - 'hide_cost': False.
+    - 'hide_nutrition': False.
 
-    This function ensures that specific keys have default values if 
-    they are not already present.
-        - Each dictionary in the 'yield' list:
-            - 'unit': Defaults to 'servings'.
-            - 'show_yield': Defaults to True.
-            - 'show_serving_size': Defaults to False.
-        - 'hide_cost': Defaults to False.
-        - 'hide_nutrition': Defaults to False.
-
-    Args:
-        recipe (dict): The recipe data.
-
-    Returns:
-        dict: The updated recipe dictionary.
-
-    Raises:
-        KeyError: If the 'yield' key is not present in the `recipe` 
-        dictionary.
+    Sets the following default values for each yield in recipe:
+    - 'unit': 'servings'.
+    - 'show_yield': True.
+    - 'show_serving_size': False.
     """
 
     for yielb in recipe['yield']:
@@ -208,29 +197,13 @@ def set_defaults(recipe: dict) -> dict:
     return recipe
 
 
-def set_url(recipe: dict) -> dict:
+def set_url(recipe):
     """Sets values regarding the URLs for the given recipe.
 
-    This function processes a `recipe` dictionary and sets several 
-    URL-related keys based on the `url_slug` and `title` of the recipe. 
-    The keys set by this function are:
-        - 'url_path': Constructed by prefixing '/' to the 'url_slug'.
-        - 'url': The full URL constructed using the `make_url` function 
-            and the 'url_path'.
-        - 'feedback_url': Constructed using the `feedback_url` function 
-            with the recipe 'title' and 'url'.
-
-    Args:
-        recipe (dict): The recipe data containing the 'url_slug' and 
-        'title' keys. 
-
-    Returns:
-        dict: The updated recipe dictionary with 'url_path', 'url', and 
-        'feedback_url' keys set.
-
-    Raises:
-        KeyError: If the 'url_slug' or 'title' key is not present in 
-        the `recipe` dictionary.
+    Sets the following keys:
+    - 'url_path' (str)
+    - 'url' (str)
+    - 'feedback_url' (str)
     """
 
     recipe['url_path'] = '/' + recipe['url_slug']
@@ -239,24 +212,11 @@ def set_url(recipe: dict) -> dict:
     return recipe
 
 
-def set_subtitle(recipe: dict) -> dict:
+def set_subtitle(recipe):
     """Sets values related to the recipe's subtitle.
 
-    This function updates the `recipe` dictionary to include 
-    information about the recipe's subtitle. If the `subtitle` key is 
-    present and not an empty string, it sets `has_subtitle` to True and 
-    converts the subtitle to lowercase. If the `subtitle` key is 
-    missing or an empty string, it sets `has_subtitle` to False.
-
-    Args:
-        recipe (dict): The recipe dictionary that may contain a 
-        'subtitle' key.
-
-    Returns:
-        dict: The updated recipe dictionary with 'has_subtitle' key set 
-        to True or False based on the presence and content of the 
-        'subtitle' key. The 'subtitle' is converted to lowercase if it 
-        is present.
+    Sets the following keys:
+    - 'has_subtitle' (bool)
     """
     
     if 'subtitle' in recipe and recipe['subtitle'] != '':
@@ -271,36 +231,20 @@ def set_subtitle(recipe: dict) -> dict:
 def set_description(recipe):
     """Sets a flag indicating the presence of a recipe description.
 
-    This function updates the `recipe` dictionary by adding a key 
-    `has_description`. The value of this key is set to True if the 
-    `description` key is present in the dictionary; otherwise, it is 
-    set to False.
-
-    Args:
-        recipe (dict): The recipe dictionary.
-
-    Returns:
-        dict: The updated recipe dictionary with the 'has_description' 
-        key.
+    Sets the following keys:
+    - 'has_description' (bool)
     """
 
     recipe['has_description'] = 'description' in recipe
     return recipe
 
 
-def set_image(recipe: dict) -> dict:
+def set_image(recipe):
     """Sets the image URL for the recipe.
 
-     This function updates the `recipe` dictionary by setting the `image_url` key. 
-    If the `has_image` key in the dictionary is True, `image_url` is set to a combination 
-    of `url_slug` and `image` keys. If `has_image` is False, `image_url` is set to 'default.jpg'.
-
-    Args:
-        recipe (dict): The recipe dictionary that should contain the keys 'has_image', 
-            'url_slug', and 'image' (optional).
-
-    Returns:
-        dict: The updated recipe dictionary with the 'image_url' key set. 
+    Sets the following keys:
+    - 'has_image' (bool)
+    - 'image_url' (str)
     """
 
     if recipe['has_image']:
@@ -310,33 +254,20 @@ def set_image(recipe: dict) -> dict:
     return recipe
 
 
-def set_scales(recipe: dict) -> dict:
-    """Sets scale-related values for each scale in the recipe.
+def set_scales(recipe):
+    """Sets scale-related values for each scale.
 
-    This function updates the `recipe` dictionary by assigning various class names and 
-    other attributes to each scale in the `scales` list. It generates the `label`, `item_class`, 
-    `select_class`, `button_class`, `js_function_name`, and `keyboard_shortcut` for each scale. 
-    Additionally, it sets the `base_select_class` based on the first scale and determines if 
-    there are multiple scales to update the `has_scales` flag.
+    Sets the following keys:
+    - 'base_select_class' (str)
+    - 'has_scales' (bool)
 
-    Args:
-        recipe (dict): The recipe dictionary that should contain the 'scales' key.
-
-    Returns:
-        dict: The updated recipe dictionary with added or modified keys:
-            - 'scales': List of scales with updated attributes.
-                - 'label': The scale label as a string (e.g., '1x', '2x').
-                - 'item_class': CSS class name for the scale (e.g., 'scale-1x').
-                - 'select_class': CSS class name for scale selection (e.g., 'display-scale-1x').
-                - 'button_class': CSS class name for the scale button (e.g., 'display-scale-1x-btn').
-                - 'js_function_name': JavaScript function name associated with the scale (e.g., 'scale1x').
-                - 'keyboard_shortcut': Sequential integer representing the scale's keyboard shortcut.
-            - 'base_select_class': Class name for the base scale selection, derived from the first scale.
-            - 'has_scales': Boolean indicating if there is more than one scale in the `scales` list.
-
-    Raises:
-        KeyError: If the 'scales' key is not present in the `recipe` dictionary.
-        TypeError: If any element in 'scales' does not have a valid 'multiplier'.
+    Sets the following keys for each scale:
+    - 'label' (str)
+    - 'item_class' (str)
+    - 'select_class' (str)
+    - 'button_class' (str)
+    - 'js_function_name' (str)
+    - 'keyboard_shortcut' (str)
     """
 
     for i, scale in enumerate(recipe['scales'], 1):
@@ -352,8 +283,17 @@ def set_scales(recipe: dict) -> dict:
     return recipe
 
 
-def set_times(recipe: dict) -> dict:
-    """Set recipe attributes related cook times."""
+def set_times(recipe):
+    """Set recipe attributes related to cook times.
+    
+    Sets the following keys for each scale:
+    - 'times' (list)
+    - 'has_times' (bool)
+
+    Sets the following keys for each time:
+    - 'unit' (str)
+    - 'time_string' (str)
+    """
 
     for time in recipe['times']:
 
@@ -370,19 +310,12 @@ def set_times(recipe: dict) -> dict:
     return recipe
 
 
-def set_yield_defaults(recipe):
-    """Set default values for each yield."""
-
-    for yielb in recipe['yield']:
-        if yielb['show_yield'] == '':
-            yielb['show_yield'] = True
-        if yielb['show_serving_size'] == '':
-            yielb['show_serving_size'] = False
-    return recipe
-
-
 def scale_yields(recipe):
-    """Add yield section to each recipe scale."""
+    """Add yield section to each scale.
+    
+    Sets the following keys for each scale:
+    - 'yield' (list)
+    """
 
     for scale in recipe['scales']:
         scale['yield'] = []
@@ -397,54 +330,67 @@ def scale_yields(recipe):
 
 
 def set_servings(recipe):
-    """Set servings data for each scale in recipe."""
+    """Sets servings data for each scale.
+    
+    Sets the following keys:
+    - 'has_servings' (bool)
+
+    Sets the following keys for each scale:
+    - 'has_servings' (bool)
+
+    Sets the following keys for each scale with servings:
+    - 'servings' (int)
+    """
 
     for scale in recipe['scales']:
-        set_servings_scale(scale)
+        scale['has_servings'] = False
+        for yielb in scale['yield']:
+            if yielb['unit'].lower() in ('serving', 'servings'):
+                scale['servings'] = yielb['number']
+                scale['has_servings'] = True
+
+
+
     recipe['has_servings'] = recipe['scales'][0]['has_servings']
     return recipe
 
 
-def set_servings_scale(scale):
-    """Set servings data for a recipe scale."""
-
-    scale['has_servings'] = False
-    for yielb in scale['yield']:
-        if yielb['unit'].lower() in ('serving', 'servings'):
-            scale['servings'] = yielb['number']
-            scale['has_servings'] = True
-    # return scale
-
-
 def set_visible_yields(recipe):
-    """Sets yield data to show on page."""
+    """Sets yield data to appear on page.
+
+    Sets the following keys for each scale:
+    - 'has_visible_yields' (bool)
+
+    Sets the following keys for each yield:
+    - 'yield_string' (str)
+    """
 
     for scale in recipe['scales']:
-        scale = set_visible_yields_scale(scale)
+        scale['has_visible_yields'] = False
+        for yielb in scale['yield']:
+            if yielb['show_yield']:
+                scale['has_visible_yields'] = True
+                yielb['yield_string'] = yield_string(yielb)
+
     return recipe
 
 
-def set_visible_yields_scale(scale):
-    """Sets yield data for a recipe scale to show on page."""
-
-    scale['has_visible_yields'] = False
-    for yielb in scale['yield']:
-        if yielb['show_yield']:
-            scale['has_visible_yields'] = True
-            yielb['yield_string'] = yield_string(yielb)
-    return scale
-
-
 def yield_string(yielb: dict) -> str:
-    """Returns string for a yield."""
+    """String represeentation of a yield."""
 
     number = fraction_to_string(yielb["number"])
-    display = f'{number} {yielb["unit"]}'
-    return display
+    return f'{number} {yielb["unit"]}'
 
 
 def set_visible_serving_sizes(recipe):
-    """"""
+    """Sets servings size data for each scale.
+    
+    Sets the following keys for each scale:
+    - 'has_visible_serving_sizes' (bool)
+
+    Sets the following keys for each yield if showing serving size:
+    - 'serving_size_string' (str)
+    """
 
     for scale in recipe['scales']:
         scale = set_serving_size(scale)
@@ -452,7 +398,7 @@ def set_visible_serving_sizes(recipe):
 
 
 def set_serving_size(scale):
-    """Sets servings size data for a recipe scale to show on page."""
+    """Sets servings size data for a scale."""
 
     scale['has_visible_serving_sizes'] = False
 
@@ -469,15 +415,26 @@ def set_serving_size(scale):
     return scale
 
 
-def set_copy_ingredients_sublabel(recipe: dict) -> dict:
-    """Set sublabel of copy ingredients button for each scale."""
+def set_copy_ingredients_sublabel(recipe):
+    """Set sublabel of copy ingredients button for each scale.    
+    
+    Sets the following keys for each scale:
+    - 'copy_ingredients_sublabel' (str)
+    """
 
     for scale in recipe['scales']:
         scale['copy_ingredients_sublabel'] = copy_ingredients_sublabel(scale)
     return recipe
 
 
-def copy_ingredients_sublabel(scale) -> str:
+def copy_ingredients_sublabel(scale: dict) -> str:
+    """Returns sublabel for copy ingredients button.
+    
+    The sublabel is based on the following:
+    - [Empty string] if scale is base scale
+    - '4 servings' if servings is set
+    - '2x' otherwise
+    """
 
     if scale['multiplier'] == 1:
         return ''
@@ -490,21 +447,11 @@ def copy_ingredients_sublabel(scale) -> str:
 
 
 def set_ingredients_type(recipe):
-    """Sets the ingredient type for each ingredient in the recipe.
+    """Sets the ingredient type for each ingredient.
 
-    This function adds 'is_recipe' and 'is_grocery' keys to each 
-    ingredient in the 'ingredients' list. The 'is_recipe' key is set 
-    to True if the ingredient contains a 'recipe_slug' key, and False 
-    otherwise.
-
-    Args:
-        recipe (dict): The recipe data containing a list of 
-        ingredients. 
-
-    Returns:
-        dict: The updated recipe dictionary with 'is_recipe' and 
-        'is_grocery' keys added to each ingredient in the 'ingredients' 
-        list. 
+    Sets the following keys for each ingredient:
+    - 'is_recipe' (bool)
+    - 'is_grocery' (bool)
     """
 
     for ingredient in recipe['ingredients']:
@@ -514,11 +461,16 @@ def set_ingredients_type(recipe):
 
 
 def scale_ingredients(recipe):
-    """Add ingredients list to each recipe scale."""
+    """Add ingredients list to each recipe scale.
+    
+    Sets the following keys for each scale:
+    - 'ingredients' (list)
+    - 'has_ingredients' (bool)
+    """
 
     for scale in recipe['scales']:
         scale['ingredients'] = ingredients_in_scale(recipe['ingredients'], 
-                                                 scale['multiplier'])
+                                                    scale['multiplier'])
         scale['has_ingredients'] = bool(scale['ingredients'])
     return recipe
 
@@ -526,28 +478,21 @@ def scale_ingredients(recipe):
 def ingredients_in_scale(base_ingredients, multiplier) -> list:
     """Get list of ingredients for a recipe scale.
 
-    Base ingredients are scaled using a multiplier. If the base 
+    Ingredients are scaled using a multiplier. If the base 
     ingredient has an explicit scale, the ingredient is copied without 
     multiplying.
-
-    Args:
-        base_ingredients: Ingredient data as a directory.
-        multiplier: A scale's multiplier as a fraction.
-
-    Returns:
-        List of ingredient dictionaries.
     """
 
     ingredients = []
     for ingredient in base_ingredients:
         if 'scale' not in ingredient:
             ingredients.append(multiply_ingredient(ingredient, multiplier))
-        elif to_fraction(ingredient['scale']) == multiplier:        
+        elif to_fraction(ingredient['scale']) == multiplier:
             ingredients.append(ingredient)
     return ingredients
 
 
-def multiply_ingredient(ingredient, multiplier):
+def multiply_ingredient(ingredient, multiplier) -> dict:
     """Returns ingredient data scaled by multiplier."""
 
     scaled = ingredient.copy()
@@ -555,34 +500,34 @@ def multiply_ingredient(ingredient, multiplier):
     scaled['display_number'] = ingredient['display_number'] * multiplier
     if 'explicit_cost' in ingredient:
         scaled['explicit_cost'] = ingredient['explicit_cost'] * multiplier
+    if 'explicit_nutrition' in ingredient:
+        scaled['explicit_nutrition'] = multiply_nutrition(
+            ingredient['explicit_nutrition'], multiplier)
     return scaled
 
 
-def set_ingredient_outputs(recipe: dict) -> dict:
-    """Sets recipe data regarding ingredients."""
+def set_ingredient_outputs(recipe):
+    """Sets display values for ingredients.
+    
+    Sets the following keys for each scaled ingredient:
+    - 'string' (str)
+    - 'display_amount' (str)
+    """
 
-    for scale in recipe['scales']:
-        for ingredient in scale['ingredients']:
-            ingredient = set_ingredient_displays(ingredient)
-            ingredient['string'] = ingredient_string(ingredient)
-            ingredient['display_amount'] = ingredient_display_amount(ingredient)
+    for ingredient in ingredients_in(recipe):
+        if ingredient['display_number'] == 0:
+            ingredient['display_number'] = ingredient['number']
+        if ingredient['display_unit'] == '':
+            ingredient['display_unit'] = ingredient['unit']
+        if ingredient['display_item'] == '':
+            ingredient['display_item'] = ingredient['item']
+        ingredient['string'] = ingredient_string(ingredient)
+        ingredient['display_amount'] = ingredient_display_amount(ingredient)
     return recipe
 
 
-def set_ingredient_displays(ing: dict) -> dict:
-    """Fill missing ingredient display data."""
-
-    if ing['display_number'] == 0:
-        ing['display_number'] = ing['number']
-    if ing['display_unit'] == '':
-        ing['display_unit'] = ing['unit']
-    if ing['display_item'] == '':
-        ing['display_item'] = ing['item']
-    return ing
-
-
 def ingredient_string(ing: dict) -> str:
-    """Returns string with ingredient number, unit, and item."""
+    """String for ingredient with number, unit, and item."""
 
     i_str = []
     if ing['display_number']:
@@ -596,7 +541,7 @@ def ingredient_string(ing: dict) -> str:
 
 
 def ingredient_display_amount(ingredient):
-    """Return string with ingredient number and unit."""
+    """String for ingredient with number and unit."""
 
     amount = []
     if ingredient['display_number']:
@@ -607,25 +552,30 @@ def ingredient_display_amount(ingredient):
 
 
 def lookup_groceries(recipe):
-    """Looks up grocery info for each ingredient."""
+    """Looks up grocery info for each ingredient.
+    
+    Sets the following keys for each scaled ingredient:
+    - 'grocery' (dict)
+    - 'has_matching_grocery' (bool)
+    - 'grocery_count' (float)
+    """
 
-    for scale in recipe['scales']:
-        for ingredient in scale['ingredients']:
-            ingredient = lookup_grocery(ingredient)
-            ingredient['grocery_number'] = grocery_number(ingredient)
+    for ingredient in ingredients_in(recipe):
+        lookup_grocery(ingredient)
+        ingredient['grocery_count'] = grocery_count(ingredient)
     return recipe
 
 
 def lookup_grocery(ingredient):
-    """Returns ingredient with grocery data."""
+    """Adds grocery data to ingredient."""
 
-    ingredient['has_grocery'] = False
+    ingredient['has_matching_grocery'] = False
     grocery = utils.grocery_info(ingredient['item'])
 
     if grocery is None:
-        return ingredient
+        return
     
-    ingredient['has_grocery'] = True
+    ingredient['has_matching_grocery'] = True
     grocery_keys = ["name", "cost", "volume_amount", "volume_unit", 
                     "weight_amount", "weight_unit", "other_amount", 
                     "other_unit", "discrete_amount", "calories", "fat", 
@@ -637,13 +587,12 @@ def lookup_grocery(ingredient):
         'carbohydrates': ingredient['grocery'].pop('carbohydrates'),
         'protein': ingredient['grocery'].pop('protein')
     }
-    return ingredient
 
 
-def grocery_number(ingredient):
+def grocery_count(ingredient) -> float:
     """Returns how many grocery items are in the ingredient."""
 
-    if ingredient['has_grocery'] is False:
+    if not ingredient['has_matching_grocery']:
         return 0
     
     ingredient_unit = ingredient['unit']
@@ -671,12 +620,7 @@ def grocery_number_discrete(ingredient):
 
 
 def grocery_number_volume(ingredient):
-    """Number of groceries in ingredient, measured by volume.
-    
-    Returns 0 if any of the following:
-    - grocery data does not include number or unit
-    - listed grocery volume unit is not a known volume unit
-    """
+    """Number of groceries in ingredient, measured by volume."""
 
     ingredient_number = ingredient['number']
     ingredient_unit = ingredient['unit']
@@ -722,7 +666,7 @@ def grocery_number_weight(ingredient):
 
 
 def grocery_number_other(ingredient):
-    """Number of groceries in ingredient, measured by an abnormal unit."""
+    """Number of groceries in ingredient, measured by a nonstandard unit."""
 
     ingredient_number = ingredient['number']
     ingredient_unit = ingredient['unit']
@@ -739,42 +683,13 @@ def grocery_number_other(ingredient):
     return ingredient_number / grocery_number
 
 
-def scale_nutrition(nutrition, multiplier):
-
-    scaled = {}
-    for nutrient in nutrition:
-        scaled[nutrient] = round(float(nutrition[nutrient] * multiplier))
-
-    return scaled
-
-
-def sum_ingredient_nutrition(scale):
-
-    sum = {
-        'calories': 0,
-        'fat': 0,
-        'protein': 0,
-        'carbohydrates': 0
-    }
-    for ingredient in scale['ingredients']:
-        if ingredient['has_nutrition']:
-            for nutrient in sum:
-                sum[nutrient] += ingredient['nutrition'][nutrient]
-
-    return sum
-
-
-def has_nutrients(nutrition: dict):
-    """Return True if any item in nutrition is nonzero."""
-
-    for value in nutrition.values():
-        if value > 0:
-            return True
-    return False
-
-
 def set_instructions(recipe):
-    """Sets recipe data regarding instructions."""
+    """Sets instruction data for each scale.
+    
+    Sets the following keys for each scale:
+    - 'instructions' (list)
+    - 'has_instructions' (bool)
+    """
 
     for scale in recipe['scales']:
         scale['instructions'] = []
@@ -788,6 +703,16 @@ def set_instructions(recipe):
     return recipe
 
 
+def set_instruction_lists(recipe):
+    """Groups instruction steps into step lists."""
+    
+    for scale in recipe['scales']:
+        scale['instruction_lists'] = defaultdict(list)
+        for step in scale['instructions']:
+            scale['instruction_lists'][step.get('list', 'Instructions')].append(step)
+    return recipe
+
+
 def number_steps(recipe):
     """Sets step numbers for instructions."""
 
@@ -796,6 +721,138 @@ def number_steps(recipe):
             for i, step in enumerate(steps, 1):
                 step['number'] = i
     return recipe
+
+
+def set_sources(recipe):
+    """Sets sources data.
+    
+    Sets the following keys:
+    - 'has_sources' (bool)
+
+    Sets the following keys for each source:
+    - 'html' (str)
+    """
+
+
+    if 'sources' not in recipe:
+        recipe['has_sources'] = False
+        return recipe
+    
+    for source in recipe['sources']:
+        source['html'] = source_html(source)
+
+    recipe['has_sources'] = True
+
+    return recipe
+
+
+def source_html(source):
+    """Returns link html for a source."""
+
+    if 'name' in source and 'url' in source:
+        return source_link(source['name'], source['url'])
+    elif  'name' in source and 'url' not in source:
+        return source['name']
+    elif  'name' not in source and 'url' in source:
+        name = urlparse(source['url']).netloc
+        return source_link(name, source['url'])
+    else:
+        return ''
+
+
+def source_link(name, url) -> str:
+    """Returns html for link given name and url."""
+
+    return f'<a href="{url}" target="_blank">{name}</a>'
+
+
+def set_notes(recipe):
+    """Set notes for each scale.
+    
+    Sets the following keys for each scale:
+    - 'notes' (list)
+    - 'has_notes' (bool)
+    - 'has_notes_box' (bool)
+    """
+
+    for scale in recipe['scales']:
+
+        if 'notes' in recipe:
+            scale['notes'] = notes_for_scale(recipe['notes'], scale)
+        else:
+            scale['notes'] = []
+
+        scale['has_notes'] = bool(scale['notes'])
+        scale['has_notes_box'] = recipe['has_sources'] or scale['has_notes']
+    return recipe
+
+
+def notes_for_scale(notes, scale) -> list:
+    """Returns notes for a scale."""
+
+    scale_notes = []
+    for note in notes:
+        if 'scale' not in note or note['scale'] == scale['multiplier']:
+            scale_notes.append(note)
+    return scale_notes
+
+
+def set_schema(recipe):
+    """Add schema to recipe data.
+
+    More on recipe schema: https://schema.org/Recipe
+
+    Sets the following keys:
+    - 'schema_str' (str)
+    """
+
+    schema = {
+        '@context': 'https://schema.org',
+        '@type': 'Recipe',
+        'name': recipe['title']
+    }
+
+    if recipe['has_image']:
+        schema['image'] = recipe['image']
+
+    if servings_schema(recipe):
+        schema['recipeYield'] = servings_schema(recipe)
+
+    if recipe['scales'][0]['has_ingredients']:
+        schema['recipeIngredient'] = []
+        for ingredient in recipe['scales'][0]['ingredients']:
+            schema['recipeIngredient'].append(ingredient['string'])
+
+    recipe['schema_string'] = json.dumps(schema)
+    return recipe
+
+
+def servings_schema(recipe) -> str:
+    """Returns schema string for servings. Empty string if no servings."""
+
+    if recipe['scales'][0]['has_servings'] is False:
+        return ''
+
+    number = recipe['scales'][0]['servings']
+    unit = 'serving' if number == 1 else 'servings'
+    return f'{number} {unit}'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def has_cost_detail(scale):
@@ -816,118 +873,6 @@ def has_nutrition_detail(scale):
     return False
 
 
-def set_instruction_lists(recipe):
-    """Groups instruction steps into step lists."""
-    
-    for scale in recipe['scales']:
-        scale['instruction_lists'] = defaultdict(list)
-        for step in scale['instructions']:
-            scale['instruction_lists'][step.get('list', 'Instructions')].append(step)
-    return recipe
-
-
-def set_sources(recipe):
-    """"""
-
-    if 'sources' not in recipe:
-        recipe['has_sources'] = False
-        return recipe
-    
-    for source in recipe['sources']:
-        source['html'] = source_html(source)
-
-    recipe['has_sources'] = True
-
-    return recipe
-
-
-def source_html(source):
-    """Returns html for a source."""
-
-    if 'name' in source and 'url' in source:
-        return source_link(source['name'], source['url'])
-    elif  'name' in source and 'url' not in source:
-        return source['name']
-    elif  'name' not in source and 'url' in source:
-        name = urlparse(source['url']).netloc
-        return source_link(name, source['url'])
-    else:
-        return ''
-
-
-def source_link(name, url):
-
-    return f'<a href="{url}" target="_blank">{name}</a>'
-
-
-def scale_notes(recipe):
-    """Set notes for each scale."""
-
-    if 'notes' not in recipe:
-        for scale in recipe['scales']:
-            scale['notes'] = []
-        return recipe
-    
-    for scale in recipe['scales']:
-        scale['notes'] = notes_for_scale(recipe['notes'], scale)
-    return recipe
-
-
-def notes_for_scale(notes, scale):
-    """Returns notes for a scale."""
-
-    scale_notes = []
-    for note in notes:
-        if 'scale' not in note or note['scale'] == scale['multiplier']:
-            scale_notes.append(note)
-    return scale_notes
-
-
-def set_notes(recipe):
-
-    for scale in recipe['scales']:
-        scale['has_notes'] = bool(scale['notes'])
-        scale['has_notes_box'] = recipe['has_sources'] or scale['has_notes']
-    return recipe
-
-
-def set_schema(recipe: dict) -> dict:
-    """Add schema to recipe data.
-
-    More about recipe schema: https://schema.org/Recipe
-    """
-
-    schema = {
-        '@context': 'https://schema.org',
-        '@type': 'Recipe',
-        'name': recipe['title']
-    }
-
-    if recipe['has_image']:
-        schema['image'] = recipe['image']
-
-    # servings = servings_schema(recipe)
-    if servings_schema(recipe):
-        schema['recipeYield'] = servings_schema(recipe)
-
-    if recipe['scales'][0]['has_ingredients']:
-        schema['recipeIngredient'] = []
-        for ingredient in recipe['scales'][0]['ingredients']:
-            schema['recipeIngredient'].append(ingredient['string'])
-
-    recipe['schema_string'] = json.dumps(schema)
-    return recipe
-
-
-def servings_schema(recipe):
-    """Returns schema string for servings. Empty string if no servings."""
-
-    if recipe['scales'][0]['has_servings'] is False:
-        return ''
-
-    number = recipe['scales'][0]['servings']
-    unit = 'serving' if number == 1 else 'servings'
-    return f'{number} {unit}'
 
 
 def recipe_file(recipe_path: str) -> str:
@@ -1115,6 +1060,8 @@ def set_recipe_quantity(ingredient, recipes):
 
 
 def recipe_quantity(amount, unit, recipe):
+    """Returns the number of recipes produce an amount and unit."""
+
     for yielb in recipe['yield']:
         yield_unit = yielb['unit']
         if (utils.is_volume(unit) and utils.is_volume(yield_unit) 
@@ -1143,10 +1090,10 @@ def set_costs(site):
         ingredient['cost_final'] = True
 
     for ingredient in ingredients_in(site, values={'is_grocery': True, 'cost_final': False}):
-        if not ingredient['has_grocery']:
+        if not ingredient['has_matching_grocery']:
             ingredient['cost'] = 0
         else:
-            ingredient['cost'] = (ingredient['grocery_number'] * ingredient['grocery']['cost'])
+            ingredient['cost'] = (ingredient['grocery_count'] * ingredient['grocery']['cost'])
         ingredient['cost_final'] = True
 
     for recipe, scale in scales_in(site, include='r'):
@@ -1254,6 +1201,19 @@ def set_costs_per_serving(site):
 
 
 def set_cost_strings(site):
+    """Sets formatted cost strings for ingredients and scales.
+
+    Sets the following keys for each ingredient:
+    - 'cost_string' (str)
+    - 'cost_per_serving_string' (str)
+
+    Sets the following keys for each scale:
+    - 'cost_string' (str)
+    - 'cost_per_serving_string' (str)
+    - 'has_visible_cost' (bool)
+    - 'has_visible_cost_per_serving' (bool)
+        
+    """
 
     for ingredient in ingredients_in(site):
         ingredient['cost_string'] = utils.format_currency(ingredient['cost'])
@@ -1285,13 +1245,13 @@ def set_nutrition(site):
         ingredient['nutrition_final'] = True
     
     for recipe, scale, ingredient in ingredients_in(site, values={'is_grocery': True, 'nutrition_final': False}, include='rs'):
-        if not ingredient['has_grocery']:
+        if not ingredient['has_matching_grocery']:
             ingredient['nutrition'] = empty_nutrition()
             ingredient['has_nutrition'] = False
         else:
             ingredient['nutrition'] = multiply_nutrition(
                 ingredient['grocery']['nutrition'], 
-                ingredient['grocery_number']
+                ingredient['grocery_count']
                 )
             ingredient['has_nutrition'] = True
         ingredient['nutrition_final'] = True
@@ -1344,31 +1304,19 @@ def calculate_ingredient_nutrition(recipes):
 
 
 def calculate_recipes_nutrition(recipes):
-    """Each recipe scale - if every ingredient nutrition is final, sum to get scale cost."""
+    """Attempts to set each recipe scale's nutrition.
+    
+    Only sets nutrition if all ingredients in scale have final 
+    nutrition set."""
 
-# todo scale_in
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            if not scale['nutrition_final'] and ingredients_nutrition_final(scale):
-                scale['nutrition'] = sum_ingredient_nutrition(scale)
-                scale['nutrition_final'] = True
+    for scale in scales_in(recipes):
+        if not scale['nutrition_final'] and ingredients_nutrition_final(scale):
+            scale['nutrition'] = sum_ingredient_nutrition(scale)
+            scale['nutrition_final'] = True
 
 
 def ingredients_nutrition_final(scale):
-    """Checks if all ingredients in a scale have their final costs set.
-
-    This function iterates through the ingredients in the given 
-    `scale` and returns `True` if all ingredients have `cost_final` 
-    set, otherwise it returns `False`.
-
-    Args:
-        scale (dict): The scale dictionary containing a list of 
-        ingredients. Each ingredient should have the key 'cost_final'.
-
-    Returns:
-        bool: `True` if each ingredient's `cost_final` evaluates to 
-                True. Otherwise, False.
-    """
+    """Checks if all ingredients have their final nutrition set."""
 
     for ingredient in scale['ingredients']:
         if not ingredient['nutrition_final']:
@@ -1377,14 +1325,7 @@ def ingredients_nutrition_final(scale):
 
 
 def sum_ingredient_nutrition(scale: dict):
-    """Returns the cost of a scale by adding each ingredient.
-    
-    Args:
-        scale: Dictionary for a recipe scale's data.
-
-    Returns:
-        Scale cost as float.
-    """
+    """Returns the sum of all ingrediets' nutrition values."""
 
     nutrition = empty_nutrition()
     for ingredient in scale['ingredients']:
@@ -1397,7 +1338,11 @@ def sum_ingredient_nutrition(scale: dict):
 
 
 
-def multiply_nutrition(nutrition, multiplier, round_result=False):
+def multiply_nutrition(nutrition, multiplier, round_result=False) -> dict:
+    """Multiplies nutritional values by a given multiplier.
+    
+    Optionally, the results can be rounded to the nearest integer.
+    """
 
     multiplied = {
         'calories': nutrition['calories'] * multiplier,
@@ -1418,6 +1363,8 @@ def multiply_nutrition(nutrition, multiplier, round_result=False):
 
 
 def empty_nutrition():
+    """Returns a nutrition dictionary with zero values."""
+
     return {
         'calories': 0,
         'fat': 0,
@@ -1444,19 +1391,25 @@ def set_display_nutrition(site):
     return site
 
 
-def scale_has_visible_nutrition(scale, recipe):
-    """Returns True if a scale has nutrition """
+def scale_has_visible_nutrition(scale, recipe) -> bool:
+    """Determines if a scale's nutrition should be visible."""
 
     if recipe['hide_nutrition']:
         return False
-    
-    # if not scale['has_servings']:
-    #     return False
     
     if 'explicit_nutrition' in recipe:
         return True
 
     return has_nutrients(scale['nutrition'])
+
+
+def has_nutrients(nutrition: dict):
+    """Return True if any item in nutrition is nonzero."""
+
+    for value in nutrition.values():
+        if value > 0:
+            return True
+    return False
 
 
 def set_ingredient_details(site):
@@ -1473,7 +1426,6 @@ def set_recipe_ingredient_details(recipe):
     explicit_cost = 'explicit_cost' in recipe
     explicit_nutrition = 'explicit_nutrition' in recipe
     cost_hidden = recipe['hide_cost']
-    # nutrition_hidden = recipe['hide_nutrition']
 
     for scale in recipe['scales']:
 
@@ -1487,13 +1439,9 @@ def set_recipe_ingredient_details(recipe):
             and scale['has_servings'])
         
         scale['has_nutrition_per_serving_detail'] = (
-            # has_nutrition_detail(scale)
-            # and scale['has_servings']
             scale['has_visible_nutrition']
-            and not explicit_nutrition
-            # and not nutrition_hidden
-            )
-                            
+            and not explicit_nutrition)
+
         scale['has_any_detail'] = (
             scale['has_cost_detail'] 
             or scale['has_cost_per_serving_detail'] 
@@ -1514,7 +1462,11 @@ def set_recipe_ingredient_details(recipe):
 
 
 def set_description_areas(site):
-    """Sets recipe data regarding the description area."""
+    """Sets recipe data regarding the description area.
+    
+    Sets the following keys for each scale:
+    - 'has_description_area' (bool)
+    """
 
     for recipe, scale in scales_in(site, include='r'):
         scale['has_description_area'] = (
@@ -1562,28 +1514,14 @@ def link_recipes_collections(site: dict) -> dict:
 
 
 def info_for_collection(recipe: dict) -> dict:
-    """Recipe data needed for collection page.
-
-    Args:
-        recipe: Recipe data as a dictionary.
-
-    Returns:
-        Stripped down recipe data as a dictionary.
-    """
+    """Recipe data needed for collection page."""
 
     keys = ('title', 'url_slug', 'subtitle', 'has_subtitle', 'image_url')
     return {k: recipe[k] for k in keys if k in recipe}
 
 
 def info_for_recipe(collection: dict) -> dict:
-    """Collection data needed for recipe page.
-
-    Args:
-        collection: Collection data as a dictionary.
-
-    Returns:
-        Stripped down collection data as a dictionary.
-    """
+    """Collection data needed for recipe page."""
 
     keys = ('name', 'url_path', 'label', 'href')
     return {k: collection[k] for k in keys if k in collection}
@@ -1642,10 +1580,6 @@ def summary_ingredients(site: dict) -> list[dict]:
             - 'ingredient' (str): The ingredient description.
             - 'found_grocery' (bool): Whether the ingredient was found in the grocery.
             - 'number_groceries' (float): The number of groceries rounded to five decimal places.
-
-    Raises:
-        KeyError: If the expected keys ('title', 'label', 'string', 'has_grocery', 'grocery_number') 
-        are not present in the `site` dictionary.
     """
 
     ingredients = []
@@ -1654,13 +1588,14 @@ def summary_ingredients(site: dict) -> list[dict]:
             'recipe': recipe['title'],
             'scale': scale['label'],
             'ingredient': ingredient['string'],
-            'found_grocery': ingredient['has_grocery'],
-            'number_groceries': round(ingredient.get('grocery_number', 0),5)
+            'found_grocery': ingredient['has_matching_grocery'],
+            'number_groceries': round(ingredient.get('grocery_count', 0),5)
         })
     return ingredients
 
 
-def ingredients_in(container, keys=None, values=None, include=None):
+def ingredients_in(container:(dict | list), keys:(str | list) = None, 
+                   values:dict = None, include:str = None) -> list:
     """Returns a list of ingredients from the container.
 
     This function extracts scaled ingredients from a recipe, list of 
@@ -1691,11 +1626,11 @@ def ingredients_in(container, keys=None, values=None, include=None):
 
     Returns:
         list: A list of ingredient dictionaries, or a list of tuples 
-        containing optional recipe, scale, and ingredient information. 
-        If 'r' is in `include`, the recipe dictionary is included in 
-        each tuple. If 's' is in `include`, the scale dictionary is 
-        included in each tuple. The order of items in the tuple is 
-        (recipe, scale, ingredient).
+        containing optional recipe and scale information. If 'r' is in 
+        `include`, the recipe dictionary is included in each tuple. If 
+        's' is in `include`, the scale dictionary is included in each 
+        tuple. The order of items in the tuple is (recipe, scale, 
+        ingredient).
     """
 
     if values is None:
@@ -1766,10 +1701,10 @@ def scales_in(container, include=None):
     if include is None:
         include = ''
 
-    if 'recipes' in container.keys():
-        recipes = container['recipes']
-    elif isinstance(container, list):
+    if isinstance(container, list):
         recipes = container
+    elif 'recipes' in container.keys():
+        recipes = container['recipes']
     else: 
         recipes = [container]
     # todo: duplicate code to function container type or recipes_list
