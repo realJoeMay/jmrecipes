@@ -67,7 +67,7 @@ def load_site(data_path, log_path=None) -> dict:
         'collections': collections
     }
     return utils.pipe(site, pipe_log_path,
-                      set_ingredient_as_recipe_links,
+                      set_child_recipe_links,
                       set_recipes_used_in,
                       set_ingredient_as_recipe_quantities,
                       set_costs,
@@ -82,7 +82,7 @@ def load_site(data_path, log_path=None) -> dict:
                       set_summary)
 
 
-def load_recipes(recipes_path, log_path=None) -> list:
+def load_recipes(recipes_path: str, log_path:str = None) -> list:
     """Loads data for recipes.
     
     Args:
@@ -164,8 +164,44 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                       set_instructions,
                       set_sources,
                       set_notes,
-                      set_schema
-                      )
+                      set_schema)
+
+
+def recipe_file(recipe_path: str) -> str:
+    """Finds a recipe data file inside a folder.
+    
+    Args:
+        recipe_path: A directory to search in.
+
+    Returns:
+        Filename of the recipe data file as a string.
+
+    Raises:
+        OSError: If no recipe data file was found.
+    """
+    
+    for file in os.listdir(recipe_path):
+        if file.endswith('.json'):
+            return file
+        elif file.endswith('.yaml'):
+            return file
+    raise OSError(f'Data file not found in {dir}')
+
+
+def recipe_image(recipe_path: str) -> str:
+    """Finds a recipe image file inside a folder.
+    
+    Args:
+        recipe_path: A directory to search in.
+
+    Returns:
+        Filename of the image file as a string, or empty string if no image.
+    """
+    
+    for file in os.listdir(recipe_path):
+        if file.endswith(('.jpg', '.jpeg', 'png')):
+            return file
+    return ''
 
 
 def set_defaults(recipe):
@@ -838,81 +874,7 @@ def servings_schema(recipe) -> str:
     return f'{number} {unit}'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def has_cost_detail(scale):
-    """True if any ingredient has cost detail."""
-
-    for ingredient in scale['ingredients']:
-        if ingredient['cost']:
-            return True
-    return False
-
-
-def has_nutrition_detail(scale):
-    """True if any ingredient has nutrition detail."""
-
-    for ingredient in scale['ingredients']:
-        if ingredient['has_nutrition']:
-            return True
-    return False
-
-
-
-
-def recipe_file(recipe_path: str) -> str:
-    """Finds a recipe data file inside a folder.
-    
-    Args:
-        recipe_path: A directory to search in.
-
-    Returns:
-        Filename of the recipe data file as a string.
-
-    Raises:
-        OSError: If no recipe data file was found.
-    """
-    
-    for file in os.listdir(recipe_path):
-        if file.endswith('.json'):
-            return file
-        elif file.endswith('.yaml'):
-            return file
-    raise OSError(f'Data file not found in {dir}')
-
-
-def recipe_image(recipe_path):
-    """Finds a recipe image file inside a folder.
-    
-    Args:
-        recipe_path: A directory to search in.
-
-    Returns:
-        Filename of the image file as a string, or empty string if no image.
-    """
-    
-    for file in os.listdir(recipe_path):
-        if file.endswith(('.jpg', '.jpeg', 'png')):
-            return file
-    return ''
-
-
-def load_collections(collections_path, log_path=None) -> list:
+def load_collections(collections_path: str, log_path:str = None) -> list:
     """Generates data for collections.
     
     Args:
@@ -959,12 +921,15 @@ def load_collection(file_path, log_path=None) -> dict:
     return utils.pipe(data,
                       log_path,
                       set_homepage,
-                      set_href
-                      )
+                      set_href)
 
 
 def set_homepage(collection):
-    """Add homepage data to collection."""
+    """Add homepage data to collection.
+    
+    Sets the following keys:
+    - 'is_homepage' (bool)
+    """
     
     collection['is_homepage'] = False
     if collection['url_path'] == '':
@@ -973,7 +938,11 @@ def set_homepage(collection):
 
 
 def set_href(collection):
-    """Set href to a collectvion from a recipe page."""
+    """Set href to a collection from a recipe page.
+    
+    Sets the following keys:
+    - 'href' (str)
+    """
 
     if collection['is_homepage']:
         collection['href'] = '..'
@@ -982,32 +951,38 @@ def set_href(collection):
     return collection
 
 
-def set_ingredient_as_recipe_links(site):
-    """Sets data for site ingredients as recipes."""
+def set_child_recipe_links(site):
+    """Sets link data for parent ingredients.
+    
+    Sets the following keys for parent ingredients:
+    - 'recipe_url' (str)
+    """
 
-    for recipe in site['recipes']:
-        for scale in recipe['scales']:
-            for ingredient in scale['ingredients']:
-                if ingredient['is_recipe']:
-                    ingredient['recipe_url'] = '../' + ingredient['recipe_slug']
-                    # ingredient = set_ingredient_as_recipe(ingredient, site['recipes'])
+    for ingredient in ingredients_in(site):
+        if ingredient['is_recipe']:
+            ingredient['recipe_url'] = '../' + ingredient['recipe_slug']
 
     return site
 
 
 def set_recipes_used_in(site):
-    """Sets data for recipe used in another recipe."""
+    """Sets link data for child recipes.
+    
+    Sets the following keys for each recipe:
+    - 'used_in_any' (bool)
+
+    Sets the following keys for each child recipe:
+    - 'used_in' (list)
+    """
 
     for recipe in site['recipes']:
         recipe['used_in_any'] = False
 
-    for parent_recipe in site['recipes']:
-        for scale in parent_recipe['scales']:
-            for ingredient in scale['ingredients']:
-                if ingredient['is_recipe']:
-                    child_recipe = recipe_from_slug(ingredient['recipe_slug'], site['recipes'])
-                    child_recipe['used_in_any'] = True
-                    child_recipe = add_used_in(child_recipe, parent_recipe)
+    for parent_recipe, ingredient in ingredients_in(site, include='r'):
+        if ingredient['is_recipe']:
+            child_recipe = recipe_from_slug(ingredient['recipe_slug'], site['recipes'])
+            child_recipe['used_in_any'] = True
+            child_recipe = add_used_in(child_recipe, parent_recipe)
 
     # remove duplicates
     for recipe in site['recipes']:
@@ -1028,7 +1003,8 @@ def recipe_from_slug(slug, recipes):
 
 
 def add_used_in(child_recipe, parent_recipe):
-    
+    """Add parent recipe data to child recipe."""
+
     if 'used_in' not in child_recipe:
         child_recipe['used_in'] = []
 
@@ -1040,27 +1016,32 @@ def add_used_in(child_recipe, parent_recipe):
 
 
 def set_ingredient_as_recipe_quantities(site):
+    """Sets recipe quantities for each parent ingredient.
+    
+    Sets the following keys for each parent ingredient:
+    - 'recipe_quantity' (float)
+    """
 
-    recipes = site['recipes']
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            for ingredient in scale['ingredients']:
-                if ingredient['is_recipe']:
-                    ingredient = set_recipe_quantity(ingredient, recipes)
+    for ingredient in ingredients_in(site):
+        if ingredient['is_recipe']:
+            set_recipe_quantity(ingredient, site['recipes'])
     return site
 
 
-def set_recipe_quantity(ingredient, recipes):
+def set_recipe_quantity(ingredient, recipes) -> None:
+    """Sets recipe quantity for a parent ingredient."""
 
     number = ingredient['number']
     unit = ingredient['unit']
     recipe = recipe_from_slug(ingredient['recipe_slug'], recipes)
     ingredient['recipe_quantity'] = recipe_quantity(number, unit, recipe)
-    return ingredient
 
 
-def recipe_quantity(amount, unit, recipe):
-    """Returns the number of recipes produce an amount and unit."""
+def recipe_quantity(amount, unit, recipe) -> float:
+    """Returns the number of recipes produce an amount and unit.
+    
+    Returns 0 if no compatible yields.
+    """
 
     for yielb in recipe['yield']:
         yield_unit = yielb['unit']
@@ -1072,12 +1053,20 @@ def recipe_quantity(amount, unit, recipe):
                     / yielb['number'])
         elif utils.is_equivalent(unit, yield_unit):
             return amount / yielb['number']
-
     return 0
 
 
 def set_costs(site):
-    """Set costs for each ingredients and recipe scale."""
+    """Set costs for each ingredients and recipe scale.
+    
+    Sets the following keys for each scale:
+    - 'cost' (float)
+    - 'cost_final' (bool)
+
+    Sets the following keys for each ingredient:
+    - 'cost' (float)
+    - 'cost_final' (bool)
+    """
 
     for ingredient in ingredients_in(site):
         ingredient['cost_final'] = False
@@ -1101,68 +1090,56 @@ def set_costs(site):
             scale['cost'] = recipe['explicit_cost'] * scale['multiplier']
             scale['cost_final'] = True
 
-    recipes = site['recipes']
-    while recipes_cost_pending_count(recipes):
-        calculate_ingredient_costs(recipes)		
-        pre_pending_count = recipes_cost_pending_count(recipes)
-        calculate_recipe_costs(recipes)
-        post_pending_count = recipes_cost_pending_count(recipes)
+    while recipes_cost_pending_count(site):
+        calculate_ingredient_costs(site)		
+        pre_pending_count = recipes_cost_pending_count(site)
+        calculate_recipe_costs(site)
+        post_pending_count = recipes_cost_pending_count(site)
         if pre_pending_count == post_pending_count:
             raise ValueError('Cyclic recipe reference found')        
 
     return site
 
 
-def recipes_cost_pending_count(recipes):
-    """Number of recipe scales that do not have cost_final set to True."""
+def recipes_cost_pending_count(site) -> int:
+    """Number of recipe scales where cost_final is False."""
 
     count = 0
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            if not scale['cost_final']:
-                count += 1
+    for scale in scales_in(site):
+        if not scale['cost_final']:
+            count += 1
     return count
 
 
-def calculate_ingredient_costs(recipes):
-    """Go through each ingredient and try to calculate costs. All nonrecipe ingredients already have cost_final = True"""
+def calculate_ingredient_costs(site) -> None:
+    """Tries to calculate costs of parent ingredients. 
+    
+    Sets ingredient cost if child recipe's cost is final.
+    """
 
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            for ingredient in scale['ingredients']:
-                if ingredient['is_recipe']:
-                    child_recipe = recipe_from_slug(ingredient['recipe_slug'], recipes)
-                    if child_recipe['scales'][0]['cost_final']:
-                        ingredient['recipe_cost'] = child_recipe['scales'][0]['cost']
-                        ingredient['cost'] = ingredient['recipe_quantity'] * ingredient['recipe_cost']
-                        ingredient['cost_final'] = True
+    for ingredient in ingredients_in(site):
+        if ingredient['is_recipe']:
+            child_recipe = recipe_from_slug(ingredient['recipe_slug'], site['recipes'])
+            if child_recipe['scales'][0]['cost_final']:
+                ingredient['recipe_cost'] = child_recipe['scales'][0]['cost']
+                ingredient['cost'] = ingredient['recipe_quantity'] * ingredient['recipe_cost']
+                ingredient['cost_final'] = True
 
 
-def calculate_recipe_costs(recipes):
-    """Each recipe scale - if every ingredient cost is final, sum to get scale cost."""
+def calculate_recipe_costs(site) -> None:
+    """Tries to calculate costs of recipes.
+    
+    Sets recipe cost if all ingredients' costs are final.
+    """
 
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            if not scale['cost_final'] and ingredients_costs_final(scale):
-                scale['cost'] = sum_ingredient_cost(scale)
-                scale['cost_final'] = True
+    for scale in scales_in(site):
+        if not scale['cost_final'] and ingredients_costs_final(scale):
+            scale['cost'] = sum_ingredient_cost(scale)
+            scale['cost_final'] = True
 
 
 def ingredients_costs_final(scale):
-    """Checks if all ingredients in a scale have their final costs set.
-
-    This function iterates through the ingredients in the given 
-    `scale` and returns `True` if all ingredients have `cost_final` 
-    set, otherwise it returns `False`.
-
-    Args:
-        scale (dict): The scale dictionary containing a list of 
-        ingredients. Each ingredient should have the key 'cost_final'.
-
-    Returns:
-        bool: `True` if each ingredient's `cost_final` evaluates to 
-                True. Otherwise, False.
-    """
+    """True if all ingredients' costs are final."""
 
     for ingredient in scale['ingredients']:
         if not ingredient['cost_final']:
@@ -1170,15 +1147,8 @@ def ingredients_costs_final(scale):
     return True
 
 
-def sum_ingredient_cost(scale: dict):
-    """Returns the cost of a scale by adding each ingredient.
-    
-    Args:
-        scale: Dictionary for a recipe scale's data.
-
-    Returns:
-        Scale cost as float.
-    """
+def sum_ingredient_cost(scale) -> float:
+    """Returns the cost of a scale by adding each ingredient."""
 
     cost = 0
     for ingredient in scale['ingredients']:
@@ -1187,16 +1157,23 @@ def sum_ingredient_cost(scale: dict):
 
 
 def set_costs_per_serving(site):
-    """Sets cost per serving for each ingredient and recipe scale."""
+    """Sets cost per serving for each ingredient and recipe scale.
+
+    Sets the following keys for each scale:
+    - 'cost_per_serving' (float)    
+    
+    Sets the following keys for each ingredient:
+    - 'cost_per_serving' (float)
+    """
+
+    for scale in scales_in(site):
+        servings = scale['servings'] if scale['has_servings'] else 1
+        scale['cost_per_serving'] = scale['cost'] / servings
 
     for scale, ingredient in ingredients_in(site, include='s'):
         servings = scale['servings'] if scale['has_servings'] else 1
         ingredient['cost_per_serving'] = ingredient['cost'] / servings
 
-    for scale in scales_in(site):
-        servings = scale['servings'] if scale['has_servings'] else 1
-        scale['cost_per_serving'] = scale['cost'] / servings
-        
     return site
 
 
@@ -1212,7 +1189,6 @@ def set_cost_strings(site):
     - 'cost_per_serving_string' (str)
     - 'has_visible_cost' (bool)
     - 'has_visible_cost_per_serving' (bool)
-        
     """
 
     for ingredient in ingredients_in(site):
@@ -1231,7 +1207,18 @@ def set_cost_strings(site):
 
 
 def set_nutrition(site):
-    """Set nutrition for each ingredients and recipe scale."""
+    """Set nutrition for each ingredients and recipe scale.
+    
+    Sets the following keys for each scale:
+    - 'nutrition' (dict)
+    - 'nutrition_final' (bool)
+
+    Sets the following keys for each ingredient:
+    - 'nutrition' (dict)
+    - 'nutrition_final' (bool)
+    - 'has_nutrition' (bool)
+    """
+
 
     for ingredient in ingredients_in(site):
         ingredient['nutrition_final'] = False
@@ -1261,13 +1248,10 @@ def set_nutrition(site):
             scale['nutrition'] = multiply_nutrition(recipe['explicit_nutrition'], scale['multiplier'])
             scale['nutrition_final'] = True
 
-
-    # todo remove recipes
-    recipes = site['recipes']
     while recipes_nutrition_pending_count(site):
-        calculate_ingredient_nutrition(recipes)
+        calculate_ingredient_nutrition(site)
         pre_pending_count = recipes_nutrition_pending_count(site)
-        calculate_recipes_nutrition(recipes)
+        calculate_recipes_nutrition(site)
         post_pending_count = recipes_nutrition_pending_count(site)
         if pre_pending_count == post_pending_count:
             raise ValueError('Cyclic recipe reference found')
@@ -1277,8 +1261,8 @@ def set_nutrition(site):
 # todo has_nutrition to flags
 
 
-def recipes_nutrition_pending_count(site):
-    """Number of recipe scales that do not have nutrition_final set to True."""
+def recipes_nutrition_pending_count(site) -> int:
+    """Number of recipe scales where nutrition_final is False."""
 
     count = 0
     for scale in scales_in(site):
@@ -1287,36 +1271,39 @@ def recipes_nutrition_pending_count(site):
     return count
 
 
-def calculate_ingredient_nutrition(recipes):
-    """Go through each ingredient and try to calculate nutritions. All nonrecipe ingredients already have cost_final = True"""
-
-# todo ingredients_in()
-    for recipe in recipes:
-        for scale in recipe['scales']:
-            for ingredient in scale['ingredients']:
-                if ingredient['is_recipe']:
-                    child_recipe = recipe_from_slug(ingredient['recipe_slug'], recipes)
-                    if child_recipe['scales'][0]['nutrition_final']:
-                        ingredient['recipe_nutrition'] = child_recipe['scales'][0]['nutrition']
-                        ingredient['nutrition'] = multiply_nutrition(ingredient['recipe_nutrition'], ingredient['recipe_quantity'])
-                        ingredient['has_nutrition'] = True
-                        ingredient['nutrition_final'] = True
-
-
-def calculate_recipes_nutrition(recipes):
-    """Attempts to set each recipe scale's nutrition.
+def calculate_ingredient_nutrition(site) -> None:
+    """Tries to calculate nutrition of parent ingredients. 
     
-    Only sets nutrition if all ingredients in scale have final 
-    nutrition set."""
+    Sets ingredient nutrition if child recipe's nutrition is final.
+    """
 
-    for scale in scales_in(recipes):
+    for ingredient in ingredients_in(site):
+        if ingredient['is_recipe']:
+            child_recipe = recipe_from_slug(ingredient['recipe_slug'], 
+                                            site['recipes'])
+            if child_recipe['scales'][0]['nutrition_final']:
+                ingredient['recipe_nutrition'] = child_recipe['scales'][0]['nutrition']
+                ingredient['nutrition'] = multiply_nutrition(
+                    ingredient['recipe_nutrition'], 
+                    ingredient['recipe_quantity'])
+                ingredient['has_nutrition'] = True
+                ingredient['nutrition_final'] = True
+
+
+def calculate_recipes_nutrition(site):
+    """Tries to calculate nutrition of recipes.
+    
+    Sets recipe nutrition if all ingredients' nutritions are final.
+    """
+
+    for scale in scales_in(site):
         if not scale['nutrition_final'] and ingredients_nutrition_final(scale):
             scale['nutrition'] = sum_ingredient_nutrition(scale)
             scale['nutrition_final'] = True
 
 
 def ingredients_nutrition_final(scale):
-    """Checks if all ingredients have their final nutrition set."""
+    """True if all ingredients' nutritions are final."""
 
     for ingredient in scale['ingredients']:
         if not ingredient['nutrition_final']:
@@ -1324,8 +1311,8 @@ def ingredients_nutrition_final(scale):
     return True
 
 
-def sum_ingredient_nutrition(scale: dict):
-    """Returns the sum of all ingrediets' nutrition values."""
+def sum_ingredient_nutrition(scale) -> dict:
+    """Returns the nutrition of a scale by adding each ingredient."""
 
     nutrition = empty_nutrition()
     for ingredient in scale['ingredients']:
@@ -1339,7 +1326,7 @@ def sum_ingredient_nutrition(scale: dict):
 
 
 def multiply_nutrition(nutrition, multiplier, round_result=False) -> dict:
-    """Multiplies nutritional values by a given multiplier.
+    """Multiplies nutrition values by a given multiplier.
     
     Optionally, the results can be rounded to the nearest integer.
     """
@@ -1362,8 +1349,8 @@ def multiply_nutrition(nutrition, multiplier, round_result=False) -> dict:
     return multiplied
 
 
-def empty_nutrition():
-    """Returns a nutrition dictionary with zero values."""
+def empty_nutrition() -> dict:
+    """Returns a nutrition with zero values."""
 
     return {
         'calories': 0,
@@ -1374,7 +1361,19 @@ def empty_nutrition():
 
 
 def set_display_nutrition(site):
-    """Sets nutrition_display for each scale and each ingredient."""
+    """Sets nutrition to display for each scale and each ingredient.
+
+    If servings are set, nutrition to display is nutrition per serving,
+    otherwise, it is the total nutrition.
+    
+    Sets the following keys for each scale:
+    - 'nutrition_display' (dict)
+    - 'has_visible_nutrition' (bool)
+    - 'is_nutrition_per_serving' (bool)
+
+    Sets the following keys for each ingredient:
+    - 'nutrition_display' (dict)    
+    """
 
     for scale, ingredient in ingredients_in(site, include='s'):
         servings = scale.get('servings', 1)
@@ -1396,10 +1395,8 @@ def scale_has_visible_nutrition(scale, recipe) -> bool:
 
     if recipe['hide_nutrition']:
         return False
-    
     if 'explicit_nutrition' in recipe:
         return True
-
     return has_nutrients(scale['nutrition'])
 
 
@@ -1413,52 +1410,70 @@ def has_nutrients(nutrition: dict):
 
 
 def set_ingredient_details(site):
-    """Sets ingredient detail info."""
+    """Sets ingredient detail info.
+    
+    Sets the following keys for each recipe:
+    - 'has_cost_detail' (bool)
+    - 'has_cost_per_serving_detail' (bool)
+    - 'has_nutrition_detail' (bool)
 
-    for recipe in site['recipes']:
-        set_recipe_ingredient_details(recipe)
-    return site
+    Sets the following keys for each scale:
+    - 'has_cost_detail' (bool)
+    - 'has_cost_per_serving_detail' (bool)
+    - 'has_nutrition_detail' (bool)
+    - 'has_any_detail' (bool)
+    """
 
-
-def set_recipe_ingredient_details(recipe):
-    """Sets ingredient detail info."""
-
-    explicit_cost = 'explicit_cost' in recipe
-    explicit_nutrition = 'explicit_nutrition' in recipe
-    cost_hidden = recipe['hide_cost']
-
-    for scale in recipe['scales']:
-
+    for recipe, scale in scales_in(site, include='r'):
+        explicit_cost = 'explicit_cost' in recipe
+        explicit_nutrition = 'explicit_nutrition' in recipe
+        cost_hidden = recipe['hide_cost']
         scale['has_cost_detail'] = (
             has_cost_detail(scale) 
             and not cost_hidden 
             and not explicit_cost)
-        
         scale['has_cost_per_serving_detail'] = (
             scale['has_cost_detail']
             and scale['has_servings'])
-        
-        scale['has_nutrition_per_serving_detail'] = (
+        scale['has_nutrition_detail'] = (
             scale['has_visible_nutrition']
             and not explicit_nutrition)
-
         scale['has_any_detail'] = (
             scale['has_cost_detail'] 
             or scale['has_cost_per_serving_detail'] 
-            or scale['has_nutrition_per_serving_detail'])
-        
-    recipe['has_cost_detail'] = False
-    recipe['has_cost_per_serving_detail'] = False
-    recipe['has_nutrition_per_serving_detail'] = False
-    for scale in recipe['scales']:
-        if scale['has_cost_detail']:
-            recipe['has_cost_detail'] = True
-        if scale['has_cost_per_serving_detail']:
-            recipe['has_cost_per_serving_detail'] = True
-        if scale['has_nutrition_per_serving_detail']:
-            recipe['has_nutrition_per_serving_detail'] = True
+            or scale['has_nutrition_detail'])
 
-    return recipe
+    for recipe in site['recipes']:
+        recipe['has_cost_detail'] = False
+        recipe['has_cost_per_serving_detail'] = False
+        recipe['has_nutrition_detail'] = False
+        for scale in recipe['scales']:
+            if scale['has_cost_detail']:
+                recipe['has_cost_detail'] = True
+            if scale['has_cost_per_serving_detail']:
+                recipe['has_cost_per_serving_detail'] = True
+            if scale['has_nutrition_detail']:
+                recipe['has_nutrition_detail'] = True
+
+    return site
+
+
+def has_cost_detail(scale) -> bool:
+    """True if any ingredient has nonzero cost."""
+
+    for ingredient in scale['ingredients']:
+        if ingredient['cost']:
+            return True
+    return False
+
+
+def has_nutrition_detail(scale) -> bool:
+    """True if any ingredient has nutrition detail."""
+
+    for ingredient in scale['ingredients']:
+        if ingredient['has_nutrition']:
+            return True
+    return False
 
 
 def set_description_areas(site):
@@ -1480,7 +1495,11 @@ def set_description_areas(site):
 
 
 def set_ingredient_lists(site):
-    """Groups ingredients into ingredient lists."""
+    """Groups ingredients into ingredient lists.
+    
+    Sets the following keys for each scale:
+    - 'ingredient_lists' (dict)
+    """
 
     for scale in scales_in(site):
         scale['ingredient_lists'] = defaultdict(list)
@@ -1489,46 +1508,49 @@ def set_ingredient_lists(site):
     return site
 
 
-def link_recipes_collections(site: dict) -> dict:
+def link_recipes_collections(site):
     """Adds collections data to recipes and vice versa.
     
-    Args:
-        site: Site data with recipes and collections.
+    Sets the following keys for each recipe:
+    - 'collections' (list)
 
-    Returns:
-        Updated site data as a dictionary.
+    Sets the following keys for each collection:
+    - 'recipes' (list)
     """
 
-    recipes = site['recipes']
-    for r in recipes:
-        r['collections'] = []
+    for recipe in site['recipes']:
+        recipe['collections'] = []
 
-    for c in site['collections']:
-        for i, url_slug in enumerate(c['recipes']):
-            for r in recipes:
-                if r['url_slug'] == url_slug:
-                    r['collections'].append(info_for_recipe(c))
-                    c['recipes'][i] = info_for_collection(r)
+    for collection in site['collections']:
+        for i, url_slug in enumerate(collection['recipes']):
+            for recipe in site['recipes']:
+                if recipe['url_slug'] == url_slug:
+                    recipe['collections'].append(info_for_recipe(collection))
+                    collection['recipes'][i] = info_for_collection(recipe)
 
     return site
 
 
-def info_for_collection(recipe: dict) -> dict:
+def info_for_collection(recipe) -> dict:
     """Recipe data needed for collection page."""
 
     keys = ('title', 'url_slug', 'subtitle', 'has_subtitle', 'image_url')
     return {k: recipe[k] for k in keys if k in recipe}
 
 
-def info_for_recipe(collection: dict) -> dict:
+def info_for_recipe(collection) -> dict:
     """Collection data needed for recipe page."""
 
     keys = ('name', 'url_path', 'label', 'href')
     return {k: collection[k] for k in keys if k in collection}
 
 
-def set_summary(site: dict) -> dict:
-    """Adds summary data to site."""
+def set_summary(site):
+    """Adds summary data to site.
+    
+    Sets the following keys for the site:
+    - 'summary' (dict)
+    """
 
     site['summary'] = {
         'recipes': summary_recipes(site),
@@ -1539,7 +1561,7 @@ def set_summary(site: dict) -> dict:
 
 
 def summary_recipes(site):
-    """Returns summary data for recipes."""
+    """Summary data for recipes."""
 
     recipes = []
     for recipe in site['recipes']:
@@ -1551,7 +1573,7 @@ def summary_recipes(site):
 
 
 def summary_collections(site):
-    """Returns summary data for collections."""
+    """Summary data for collections."""
     
     collections = []
     for collection in site['collections']:
@@ -1563,24 +1585,7 @@ def summary_collections(site):
 
 
 def summary_ingredients(site: dict) -> list[dict]:
-    """Returns summary data for ingredients in the given site.
-
-    This function processes a `site` dictionary to generate a summary of ingredients
-    for each recipe and scale. It extracts relevant information from each ingredient
-    and returns it in a list of dictionaries.
-
-    Args:
-        site (dict): The site data containing recipes and their respective scales 
-            and ingredients.
-
-    Returns:
-        list of dict: A list of dictionaries, each containing the following keys:
-            - 'recipe' (str): The title of the recipe.
-            - 'scale' (str): The label of the scale.
-            - 'ingredient' (str): The ingredient description.
-            - 'found_grocery' (bool): Whether the ingredient was found in the grocery.
-            - 'number_groceries' (float): The number of groceries rounded to five decimal places.
-    """
+    """Summary data for ingredients."""
 
     ingredients = []
     for recipe, scale, ingredient in ingredients_in(site, include='rs'):
@@ -1642,15 +1647,8 @@ def ingredients_in(container:(dict | list), keys:(str | list) = None,
     if isinstance(keys, str):
         keys = [keys]
 
-    if 'recipes' in container.keys():
-        recipes = container['recipes']
-    elif isinstance(container, list):
-        recipes = container
-    else: 
-        recipes = [container]
-
     ingredients = []
-    for recipe in recipes:
+    for recipe in container_to_recipes(container):
         for scale in recipe['scales']:
             for ingredient in scale['ingredients']:
                 if ingredient_matches_criteria(ingredient, keys, values):
@@ -1667,6 +1665,31 @@ def ingredients_in(container:(dict | list), keys:(str | list) = None,
                         ingredients.append(tuple(item_list))
                 
     return ingredients
+
+
+def container_to_recipes(container) -> list:
+    """Returns a list of recipes from the container.
+
+    This function extracts scaled ingredients from a recipe, list of 
+    recipes, or site. The `include` parameter determines whether the 
+    recipe and scale information should be included in the returned 
+    list.
+
+    Args:
+        container (dict, list): Can be a site dictionary, list of 
+        recipe dictionaries, or a recipe dictionary.
+
+    Returns:
+        list: A list of recipe dictionaries.
+    """
+
+    if 'recipes' in container.keys():
+        return container['recipes']
+    elif isinstance(container, list):
+        return container
+    else: 
+        return [container]
+
 
 
 def ingredient_matches_criteria(ingredient: dict, keys: list, values: dict) -> bool:
@@ -1687,11 +1710,9 @@ def ingredient_matches_criteria(ingredient: dict, keys: list, values: dict) -> b
     for key in keys + list(values.keys()):
         if key not in ingredient:
             return False
-        
     for k, v in values.items():
         if ingredient[k] != v:
             return False
-        
     return True
 
 
@@ -1701,16 +1722,8 @@ def scales_in(container, include=None):
     if include is None:
         include = ''
 
-    if isinstance(container, list):
-        recipes = container
-    elif 'recipes' in container.keys():
-        recipes = container['recipes']
-    else: 
-        recipes = [container]
-    # todo: duplicate code to function container type or recipes_list
-
     scales = []
-    for recipe in recipes:
+    for recipe in container_to_recipes(container):
         for scale in recipe['scales']:
             item_list = []
             if 'r' in include:
@@ -1725,8 +1738,8 @@ def scales_in(container, include=None):
     return scales
 
 
-def build_site(site: dict, site_path: str, local=False):
-    """Builds a recipe site from site data.
+def build_site(site: dict, site_path: str, local=False) -> None:
+    """Builds a recipe site using site data.
 
     Args:
         site: Site data as a dictionary.
@@ -1761,20 +1774,20 @@ def build_site(site: dict, site_path: str, local=False):
 
 
 def get_collection_dir(collection: dict, site_path: str) -> str:
-    """Returns directory for a collection page."""
+    """Returns site directory for a collection page."""
 
     if collection['is_homepage']:
         return site_path
     return os.path.join(site_path, collection['url_path'])
 
 
-def make_recipe_page(recipe: dict, dir: str, local: bool):
+def make_recipe_page(recipe: dict, dir: str, local: bool) -> None:
     """Create index.html file for recipe page.
 
     Args:
         recipe: Recipe data as a dictionary.
         dir: Path to build the page inside.
-        local: Builds local version if true. Builds web version otherwise.
+        local: Builds local version if true, web version otherwise.
     """
 
     create_dir(dir)
@@ -1787,13 +1800,13 @@ def make_recipe_page(recipe: dict, dir: str, local: bool):
     write_file(content, file)
 
 
-def make_print_page(recipe: dict, dir: str, local: bool):
+def make_print_page(recipe: dict, dir: str, local: bool) -> None:
     """Create index.html file for recipe print page.
 
     Args:
         recipe: Recipe data as a dictionary.
         dir: Path to build the page inside.
-        local: Builds local version if true. Builds web version otherwise.
+        local: Builds local version if true, web version otherwise.
     """
 
     create_dir(dir)
@@ -1806,13 +1819,13 @@ def make_print_page(recipe: dict, dir: str, local: bool):
     write_file(content, file)
 
 
-def make_collection_page(collection: dict, dir: str, local: bool):
+def make_collection_page(collection: dict, dir: str, local: bool) -> None:
     """Create index.html file for collection page.
 
     Args:
         collection: Collection data as a dictionary.
         dir: Path to build the page inside.
-        local: Builds local version if true. Builds web version otherwise.
+        local: Builds local version if true, web version otherwise.
     """
 
     create_dir(dir)
@@ -1825,7 +1838,7 @@ def make_collection_page(collection: dict, dir: str, local: bool):
     write_file(content, file)
 
 
-def make_summary_page(site: dict, page_path: str):
+def make_summary_page(site: dict, page_path: str) -> None:
     """Create summary page for recipe site.
 
     Args:

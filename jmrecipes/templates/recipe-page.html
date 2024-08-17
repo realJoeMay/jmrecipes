@@ -564,7 +564,7 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
-                        {% if scale.has_nutrition_per_serving_detail %}
+                        {% if scale.has_nutrition_detail %}
                         <div class="menu-button menu-button-detail menu-button-detail-nutrition-per-serving" onclick="detailNutritionPerServing()">
                             {% if scale.is_nutrition_per_serving %}
                             <span style="margin-top:-3px;">Nutrition</span>
@@ -1049,7 +1049,7 @@ document.addEventListener("keydown", function(e) {
     }
     {% endif %}
 
-    {% if r.has_nutrition_per_serving_detail %}
+    {% if r.has_nutrition_detail %}
     if (e.code === "KeyR") {
         detailNutritionPerServing();
     }
