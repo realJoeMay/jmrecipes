@@ -37,33 +37,257 @@ a {
     row-gap: 40px;
 }
 
+
+
+
+/* .collection-title {
+    color: #667;
+}
+
 .collection-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #444;
+    display: flex;
+    flex-direction: row;
+}
+.collection-title:before, .collection-title:after{
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid #ccc;
+    margin: auto;
+}
+.collection-title:before {
+    margin-right: 10px
+}
+.collection-title:after {
+    margin-left: 10px
+} */
+
+
+
+
+
+/* MENU */
+
+.menu {
+    min-height: 100vh;
+    width: 280px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #fff;
+    box-shadow: 0 1px 10px rgb(0 0 0 / 8%);
+    margin-right: -280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-top {
+    margin-top: 40px;
+}
+
+.menu-bottom {
     margin-bottom: 10px;
 }
+
+.menu-section-break {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: solid 2px rgba(128, 128, 128, 0.2);
+}
+
+
+
+
+/* MENU ITEMS */
+
+.menu-header {
+    color: rgb(55, 53, 47);
+    fill: rgb(55, 53, 47);
+    font-size: 1.0rem;
+    margin: 0.4rem 20px;
+    font-weight: 400;
+    display: flex;
+    align-items: start;
+}
+
+a.menu-header:hover {
+    color: rgb(55, 53, 47);
+}
+
+@media screen and (max-width: 450px) {
+    .menu-header {font-size: 1.2rem;}
+}
+
+.menu-item {
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+}
+
+.menu-item:hover {
+    border-radius: 3px;
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.menu-icon {
+    width: 1rem;
+    padding:2px 0.8rem 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.menu-text {
+    flex-grow: 1;
+}
+
+.menu-copy-ingredients .menu-header .menu-text {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0px;
+}
+
+
+
+/* MENU BUTTONS */
+
+.menu-button-section {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2%;
+  row-gap: 5px;
+  padding: 0 20px;
+}
+
+.menu-button-section {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome, Edge, Opera and Firefox */
+}
+
+.menu-button-section .menu-button {
+  width:32%;
+  padding: 10px 3px;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1;
+}
+
+.menu-button:not(.selected):hover {
+    background-color:rgba(128, 128, 128, 0.2);
+}
+
+.menu-button.selected {
+    border-color: #146EBE;
+    color: #146EBE;
+}
+
+
+/* MENU TOGGLE */
+
+.menu-open .menu {
+    margin-right: 0;
+}
+
+.menu-open .recipe {
+    margin-right: 280px;
+}
+
+@media only screen and (max-width: 600px) {
+    .menu-open .recipe {
+        margin-right: 0;
+    }
+}
+
+.recipe, .menu {
+    transition: margin-right .4s;
+}
+
+
+
+/* MENU BUTTONS */
+
+.menu-toggle-btn,
+.menu-close-btn {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 3px;
+}
+
+.menu-toggle-btn {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+}
+
+.menu-toggle-btn svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.menu-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    width: 1rem;
+    height: 1rem;
+}
+
+.menu-close-btn svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.menu-toggle-btn:hover,
+.menu-close-btn:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+
 
 
 /* CARDS */
 
 .recipe-cards {
-    min-width: 65%;
+    width: 100%;
     padding: 0 10px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap:wrap;
+    row-gap: 24px;
+    column-gap: 20px;
 }
 
 .recipe-card {
+    width:250px;
     display: flex;
     flex-direction: column;
     background: white;
-    margin-bottom: 20px;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.09);
+    border-radius: 5px;
 }
 
 .recipe-image-area {
     background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(255,255,255,1) 50%, rgba(0,0,0,0.1) 100%);
+    border-radius: 5px 5px 0 0;
 }
 
 .recipe-image {
@@ -71,12 +295,13 @@ a {
     background-size: cover;
     background-position: center;
     background-color: rgba(0,0,0,0);
+    border-radius: 5px 5px 0 0;
 }
 
-.recipe-image-wrap img {
+/* .recipe-image-wrap img {
     max-width:  100%;
-    vertical-align: bottom; /* remove gap below image */
-}
+    /* vertical-align: bottom; remove gap below image 
+/* }  */
 
 .recipe-title-area {
     padding: 20px;
@@ -86,80 +311,237 @@ a {
 }
 
 .recipe-title {
-    font-size: 1.75rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: #333;
     line-height: 1;
 }
 
 .recipe-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 400;
     color: #999;
 }
 
 
-/* EXPAND CARDS */
 
-@media only screen and (min-width: 600px) {
 
-    .filters {
-        min-width: 35%;
-    }
+header {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.09);
+    display: flex;
+    justify-content: center;
+}
 
-    .recipe-card {
-        flex-direction: row;
-    }
-
-    .recipe-image-area {
-        min-width:  35%;
-    }
-
-    .recipe-image {
-        position: relative;
-        height: 0;
-    }
+.header-content {
+    max-width: 1000px;
+    flex-grow: 1;
+    margin: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 
 
-/* EXPAND COLUMNS */
+/* MENU TOGGLE */
 
-@media only screen and (min-width: 600px) {
-    .content {
-        flex-direction: row;
-    }
+.menu-open .menu {
+    margin-right: 0;
+}
 
-    .title-col {
-        min-width: 35%;
+.menu-open .collection {
+    margin-right: 280px;
+}
+
+@media only screen and (max-width: 600px) {
+    .menu-open .collection {
+        margin-right: 0;
     }
+}
+
+.collection, .menu {
+    transition: margin-right .4s;
+}
+
+
+
+/* ICONS */
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    fill: rgb(85, 88, 92);
+}
+
+svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+
+
+/* Searchbox */
+
+#search {
+    width: 100%;
+    border: none;
+    padding: 11px 11px;
+    outline: none;
+    background-color: #f1f3f4;
+    font-size: 1.5rem;
+}
+
+#search::placeholder {
+    color: #ddd;
 }
 
 
         </style>
     </head>
     <body>
-        <div class='content'>
-            <div class='title-col'>
-                <h1 class="collection-title">{{ c.name }}</h1>
-            </div>
-            <div class='recipe-cards'>
 
-                {% for r in c.recipes %}
-                <a class="recipe-card" href="{% if not c.is_homepage %}../{% endif %}{{ r.url_slug }}{% if is_local %}/index.html{% endif %}">
-                    <div class="recipe-image-area">
-                        <div class="recipe-image" style="background-image:url({% if not c.is_homepage %}.{% endif %}./{{ r.image_url }});"></div>
-                    </div>                
-                    <div class="recipe-title-area">
-                        <h2 class="recipe-title">{{ r.title }}</h2>
-                        {% if r.has_subtitle %}
-                        <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
-                        {% endif %}
+        <div class="menu">
+            <div class="menu-top">    
+                <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
+
+                <div class='menu-search'>
+                    <label for="search" class='menu-header'>Search</label>
+                    <div class='menu-content menu-button-section'>
+                        <input type="text" id="search" name="search" placeholder="beef" autocomplete="off">
                     </div>
-                </a>
-                {% endfor %}
+                </div>
+
+                <div class="menu-section-break"></div>
+
+            </div><!-- menu top -->
+
+
+            <div class="menu-bottom">
+                <div class="menu-section-break"></div>    
+                <div class='menu_feedback'>
+                    <a class='menu-header menu-item' href="{{ c.feedback_url }}" target="_blank">
+                        <span class='menu-icon icon-wrapper'>{{ icon.message }}</span>
+                        <span class='menu-text'>Feedback</span>
+                    </a>
+                </div>
+            </div><!-- menu bottom -->
+        
+        </div><!-- menu -->
     
+
+        <div class="collection">
+
+            <header>
+                <div class="header-content">
+                    <h1>{{ c.name }}</h1>
+                    <div>
+                        <span class='menu-toggle-btn icon-wrapper' onclick='toggleMenu()'>{{ icon.bars }}</span>
+                    </div>        
+                </div>
+            </header>
+    
+            <div class='content'>
+                <!-- <h1 class="collection-title">{{ c.name }}</h1> -->
+
+                <div class='recipe-cards'>
+                    {% for r in c.recipes %}
+                    <a class="recipe-card" href="{% if not c.is_homepage %}../{% endif %}{{ r.url_slug }}{% if is_local %}/index.html{% endif %}">
+                        <div class="recipe-image-area">
+                            <div class="recipe-image" style="background-image:url({% if not c.is_homepage %}.{% endif %}./{{ r.image_url }});"></div>
+                        </div>                
+                        <div class="recipe-title-area">
+                            <h2 class="recipe-title">{{ r.title }}</h2>
+                            {% if r.has_subtitle %}
+                            <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-        </div>        
+
+        </div>
+
+
+
+
+        <script>
+
+
+
+const pageBody = document.querySelector("body");
+
+
+// Menu
+
+function toggleMenu() {
+    if (pageBody.classList.contains("menu-open")) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+}
+
+function openMenu() {
+    pageBody.classList.add("menu-open");
+    document.querySelector('#search').focus();
+    document.querySelector('#search').select();
+}
+
+function closeMenu() {
+    pageBody.classList.remove("menu-open");
+    document.querySelector('#search').blur();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Keyboard Shortcuts
+
+document.addEventListener("keydown", function(e) {
+
+console.log(e.code);
+
+// Press m to toggle menu
+if (e.code === "KeyM" && document.activeElement.tagName != "INPUT") {
+    toggleMenu();
+    e.preventDefault() // Prevent typing into search input
+}
+
+// Press escape to close menu
+if (e.code === "Escape") {
+    closeMenu();
+}
+
+});
+
+
+
+
+
+
+
+
+
+
+        </script>
     </body>
 </html>
