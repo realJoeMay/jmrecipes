@@ -164,7 +164,8 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                       set_instructions,
                       set_sources,
                       set_notes,
-                      set_schema)
+                      set_schema,
+                      set_search_targets)
 
 
 def recipe_file(recipe_path: str) -> str:
@@ -831,6 +832,37 @@ def notes_for_scale(notes, scale) -> list:
         if 'scale' not in note or note['scale'] == scale['multiplier']:
             scale_notes.append(note)
     return scale_notes
+
+
+def set_search_targets(recipe):
+    """Add search target data.
+    
+    Sets the following keys for each scale:
+    - 'search_targets' (list)
+    """
+
+    recipe['search_targets'] = []
+    recipe['search_targets'].append({
+        'text': recipe['title'],
+        'type': 'title'
+    })
+
+    if recipe['has_subtitle']:
+        recipe['search_targets'].append({
+            'text': recipe['subtitle'],
+            'type': 'subtitle'
+        })
+
+    for ingredient in recipe['scales'][0]['ingredients']:
+        recipe['search_targets'].append({
+            'text': ingredient['display_item'],
+            'type': 'ingredient'
+        })
+
+    for target in recipe['search_targets']:
+        target['class'] = 'target-' + target['type']
+
+    return recipe
 
 
 def set_schema(recipe):
@@ -1541,7 +1573,8 @@ def link_recipes_collections(site):
 def info_for_collection(recipe) -> dict:
     """Recipe data needed for collection page."""
 
-    keys = ('title', 'url_slug', 'subtitle', 'has_subtitle', 'image_url')
+    keys = ('title', 'url_slug', 'subtitle', 'has_subtitle', 'image_url', 
+            'search_targets')
     return {k: recipe[k] for k in keys if k in recipe}
 
 

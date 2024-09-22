@@ -396,6 +396,27 @@ svg {
     color: #ddd;
 }
 
+/* Search */
+.search-target {
+    display: none;
+}
+
+.search-active .search-no-match {
+    display: none;
+}
+
+.search-active .search-result {
+    display: block;
+    color: #146EBE;
+}
+
+.target-ingredient::before {
+    content: "Ingredient:";
+    color: #146EBE;
+    margin-right: 6px;
+}
+
+
 
         </style>
     </head>
@@ -408,7 +429,7 @@ svg {
                 <div class='menu-search'>
                     <label for="search" class='menu-header'>Search</label>
                     <div class='menu-content menu-button-section'>
-                        <input type="text" id="search" name="search" placeholder="beef" autocomplete="off">
+                        <input type="text" id="search" name="search" placeholder="beef" autocomplete="off" oninput="search()">
                     </div>
                 </div>
 
@@ -455,6 +476,10 @@ svg {
                             {% if r.has_subtitle %}
                             <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
                             {% endif %}
+                            {% for target in r.search_targets %}
+                            <div class="search-target {{ target.class }}">{{ target.text }}</div>
+
+                            {% endfor %}
                         </div>
                     </a>
                     {% endfor %}
@@ -500,7 +525,60 @@ function closeMenu() {
 
 
 
+// Search
 
+function search() {
+
+    var input = document.querySelector("#search").value.toLowerCase();
+    var cards = document.querySelectorAll(".recipe-card");
+
+    if (input == "") {
+        document.querySelector("body").classList.remove("search-active");
+        // resetCards();
+    } else {
+        document.querySelector("body").classList.add("search-active");
+    }
+
+    // loop through each card
+    for (var i = 0; i < cards.length; i++) {
+        
+        var searchTargets = cards[i].querySelectorAll(".search-target");
+    //     var ingredientSearchTargets = cards[i].querySelectorAll(".ingredient.search-target");
+
+        // first clear all search targets
+        for (var j = 0; j < searchTargets.length; j++) {
+            searchTargets[j].classList.remove("search-result");
+        }
+
+        // now check for search
+        var cardMatch = false
+        for (var j = 0; j < searchTargets.length; j++) {
+            var text = searchTargets[j].innerText.toLowerCase();
+
+            if (text.includes(input)) {
+                searchTargets[j].classList.add("search-result");
+                var cardMatch = true
+
+                // Set order
+                // if (searchTargets[j].classList.contains('recipe-title')) {
+                //     cards[i].style.order = 1
+                // } else if (searchTargets[j].classList.contains('recipe-subtitle')) {
+                //     cards[i].style.order = 2
+                // } else if (searchTargets[j].classList.contains('ingredient')) {
+                //     cards[i].style.order = 5
+                // }
+                break
+            }
+        }
+
+        if (cardMatch) {
+            cards[i].classList.remove("search-no-match");
+        } else {
+            cards[i].classList.add("search-no-match");
+        }
+
+    }
+}
 
 
 

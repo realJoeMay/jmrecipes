@@ -1,0 +1,7 @@
+title: Test Search Ingredient
+subtitle: nothing
+ingredients:
+- number: '2'
+  item: Quinoa
+  list: Ingredients
+  unit: lb

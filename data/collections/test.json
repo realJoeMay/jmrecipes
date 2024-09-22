@@ -28,6 +28,9 @@
         "test-recipe-parent",
         "test-recipe-child-1",
         "test-recipe-child-2",
-        "test-recipe-child-3"
+        "test-recipe-child-3",
+        "test-search-ingredient",
+        "test-search-subtitle",
+        "test-search-title"
     ]
 }
