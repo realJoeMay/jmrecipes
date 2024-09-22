@@ -1770,6 +1770,7 @@ def build_site(site: dict, site_path: str, local=False) -> None:
         collection_dir = get_collection_dir(collection, site_path)
         make_collection_page(collection, collection_dir, local)
 
+    make_404_page(os.path.join(site_path, 'error.html'))
     make_summary_page(site, os.path.join(site_path, 'summary.html'))
 
     shutil.copyfile(
@@ -1857,6 +1858,12 @@ def make_summary_page(site: dict, page_path: str) -> None:
                               recipes=site['summary']['recipes'], 
                               collections=site['summary']['collections'],
                               ingredients=site['summary']['ingredients'],
+                              site_title=site_title())
+    write_file(content, page_path)
+
+
+def make_404_page(page_path: str) -> None:
+    content = render_template('404.html', 
                               site_title=site_title())
     write_file(content, page_path)
 
