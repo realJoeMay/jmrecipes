@@ -18,6 +18,7 @@ html {
 
 body {
     min-height: 100vh;
+    padding-bottom: 60px;
 }
 
 body, h1, h2, h3 {
@@ -29,16 +30,13 @@ a {
 }
 
 .content {
-    max-width: 900px;
+    max-width: 790px;
     margin:  0 auto;
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
     row-gap: 40px;
 }
-
-
-
 
 /* .collection-title {
     color: #667;
@@ -60,8 +58,6 @@ a {
 .collection-title:after {
     margin-left: 10px
 } */
-
-
 
 
 
@@ -200,27 +196,6 @@ a.menu-header:hover {
 }
 
 
-/* MENU TOGGLE */
-
-.menu-open .menu {
-    margin-right: 0;
-}
-
-.menu-open .recipe {
-    margin-right: 280px;
-}
-
-@media only screen and (max-width: 600px) {
-    .menu-open .recipe {
-        margin-right: 0;
-    }
-}
-
-.recipe, .menu {
-    transition: margin-right .4s;
-}
-
-
 
 /* MENU BUTTONS */
 
@@ -270,7 +245,7 @@ a.menu-header:hover {
     padding: 0 10px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
     flex-wrap:wrap;
     row-gap: 24px;
     column-gap: 20px;
@@ -298,16 +273,12 @@ a.menu-header:hover {
     border-radius: 5px 5px 0 0;
 }
 
-/* .recipe-image-wrap img {
-    max-width:  100%;
-    /* vertical-align: bottom; remove gap below image 
-/* }  */
-
 .recipe-title-area {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    flex-grow: 1;
 }
 
 .recipe-title {
@@ -334,9 +305,9 @@ header {
 }
 
 .header-content {
-    max-width: 1000px;
+    max-width: 880px;
     flex-grow: 1;
-    margin: 10px 20px;
+    margin: 10px 0px 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -399,21 +370,22 @@ svg {
 /* Search */
 .search-target {
     display: none;
+    margin-top: 6px;
+    color: #999;
+    font-style: italic;
 }
 
 .search-active .search-no-match {
     display: none;
 }
 
-.search-active .search-result {
+.search-active .search-result.target-ingredient {
     display: block;
-    color: #146EBE;
 }
 
 .target-ingredient::before {
     content: "Ingredient:";
-    color: #146EBE;
-    margin-right: 6px;
+    margin-right: 4px;
 }
 
 
@@ -467,19 +439,23 @@ svg {
 
                 <div class='recipe-cards'>
                     {% for r in c.recipes %}
-                    <a class="recipe-card" href="{% if not c.is_homepage %}../{% endif %}{{ r.url_slug }}{% if is_local %}/index.html{% endif %}">
+                    <a class="recipe-card" data-index="{{ r.index }}" href="{% if not c.is_homepage %}../{% endif %}{{ r.url_slug }}{% if is_local %}/index.html{% endif %}">
                         <div class="recipe-image-area">
                             <div class="recipe-image" style="background-image:url({% if not c.is_homepage %}.{% endif %}./{{ r.image_url }});"></div>
                         </div>                
                         <div class="recipe-title-area">
-                            <h2 class="recipe-title">{{ r.title }}</h2>
-                            {% if r.has_subtitle %}
-                            <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
-                            {% endif %}
-                            {% for target in r.search_targets %}
-                            <div class="search-target {{ target.class }}">{{ target.text }}</div>
-
-                            {% endfor %}
+                            <div class="recipe-titles">
+                                <h2 class="recipe-title">{{ r.title }}</h2>
+                                {% if r.has_subtitle %}
+                                <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
+                                {% endif %}
+                            </div>
+                            <div class="search-targets">
+                                {% for target in r.search_targets %}
+                                <div class="search-target {{ target.class }}">{{ target.text }}</div>
+                                {% endfor %}
+                            </div>
+                            
                         </div>
                     </a>
                     {% endfor %}
@@ -526,15 +502,17 @@ function closeMenu() {
 
 
 // Search
+const cards = document.querySelectorAll(".recipe-card");
 
 function search() {
 
     var input = document.querySelector("#search").value.toLowerCase();
-    var cards = document.querySelectorAll(".recipe-card");
+    var groupInterval = {{ c.search_group_interval }}
 
     if (input == "") {
         document.querySelector("body").classList.remove("search-active");
-        // resetCards();
+        resetCards();
+        return;
     } else {
         document.querySelector("body").classList.add("search-active");
     }
@@ -543,7 +521,6 @@ function search() {
     for (var i = 0; i < cards.length; i++) {
         
         var searchTargets = cards[i].querySelectorAll(".search-target");
-    //     var ingredientSearchTargets = cards[i].querySelectorAll(".ingredient.search-target");
 
         // first clear all search targets
         for (var j = 0; j < searchTargets.length; j++) {
@@ -560,13 +537,16 @@ function search() {
                 var cardMatch = true
 
                 // Set order
-                // if (searchTargets[j].classList.contains('recipe-title')) {
-                //     cards[i].style.order = 1
-                // } else if (searchTargets[j].classList.contains('recipe-subtitle')) {
-                //     cards[i].style.order = 2
-                // } else if (searchTargets[j].classList.contains('ingredient')) {
-                //     cards[i].style.order = 5
-                // }
+                let recipeIndex = Number(cards[i].getAttribute("data-index"));
+                if (searchTargets[j].classList.contains('target-title')) {
+                    cards[i].style.order = 1 * groupInterval + recipeIndex
+                } else if (searchTargets[j].classList.contains('target-subtitle')) {
+                    cards[i].style.order = 2 * groupInterval + recipeIndex
+
+                } else if (searchTargets[j].classList.contains('target-ingredient')) {
+                    cards[i].style.order = 4 * groupInterval + recipeIndex
+                }
+
                 break
             }
         }
@@ -580,7 +560,12 @@ function search() {
     }
 }
 
-
+function resetCards(){
+    for (var i = 0; i < cards.length; i++) {
+        // let recipeIndex = Number(cards[i].getAttribute("data-index"));
+        cards[i].style.order = Number(cards[i].getAttribute("data-index"));
+    }
+}
 
 
 
@@ -600,7 +585,7 @@ console.log(e.code);
 
 // Press m to toggle menu
 if (e.code === "KeyM" && document.activeElement.tagName != "INPUT") {
-    toggleMenu();
+    openMenu();
     e.preventDefault() // Prevent typing into search input
 }
 

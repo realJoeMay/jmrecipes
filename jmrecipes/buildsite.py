@@ -2,6 +2,7 @@ import os
 import datetime
 import shutil
 import json
+import math
 from collections import defaultdict
 from urllib.parse import urlparse
 
@@ -79,6 +80,7 @@ def load_site(data_path, log_path=None) -> dict:
                       set_description_areas,
                       set_ingredient_lists,
                       link_recipes_collections,
+                      set_search_values,
                       set_summary)
 
 
@@ -1583,6 +1585,24 @@ def info_for_recipe(collection) -> dict:
 
     keys = ('name', 'url_path', 'label', 'href')
     return {k: collection[k] for k in keys if k in collection}
+
+
+def set_search_values(site):
+    """Adds data needed for search function.
+
+    Sets the following keys for each collection:
+    - 'search_group_interval' (int)
+    
+    Sets the following keys for each recipe in collection:
+    - 'index' (int)
+    """
+
+    for collection in site['collections']:
+        for i, recipe in enumerate(collection['recipes'], 1):
+            recipe['index'] = i
+        collection['search_group_interval'] = 10 ** math.ceil(math.log10(i))
+
+    return site
 
 
 def set_summary(site):
