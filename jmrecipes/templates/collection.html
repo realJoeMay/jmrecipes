@@ -30,12 +30,11 @@ a {
 }
 
 .content {
-    max-width: 790px;
-    margin:  0 auto;
-    padding: 30px 20px;
+    margin: 30px 20px;
     display: flex;
     flex-direction: column;
-    row-gap: 40px;
+    align-items: center;
+    container: cards-area / inline-size;
 }
 
 /* .collection-title {
@@ -229,23 +228,41 @@ a.menu-header:hover {
 /* CARDS */
 
 .recipe-cards {
+    max-width: 790px;
     width: 100%;
-    padding: 0 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    flex-wrap:wrap;
+    display: grid;
+    grid-template-columns: 100%;
+    justify-items: center;
     row-gap: 24px;
     column-gap: 20px;
 }
 
 .recipe-card {
-    width:250px;
+    max-width: 300px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     background: white;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.09);
     border-radius: 5px;
+}
+
+@container cards-area (width > 520px) {
+    .recipe-cards {
+        grid-template-columns: 250px 250px;
+        width: 520px;
+    }
+
+    .recipe-card {
+        width: 250px;
+    }
+}
+
+@container cards-area (width > 790px) {
+    .recipe-cards {
+        grid-template-columns: 250px 250px 250px;
+        width: 790px;
+    }
 }
 
 .recipe-image-area {
