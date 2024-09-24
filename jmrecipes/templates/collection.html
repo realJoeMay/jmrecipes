@@ -59,8 +59,6 @@ a {
     margin-left: 10px
 } */
 
-
-
 /* MENU */
 
 .menu {
@@ -94,9 +92,6 @@ a {
     margin-bottom: 10px;
     border-bottom: solid 2px rgba(128, 128, 128, 0.2);
 }
-
-
-
 
 /* MENU ITEMS */
 
@@ -149,8 +144,6 @@ a.menu-header:hover {
     row-gap: 0px;
 }
 
-
-
 /* MENU BUTTONS */
 
 .menu-button-section {
@@ -172,7 +165,7 @@ a.menu-header:hover {
 }
 
 .menu-button-section .menu-button {
-  width:32%;
+  width: 32%;
   padding: 10px 3px;
   border: 2px solid transparent;
   border-radius: 3px;
@@ -194,8 +187,6 @@ a.menu-header:hover {
     border-color: #146EBE;
     color: #146EBE;
 }
-
-
 
 /* MENU BUTTONS */
 
@@ -234,9 +225,6 @@ a.menu-header:hover {
 .menu-close-btn:hover {
     background-color: rgba(128, 128, 128, 0.2);
 }
-
-
-
 
 /* CARDS */
 
@@ -294,8 +282,7 @@ a.menu-header:hover {
     color: #999;
 }
 
-
-
+/* HEADER */
 
 header {
     background-color: #fff;
@@ -312,8 +299,6 @@ header {
     justify-content: space-between;
     align-items: center;
 }
-
-
 
 /* MENU TOGGLE */
 
@@ -335,8 +320,6 @@ header {
     transition: margin-right .4s;
 }
 
-
-
 /* ICONS */
 
 .icon-wrapper {
@@ -350,9 +333,7 @@ svg {
     height: 1.1rem;
 }
 
-
-
-/* Searchbox */
+/* SEARCH */
 
 #search {
     width: 100%;
@@ -367,7 +348,6 @@ svg {
     color: #ddd;
 }
 
-/* Search */
 .search-target {
     display: none;
     margin-top: 6px;
@@ -387,8 +367,6 @@ svg {
     content: "Ingredient:";
     margin-right: 4px;
 }
-
-
 
         </style>
     </head>
@@ -436,7 +414,6 @@ svg {
     
             <div class='content'>
                 <!-- <h1 class="collection-title">{{ c.name }}</h1> -->
-
                 <div class='recipe-cards'>
                     {% for r in c.recipes %}
                     <a class="recipe-card" data-index="{{ r.index }}" href="{% if not c.is_homepage %}../{% endif %}{{ r.url_slug }}{% if is_local %}/index.html{% endif %}">
@@ -459,19 +436,15 @@ svg {
                         </div>
                     </a>
                     {% endfor %}
-                </div>
-            </div>
+                </div><!-- recipe cards -->
+            </div><!-- content -->
 
         </div>
-
-
-
-
         <script>
 
-
-
 const pageBody = document.querySelector("body");
+const cards = document.querySelectorAll(".recipe-card");
+const searchBox = document.querySelector("#search");
 
 
 // Menu
@@ -496,33 +469,25 @@ function closeMenu() {
 }
 
 
-
-
-
-
-
 // Search
-const cards = document.querySelectorAll(".recipe-card");
 
 function search() {
 
-    var input = document.querySelector("#search").value.toLowerCase();
+    var input = searchBox.value.toLowerCase();
     var groupInterval = {{ c.search_group_interval }}
 
     if (input == "") {
         document.querySelector("body").classList.remove("search-active");
         resetCards();
         return;
-    } else {
-        document.querySelector("body").classList.add("search-active");
     }
-
-    // loop through each card
+    
+    document.querySelector("body").classList.add("search-active");
+    
     for (var i = 0; i < cards.length; i++) {
         
+        // clear search targets
         var searchTargets = cards[i].querySelectorAll(".search-target");
-
-        // first clear all search targets
         for (var j = 0; j < searchTargets.length; j++) {
             searchTargets[j].classList.remove("search-result");
         }
@@ -536,7 +501,7 @@ function search() {
                 searchTargets[j].classList.add("search-result");
                 var cardMatch = true
 
-                // Set order
+                // Set results order
                 let recipeIndex = Number(cards[i].getAttribute("data-index"));
                 if (searchTargets[j].classList.contains('target-title')) {
                     cards[i].style.order = 1 * groupInterval + recipeIndex
@@ -562,48 +527,29 @@ function search() {
 
 function resetCards(){
     for (var i = 0; i < cards.length; i++) {
-        // let recipeIndex = Number(cards[i].getAttribute("data-index"));
         cards[i].style.order = Number(cards[i].getAttribute("data-index"));
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 // Keyboard Shortcuts
 
 document.addEventListener("keydown", function(e) {
 
-console.log(e.code);
+    // console.log(e.code);
 
-// Press m to toggle menu
-if (e.code === "KeyM" && document.activeElement.tagName != "INPUT") {
-    openMenu();
-    e.preventDefault() // Prevent typing into search input
-}
+    // Press m to open menu
+    if (e.code === "KeyM" && document.activeElement.tagName != "INPUT") {
+        openMenu();
+        e.preventDefault() // Prevent typing into search input
+    }
 
-// Press escape to close menu
-if (e.code === "Escape") {
-    closeMenu();
-}
+    // Press escape to close menu
+    if (e.code === "Escape") {
+        closeMenu();
+    }
 
 });
-
-
-
-
-
-
-
-
-
 
         </script>
     </body>
