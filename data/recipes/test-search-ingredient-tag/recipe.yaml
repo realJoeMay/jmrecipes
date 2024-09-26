@@ -1,0 +1,6 @@
+title: Test Search Ingredient Tag
+ingredients:
+- number: '2'
+  item: test tag
+  list: Ingredients
+  unit: lb

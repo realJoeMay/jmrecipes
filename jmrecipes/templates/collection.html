@@ -376,11 +376,13 @@ svg {
     display: none;
 }
 
-.search-active .search-result.target-ingredient {
+.search-active .search-result.target-ingredient,
+.search-active .search-result.target-ingredient-tag {
     display: block;
 }
 
-.target-ingredient::before {
+.target-ingredient::before,
+.target-ingredient-tag::before {
     content: "Ingredient:";
     margin-right: 4px;
 }
@@ -524,11 +526,11 @@ function search() {
                     cards[i].style.order = 1 * groupInterval + recipeIndex
                 } else if (searchTargets[j].classList.contains('target-subtitle')) {
                     cards[i].style.order = 2 * groupInterval + recipeIndex
-
                 } else if (searchTargets[j].classList.contains('target-ingredient')) {
-                    cards[i].style.order = 4 * groupInterval + recipeIndex
+                    cards[i].style.order = 3 * groupInterval + recipeIndex
+                } else if (searchTargets[j].classList.contains('target-ingredient-tag')) {
+                    cards[i].style.order = 3 * groupInterval + recipeIndex
                 }
-
                 break
             }
         }

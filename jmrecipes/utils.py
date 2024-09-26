@@ -515,6 +515,7 @@ def _load_groceries():
         'fat': 0,
         'carbohydrates': 0,
         'protein': 0,
+        'tags': '',
         'notes': ''
     }
     groceries.fillna(value=column_defaults, inplace=True)

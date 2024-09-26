@@ -615,10 +615,10 @@ def lookup_grocery(ingredient):
         return
     
     ingredient['has_matching_grocery'] = True
-    grocery_keys = ["name", "cost", "volume_amount", "volume_unit", 
-                    "weight_amount", "weight_unit", "other_amount", 
-                    "other_unit", "discrete_amount", "calories", "fat", 
-                    "carbohydrates", "protein"]
+    grocery_keys = ['name', 'cost', 'volume_amount', 'volume_unit', 
+                    'weight_amount', 'weight_unit', 'other_amount', 
+                    'other_unit', 'discrete_amount', 'calories', 'fat', 
+                    'carbohydrates', 'protein', 'tags']
     ingredient['grocery'] = {k: grocery[k] for k in grocery_keys}
     ingredient['grocery']['nutrition'] = {
         'calories': ingredient['grocery'].pop('calories'),
@@ -626,6 +626,7 @@ def lookup_grocery(ingredient):
         'carbohydrates': ingredient['grocery'].pop('carbohydrates'),
         'protein': ingredient['grocery'].pop('protein')
     }
+    ingredient['grocery']['tags'] = ingredient['grocery']['tags'].split('\n')
 
 
 def grocery_count(ingredient) -> float:
@@ -849,17 +850,28 @@ def set_search_targets(recipe):
         'type': 'title'
     })
 
+    # subtitle
     if recipe['has_subtitle']:
         recipe['search_targets'].append({
             'text': recipe['subtitle'],
             'type': 'subtitle'
         })
 
+    # ingredient
     for ingredient in recipe['scales'][0]['ingredients']:
         recipe['search_targets'].append({
             'text': ingredient['display_item'],
             'type': 'ingredient'
         })
+
+    # ingredient tags
+    for ingredient in recipe['scales'][0]['ingredients']:
+        if 'grocery' in ingredient:
+            for tag in ingredient['grocery']['tags']:
+                recipe['search_targets'].append({
+                    'text': f'{ingredient["display_item"]} ({tag})',
+                    'type': 'ingredient-tag'
+                })
 
     for target in recipe['search_targets']:
         target['class'] = 'target-' + target['type']
