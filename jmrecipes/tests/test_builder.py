@@ -5,7 +5,7 @@ import pytest
 file_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.split(file_dir)[0]
 sys.path.append(project_dir)
-from jmrecipes import builder
+import src.builder as builder
 
 
 test_data = os.path.join(file_dir, 'data')

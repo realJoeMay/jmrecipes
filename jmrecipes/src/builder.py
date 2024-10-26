@@ -13,8 +13,6 @@ sys.path.append(project_dir)
 
 from src.parser import parse_recipe
 import src.utils as utils
-from src.utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
-from src.utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
 
 
 def build():
@@ -22,20 +20,20 @@ def build():
 
     ts = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
 
-    latest = os.path.join(builds_directory, 'latest')
+    latest = os.path.join(utils.builds_directory, 'latest')
     site_web = os.path.join(latest, 'web')
     site_local = os.path.join(latest, 'local')
     log = os.path.join(latest, 'build-log')
 
-    create_dir(builds_directory)
-    make_empty_dir(latest)
-    create_dir(log)
+    utils.create_dir(utils.builds_directory)
+    utils.make_empty_dir(latest)
+    utils.create_dir(log)
 
-    site = load_site(data_directory, log)
+    site = load_site(utils.data_directory, log)
     build_site(site, site_web, verbose=True)
     build_site(site, site_local, local=True)
 
-    stamp = os.path.join(builds_directory, ts)
+    stamp = os.path.join(utils.builds_directory, ts)
     shutil.copytree(latest, stamp)
     print('Build complete')
 
@@ -102,7 +100,7 @@ def load_recipes(recipes_path: str, log_path:str = None) -> list:
 
     has_log = log_path is not None
     if has_log:
-        create_dir(log_path)
+        utils.create_dir(log_path)
 
     recipes = []
     for folder in os.listdir(recipes_path):
@@ -110,7 +108,7 @@ def load_recipes(recipes_path: str, log_path:str = None) -> list:
         
         if has_log:
             recipe_log_path = os.path.join(log_path, folder)
-            create_dir(recipe_log_path)
+            utils.create_dir(recipe_log_path)
             recipes.append(load_recipe(recipe_path, log_path))
         else:
             recipes.append(load_recipe(recipe_path))
@@ -251,8 +249,8 @@ def set_url(recipe):
     """
 
     recipe['url_path'] = '/' + recipe['url_slug']
-    recipe['url'] = make_url(path=recipe['url_path'])
-    recipe['feedback_url'] = feedback_url(recipe['title'], recipe['url'])
+    recipe['url'] = utils.make_url(path=recipe['url_path'])
+    recipe['feedback_url'] = utils.feedback_url(recipe['title'], recipe['url'])
     return recipe
 
 
@@ -344,7 +342,7 @@ def set_times(recipe):
         if 'unit' not in time or time['unit'] == '':
             time['unit'] = 'minutes' if time['time'] > 1 else 'minute'
 
-        time_string = fraction_to_string(time['time'])
+        time_string = utils.fraction_to_string(time['time'])
         time['time_string'] = f'{time_string} {time["unit"]}'
 
     for scale in recipe['scales']:
@@ -422,7 +420,7 @@ def set_visible_yields(recipe):
 def yield_string(yielb: dict) -> str:
     """String represeentation of a yield."""
 
-    number = fraction_to_string(yielb["number"])
+    number = utils.fraction_to_string(yielb["number"])
     return f'{number} {yielb["unit"]}'
 
 
@@ -453,7 +451,7 @@ def set_serving_size(scale):
         if yielb['show_serving_size']:
             scale['has_visible_serving_sizes'] = True
             number = yielb['number'] / scale['servings']
-            number_string = fraction_to_string(number)
+            number_string = utils.fraction_to_string(number)
             unit = utils.numberize(yielb['unit'], number)
             yielb['serving_size_string'] = f'{number_string} {unit}'
     return scale
@@ -531,7 +529,7 @@ def ingredients_in_scale(base_ingredients, multiplier) -> list:
     for ingredient in base_ingredients:
         if 'scale' not in ingredient:
             ingredients.append(multiply_ingredient(ingredient, multiplier))
-        elif to_fraction(ingredient['scale']) == multiplier:
+        elif utils.to_fraction(ingredient['scale']) == multiplier:
             ingredients.append(ingredient)
     return ingredients
 
@@ -575,7 +573,7 @@ def ingredient_string(ing: dict) -> str:
 
     i_str = []
     if ing['display_number']:
-        i_str.append(fraction_to_string(ing['display_number']))
+        i_str.append(utils.fraction_to_string(ing['display_number']))
     if ing['display_unit']:
         i_str.append((ing['display_unit']))
     if ing['display_item']:
@@ -589,7 +587,7 @@ def ingredient_display_amount(ingredient):
 
     amount = []
     if ingredient['display_number']:
-        amount.append(fraction_to_string(ingredient['display_number']))
+        amount.append(utils.fraction_to_string(ingredient['display_number']))
     if ingredient['display_unit']:
         amount.append((ingredient['display_unit']))
     return ' '.join(amount)
@@ -739,7 +737,7 @@ def set_instructions(recipe):
     for scale in recipe['scales']:
         scale['instructions'] = []
         for step in recipe['instructions']:
-            if 'scale' not in step or to_fraction(step['scale']) == scale['multiplier']:
+            if 'scale' not in step or utils.to_fraction(step['scale']) == scale['multiplier']:
                 scale['instructions'].append(step.copy())
         scale['has_instructions'] = bool(scale['instructions'])
 
@@ -938,7 +936,7 @@ def load_collections(collections_path: str, log_path:str = None) -> list:
 
     has_log = log_path is not None
     if has_log:
-        create_dir(log_path)
+        utils.create_dir(log_path)
 
     collections = []
     for file in os.listdir(collections_path):
@@ -1002,9 +1000,9 @@ def set_collection_url(collection):
         collection['href'] = f'../{collection["url_path"]}'
 
     url_path = '/' + collection["url_path"]
-    collection['url'] = make_url(path=url_path)
+    collection['url'] = utils.make_url(path=url_path)
     feedback_name = collection['name'] + ' (Collection)'
-    collection['feedback_url'] = feedback_url(feedback_name, collection['url'])
+    collection['feedback_url'] = utils.feedback_url(feedback_name, collection['url'])
 
     return collection
 
@@ -1824,7 +1822,7 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
         local: Builds local version if true, web version otherwise. Defaults is False.
     """
     
-    make_empty_dir(site_path)
+    utils.make_empty_dir(site_path)
 
     for recipe in site['recipes']:
         recipe_dir = os.path.join(site_path, recipe['url_slug'])
@@ -1848,10 +1846,10 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
     make_summary_page(site, os.path.join(site_path, 'summary.html'))
 
     shutil.copyfile(
-        os.path.join(assets_directory, 'icon.png'), 
+        os.path.join(utils.assets_directory, 'icon.png'), 
         os.path.join(site_path, 'icon.png'))
     shutil.copyfile(
-        os.path.join(assets_directory, 'default_720x540.jpg'), 
+        os.path.join(utils.assets_directory, 'default_720x540.jpg'), 
         os.path.join(site_path, 'default.jpg'))
 
 
@@ -1872,14 +1870,14 @@ def make_recipe_page(recipe: dict, dir: str, local: bool) -> None:
         local: Builds local version if true, web version otherwise.
     """
 
-    create_dir(dir)
+    utils.create_dir(dir)
     file = os.path.join(dir, 'index.html')
-    content = render_template('recipe-page.html', 
+    content = utils.render_template('recipe-page.html', 
                               r=recipe, 
-                              icon=icon,
-                              site_title=site_title(),
+                              icon=utils.icon,
+                              site_title=utils.site_title(),
                               is_local=local)
-    write_file(content, file)
+    utils.write_file(content, file)
 
 
 def make_print_page(recipe: dict, dir: str, local: bool) -> None:
@@ -1891,14 +1889,14 @@ def make_print_page(recipe: dict, dir: str, local: bool) -> None:
         local: Builds local version if true, web version otherwise.
     """
 
-    create_dir(dir)
+    utils.create_dir(dir)
     file = os.path.join(dir, 'index.html')
-    content = render_template('print-page.html', 
+    content = utils.render_template('print-page.html', 
                               r=recipe, 
                               is_local=local,
-                              site_title=site_title(),
-                              icon=icon)
-    write_file(content, file)
+                              site_title=utils.site_title(),
+                              icon=utils.icon)
+    utils.write_file(content, file)
 
 
 def make_collection_page(collection: dict, dir: str, local: bool) -> None:
@@ -1910,14 +1908,14 @@ def make_collection_page(collection: dict, dir: str, local: bool) -> None:
         local: Builds local version if true, web version otherwise.
     """
 
-    create_dir(dir)
+    utils.create_dir(dir)
     file = os.path.join(dir, 'index.html')
-    content = render_template('collection.html', 
+    content = utils.render_template('collection.html', 
                               c=collection,
                               is_local=local,
-                              site_title=site_title(),
-                              icon=icon)
-    write_file(content, file)
+                              site_title=utils.site_title(),
+                              icon=utils.icon)
+    utils.write_file(content, file)
 
 
 def make_summary_page(site: dict, page_path: str) -> None:
@@ -1928,18 +1926,18 @@ def make_summary_page(site: dict, page_path: str) -> None:
         page_path: File path for summary page.
     """
 
-    content = render_template('summary-page.html', 
+    content = utils.render_template('summary-page.html', 
                               recipes=site['summary']['recipes'], 
                               collections=site['summary']['collections'],
                               ingredients=site['summary']['ingredients'],
-                              site_title=site_title())
-    write_file(content, page_path)
+                              site_title=utils.site_title())
+    utils.write_file(content, page_path)
 
 
 def make_404_page(page_path: str) -> None:
-    content = render_template('404.html', 
-                              site_title=site_title())
-    write_file(content, page_path)
+    content = utils.render_template('404.html', 
+                              site_title=utils.site_title())
+    utils.write_file(content, page_path)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import sys
 file_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.split(file_dir)[0]
 sys.path.append(project_dir)
-from jmrecipes import utils
+import src.utils as utils
 
 
 def test_unit_numberize():

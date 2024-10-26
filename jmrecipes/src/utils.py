@@ -127,6 +127,7 @@ class icon:
     link = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"/></svg>'
     bars = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"/></svg>'
 
+
 # Units
 def is_weight(unit: str) -> bool:
     """Returns True if unit is a weight unit, single or plural."""
@@ -255,33 +256,6 @@ unicode_fractions = {
     '5/8': '⅝', 
     '7/8': '⅞'
 }
-
-# todo get this working
-# i need to add mulitply and divide to keep in ffraction
-# also replace to_fraction with init, 
-# class FFraction(Fraction):
-#     def __str__(self):
-#         """Converts Fraction to a nice string."""
-
-#         int = floor(self)
-#         (num, den) = (self - int).as_integer_ratio()
-
-#         amount_parts = []
-#         if int:
-#             amount_parts.append(str(int))
-#         if num:
-#             amount_parts.append(f'{num}/{den}')
-
-#         amount_display = ' '.join(amount_parts)
-
-#         for fraction_ascii, fraction_unicode in unicode_fractions.items():
-#             # remove space if mixed number
-#             amount_display = amount_display.replace(' ' + fraction_ascii, 
-#                                                     fraction_unicode)
-#             # replaces if no leading integer
-#             amount_display = amount_display.replace(fraction_ascii, 
-#                                                     fraction_unicode)
-#         return amount_display
 
 
 def to_fraction(number) -> Fraction:
