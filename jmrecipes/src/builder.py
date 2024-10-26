@@ -6,11 +6,15 @@ import math
 from collections import defaultdict
 from urllib.parse import urlparse
 
-import parser
-import utils
-from utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
-from utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
+import sys
+file_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.split(file_dir)[0]
+sys.path.append(project_dir)
 
+from src.parser import parse_recipe
+import src.utils as utils
+from src.utils import builds_directory, data_directory, assets_directory, create_dir, make_empty_dir, write_file, render_template
+from src.utils import site_title, feedback_url, icon, fraction_to_string, make_url, to_fraction
 
 
 def build():
@@ -28,11 +32,12 @@ def build():
     create_dir(log)
 
     site = load_site(data_directory, log)
-    build_site(site, site_web)
+    build_site(site, site_web, verbose=True)
     build_site(site, site_local, local=True)
 
     stamp = os.path.join(builds_directory, ts)
     shutil.copytree(latest, stamp)
+    print('Build complete')
 
 
 def load_site(data_path, log_path=None) -> dict:
@@ -130,7 +135,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
     file = recipe_file(recipe_path)
     filepath = os.path.join(recipe_path, file)
 
-    recipe = parser.parse_recipe(filepath)
+    recipe = parse_recipe(filepath)
     folder = os.path.basename(recipe_path)
     recipe['url_slug'] = utils.sluggify(folder)
 
@@ -1810,7 +1815,7 @@ def scales_in(container, include=None):
     return scales
 
 
-def build_site(site: dict, site_path: str, local=False) -> None:
+def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
     """Builds a recipe site using site data.
 
     Args:
@@ -1830,10 +1835,14 @@ def build_site(site: dict, site_path: str, local=False) -> None:
             shutil.copyfile(
                 recipe['image_src_path'],
                 os.path.join(recipe_dir, recipe['image']))
+        if verbose:
+            print(f'Recipe: {recipe["title"]}')
 
     for collection in site['collections']:
         collection_dir = get_collection_dir(collection, site_path)
         make_collection_page(collection, collection_dir, local)
+        if verbose:
+            print(f'Collection: {collection["name"]}')
 
     make_404_page(os.path.join(site_path, 'error.html'))
     make_summary_page(site, os.path.join(site_path, 'summary.html'))

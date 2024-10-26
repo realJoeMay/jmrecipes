@@ -17,9 +17,9 @@ file_directory = os.path.dirname(os.path.abspath(__file__))
 project_directory = os.path.split(file_directory)[0]
 builds_directory = os.path.join(project_directory, 'builds')
 data_directory = os.path.join(project_directory, 'data')
-jmr_directory = file_directory
-assets_directory = os.path.join(jmr_directory, 'assets')
-templates_directory = os.path.join(jmr_directory, 'templates')
+src_directory = file_directory
+assets_directory = os.path.join(src_directory, 'assets')
+templates_directory = os.path.join(src_directory, 'templates')
 
 
 def create_dir(path):
@@ -78,7 +78,7 @@ class jmrEncoder(JSONEncoder):
 def config(section: str, name: str) -> str:
     """Read information from config file."""
 
-    config_path = os.path.join(data_directory, 'config.ini')
+    config_path = os.path.join(src_directory, 'config.ini')
     parser = ConfigParser()
     parser.read(config_path)
     return parser.get(section, name)

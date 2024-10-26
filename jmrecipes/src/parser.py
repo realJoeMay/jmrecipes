@@ -2,7 +2,7 @@ import json
 import yaml
 from fractions import Fraction
 
-from utils import to_fraction
+from src.utils import to_fraction
 
 
 def parse_recipe(filepath: str) -> dict:
