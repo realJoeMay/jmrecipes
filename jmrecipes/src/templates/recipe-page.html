@@ -17,7 +17,9 @@ html {
 }
 
 body {
-    margin: 0 0 6rem;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
 }
 
 h1, h2, h3 {
@@ -63,9 +65,11 @@ a, a:hover {
 
 /* BOXES */
 
-.recipe-boxes:first-child {
-    margin-top: 42px; /* no banner */
+.recipe-boxes {
+    padding-top: 42px; /* no banner */
+    padding-bottom: 6rem;
 }
+
 
 .recipe-boxes {
   position: relative;
@@ -437,11 +441,9 @@ a.menu-header:hover {
     fill: #146EBE;
 }
 
-/* DETAILS */
 
-.detail-cost,
-.detail-cost-per-serving,
-.detail-nutrition-per-serving {
+/* DETAILS */
+.ingredient-detail {
     display: none;
     font-style: italic;
     color: #555;
@@ -513,6 +515,108 @@ a.menu-header:hover {
     padding-bottom: 0;
 }
 
+
+/* DARK THEME */
+
+.theme-dark {
+    background-color: #222;
+    color: #bbb;
+}
+
+.theme-dark .ingredient-item,
+.theme-dark .ingredient-detail,
+.theme-dark .step-text {
+    color: #bbb;
+}
+
+.theme-dark .recipe-image {
+    filter: brightness(80%);
+}
+
+.theme-dark .recipe-box,
+.theme-dark .menu {
+    background-color: #2a2a2a;
+    box-shadow: 0 1px 10px rgb(0 0 0 / 20%);
+}
+
+
+
+.theme-dark .step-number-circle {
+    background-color: #3a3a3a;
+}
+
+.theme-dark .step-number-number {
+    color: #aaa;
+}
+
+.theme-dark .recipe-title,
+.theme-dark .ingredient-list-name,
+.theme-dark .box-title,
+.theme-dark a.menu-header:hover .menu-text,
+.theme-dark .menu-header {
+    color: #ccc;
+}
+
+.theme-dark .icon-wrapper {
+    fill: #ccc;
+}
+
+.theme-dark .description-area,
+.theme-dark .ingredient-list-name,
+.theme-dark .step {
+    border-color: #666;
+}
+
+
+@media (prefers-color-scheme: dark) {
+
+    .theme-system {
+        background-color: #222;
+        color: #bbb;
+    }
+
+    .theme-system .ingredient-item,
+    .theme-system .ingredient-detail,
+    .theme-system .step-text {
+        color: #bbb;
+    }
+
+    .theme-system .recipe-image {
+        filter: brightness(80%);
+    }
+
+    .theme-system .recipe-box,
+    .theme-system .menu {
+        background-color: #2a2a2a;
+        box-shadow: 0 1px 10px rgb(0 0 0 / 20%);
+    }
+
+    .theme-system .step-number-circle {
+        background-color: #3a3a3a;
+    }
+
+    .theme-system .step-number-number {
+        color: #aaa;
+    }
+
+    .theme-system .recipe-title,
+    .theme-system .ingredient-list-name,
+    .theme-system .box-title,
+    .theme-system a.menu-header:hover .menu-text,
+    .theme-system .menu-header {
+        color: #ccc;
+    }
+
+    .theme-system .icon-wrapper {
+        fill: #ccc;
+    }
+
+    .theme-system .description-area,
+    .theme-system .ingredient-list-name,
+    .theme-system .step {
+        border-color: #666;
+    }
+}
     </style>
 </head>
 <body>
@@ -520,6 +624,17 @@ a.menu-header:hover {
         <div class="menu-top">
 
             <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
+
+            <div class="menu-appearance">
+                <h3 class="menu-header">Theme</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
+                    <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
+                    <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
 
             {% if r.has_scales %}
             <div class='menu-scale'>
@@ -787,11 +902,11 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
-                        <div class="detail-cost">{{ ingredient.cost_string }}</div>
-                        <div class="detail-cost-per-serving">{{ ingredient.cost_per_serving_string }}</div>
+                        <div class="ingredient-detail detail-cost">{{ ingredient.cost_string }}</div>
+                        <div class="ingredient-detail detail-cost-per-serving">{{ ingredient.cost_per_serving_string }}</div>
 
                         {% if ingredient.has_nutrition %}
-                        <div class="detail-nutrition-per-serving">
+                        <div class="ingredient-detail detail-nutrition-per-serving">
                             <div class="nutrition">
                                 <div class="calories value">{{ ingredient.nutrition_display.calories }}</div>
                                 <div class="calories label">Calories</div>
@@ -880,6 +995,32 @@ a.menu-header:hover {
 
 const pageBody = document.querySelector("body");
 
+
+// Cookies
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+
 // Menu
 
 function toggleMenu() {
@@ -898,6 +1039,55 @@ function closeMenu() {
     pageBody.classList.remove("menu-open");
 }
 
+
+
+// Theme
+
+var themeDarkButton = document.querySelector(".button-theme-dark");
+var themeLightButton = document.querySelector(".button-theme-light");
+var themeSystemButton = document.querySelector(".button-theme-system");
+
+function themeDark() {
+    clearTheme()
+    pageBody.classList.add("theme-dark");
+    themeDarkButton.classList.add('selected');
+    setCookie("theme", "dark", 365);
+}
+
+function themeLight() {
+    clearTheme()
+    pageBody.classList.add("theme-light");
+    themeLightButton.classList.add('selected');
+    setCookie("theme", "light", 365);
+}
+
+function themeSystem() {
+    clearTheme()
+    pageBody.classList.add("theme-system");
+    themeSystemButton.classList.add('selected');
+    setCookie("theme", "system", 365);
+}
+
+function clearTheme() {
+    pageBody.classList.remove("theme-dark");
+    pageBody.classList.remove("theme-light");
+    pageBody.classList.remove("theme-system");
+    themeDarkButton.classList.remove('selected');
+    themeLightButton.classList.remove('selected');
+    themeSystemButton.classList.remove('selected');
+}
+
+function loadPreviousTheme() {
+    console.log("Checking theme now");
+    if (getCookie("theme") == "dark") {
+        themeDark();
+    } else if (getCookie("theme") == "light") {
+        themeLight(); 
+    } else {
+        themeSystem();
+    }
+}
+loadPreviousTheme()
 
 
 // Scale

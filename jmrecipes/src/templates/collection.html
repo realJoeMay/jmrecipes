@@ -37,26 +37,6 @@ a {
     container: cards-area / inline-size;
 }
 
-/* .collection-title {
-    color: #667;
-}
-
-.collection-title {
-    display: flex;
-    flex-direction: row;
-}
-.collection-title:before, .collection-title:after{
-    content: "";
-    flex: 1 1;
-    border-bottom: 1px solid #ccc;
-    margin: auto;
-}
-.collection-title:before {
-    margin-right: 10px
-}
-.collection-title:after {
-    margin-left: 10px
-} */
 
 /* MENU */
 
@@ -387,6 +367,99 @@ svg {
     margin-right: 4px;
 }
 
+
+/* DARK THEME */
+
+.theme-dark {
+    background-color: #222;
+    color: #bbb;
+}
+
+.theme-dark header,
+.theme-dark .recipe-card,
+.theme-dark .menu {
+    background-color: #2a2a2a;
+    box-shadow: 0 1px 10px rgb(0 0 0 / 24%);
+}
+
+.theme-dark .header-content,
+.theme-dark .recipe-title,
+.theme-dark a.menu-header:hover .menu-text,
+.theme-dark .menu-header {
+    color: #ccc;
+}
+
+.theme-dark .icon-wrapper {
+    fill: #ccc;
+}
+
+.theme-dark .recipe-image {
+    filter: brightness(80%);
+}
+
+.theme-dark #search {
+    background-color: #444;
+    color: #ddd;
+}
+
+.theme-dark #search::placeholder {
+    color: #999;
+}
+
+.theme-dark .recipe-image-area {
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(255,255,255,0.15) 50%, rgba(0,0,0,0.1) 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .theme-system {
+        background-color: #222;
+        color: #bbb;
+    }
+
+    .theme-system header,
+    .theme-system .recipe-card,
+    .theme-system .menu {
+        background-color: #2a2a2a;
+        box-shadow: 0 1px 10px rgb(0 0 0 / 24%);
+    }
+
+    .theme-system .header-content,
+    .theme-system .recipe-title,
+    .theme-system a.menu-header:hover .menu-text,
+    .theme-system .menu-header {
+        color: #ccc;
+    }
+
+    .theme-system .icon-wrapper {
+        fill: #ccc;
+    }
+
+    .theme-system .recipe-image {
+        filter: brightness(80%);
+    }
+
+    .theme-system #search {
+        background-color: #444;
+        color: #ddd;
+    }
+
+    .theme-system #search::placeholder {
+        color: #999;
+    }
+
+    .theme-system .recipe-image-area {
+        background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(255,255,255,0.15) 50%, rgba(0,0,0,0.1) 100%);
+    }
+}
+
+
+
+
+
+
+
+
         </style>
     </head>
     <body>
@@ -399,6 +472,17 @@ svg {
                     <label for="search" class='menu-header'>Search</label>
                     <div class='menu-content menu-button-section'>
                         <input type="text" id="search" name="search" placeholder="beef" autocomplete="off" oninput="search()">
+                    </div>
+                </div>
+
+                <div class="menu-section-break"></div>
+
+                <div class="menu-appearance">
+                    <h3 class="menu-header">Theme</h3>
+                    <div class="menu-content menu-button-section">
+                        <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
+                        <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
+                        <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
                     </div>
                 </div>
 
@@ -466,6 +550,31 @@ const cards = document.querySelectorAll(".recipe-card");
 const searchBox = document.querySelector("#search");
 
 
+// Cookies
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let name = cname + "=";
+    let ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+
 // Menu
 
 function toggleMenu() {
@@ -486,6 +595,56 @@ function closeMenu() {
     pageBody.classList.remove("menu-open");
     document.querySelector('#search').blur();
 }
+
+
+// Theme
+
+var themeDarkButton = document.querySelector(".button-theme-dark");
+var themeLightButton = document.querySelector(".button-theme-light");
+var themeSystemButton = document.querySelector(".button-theme-system");
+
+function themeDark() {
+    clearTheme()
+    pageBody.classList.add("theme-dark");
+    themeDarkButton.classList.add('selected');
+    setCookie("theme", "dark", 365);
+}
+
+function themeLight() {
+    clearTheme()
+    pageBody.classList.add("theme-light");
+    themeLightButton.classList.add('selected');
+    setCookie("theme", "light", 365);
+}
+
+function themeSystem() {
+    clearTheme()
+    pageBody.classList.add("theme-system");
+    themeSystemButton.classList.add('selected');
+    setCookie("theme", "system", 365);
+}
+
+function clearTheme() {
+    pageBody.classList.remove("theme-dark");
+    pageBody.classList.remove("theme-light");
+    pageBody.classList.remove("theme-system");
+    themeDarkButton.classList.remove('selected');
+    themeLightButton.classList.remove('selected');
+    themeSystemButton.classList.remove('selected');
+}
+
+function loadPreviousTheme() {
+    console.log("Checking theme now");
+    if (getCookie("theme") == "dark") {
+        themeDark();
+    } else if (getCookie("theme") == "light") {
+        themeLight(); 
+    } else {
+        themeSystem();
+    }
+}
+loadPreviousTheme()
+
 
 
 // Search

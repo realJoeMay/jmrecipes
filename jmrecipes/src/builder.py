@@ -5,12 +5,11 @@ import json
 import math
 from collections import defaultdict
 from urllib.parse import urlparse
-
 import sys
+
 file_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.split(file_dir)[0]
 sys.path.append(project_dir)
-
 from src.parser import parse_recipe
 import src.utils as utils
 
