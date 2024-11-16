@@ -1,4 +1,4 @@
-title: Test Recipe Child 1
+title: Recipe Child 1
 yield:
 - number: 2
   unit: servings

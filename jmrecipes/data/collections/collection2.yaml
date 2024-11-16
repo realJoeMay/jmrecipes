@@ -1,0 +1,6 @@
+---
+name: "2nd Collection"
+label: "More in 2nd Collection"
+url_path: "collection-2"
+recipes: 
+- "test-chili"

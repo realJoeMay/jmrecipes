@@ -355,3 +355,25 @@ def parse_note(note_data):
     if 'scale' in note_data:
         note['scale'] = to_fraction(note_data['scale'])
     return note
+
+
+def parse_collection(file_path: str) -> dict:
+    """Converts a collection data file to a collection dictionary.
+
+    Args:
+        file_path: Str path to collection data file.
+
+    Returns:
+        Dict containing collection data.
+    """
+
+    with open(file_path, 'r', encoding='utf8') as f:
+        data = f.read()
+
+    if file_path.endswith('.json'):
+        return json.loads(data)
+    elif file_path.endswith('.yaml'):
+        return yaml.safe_load(data)
+
+    raise ValueError('file is not a valid format')
+

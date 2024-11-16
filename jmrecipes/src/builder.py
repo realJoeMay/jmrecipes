@@ -10,7 +10,7 @@ import sys
 file_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.split(file_dir)[0]
 sys.path.append(project_dir)
-from src.parser import parse_recipe
+from src.parser import parse_recipe, parse_collection
 import src.utils as utils
 
 
@@ -964,8 +964,9 @@ def load_collection(file_path, log_path=None) -> dict:
     if not has_log:
         log_path = ''
 
-    with open(file_path, 'r', encoding='utf8') as f:
-        data = json.load(f)
+    # with open(file_path, 'r', encoding='utf8') as f:
+    #     data = json.load(f)
+    data = parse_collection(file_path)
     return utils.pipe(data,
                       log_path,
                       set_homepage,
