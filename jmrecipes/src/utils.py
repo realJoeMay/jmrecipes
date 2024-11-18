@@ -78,7 +78,7 @@ class jmrEncoder(JSONEncoder):
 def config(section: str, name: str) -> str:
     """Read information from config file."""
 
-    config_path = os.path.join(src_directory, 'config.ini')
+    config_path = os.path.join(data_directory, 'config.ini')
     parser = ConfigParser()
     parser.read(config_path)
     return parser.get(section, name)
