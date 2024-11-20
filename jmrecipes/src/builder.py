@@ -964,13 +964,24 @@ def load_collection(file_path, log_path=None) -> dict:
     if not has_log:
         log_path = ''
 
-    # with open(file_path, 'r', encoding='utf8') as f:
-    #     data = json.load(f)
     data = parse_collection(file_path)
     return utils.pipe(data,
                       log_path,
+                      set_collection_defaults,
                       set_homepage,
                       set_collection_url)
+
+
+def set_collection_defaults(collection):
+    """Sets default values for collection.
+    
+    Sets the following keys:
+    - 'search_placeholder' (str)
+    """
+
+    if 'search_placeholder' not in collection:
+        collection['search_placeholder'] = utils.config('default', 'search_placeholder')
+    return collection
 
 
 def set_homepage(collection):
