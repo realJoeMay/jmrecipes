@@ -231,9 +231,9 @@ def set_defaults(recipe):
             yielb['show_serving_size'] = False
 
     if 'hide_cost' not in recipe:
-        recipe['hide_cost'] = False
+        recipe['hide_cost'] = utils.config('default', 'hide_cost', as_boolean=True)
     if 'hide_nutrition' not in recipe:
-        recipe['hide_nutrition'] = False
+        recipe['hide_nutrition'] = utils.config('default', 'hide_nutrition', as_boolean=True)
 
     return recipe
 

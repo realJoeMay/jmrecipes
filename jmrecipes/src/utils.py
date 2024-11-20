@@ -75,12 +75,14 @@ class jmrEncoder(JSONEncoder):
 
 # Config data
 
-def config(section: str, name: str) -> str:
-    """Read information from config file."""
+def config(section: str, name: str, as_boolean: bool = False) -> (str | bool):
+    """Read string from config file."""
 
     config_path = os.path.join(data_directory, 'config.ini')
     parser = ConfigParser()
     parser.read(config_path)
+    if as_boolean:
+        return parser.getboolean(section, name)
     return parser.get(section, name)
 
 
