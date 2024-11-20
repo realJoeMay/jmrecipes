@@ -1,24 +1,22 @@
-import os
 from configparser import ConfigParser
+from fractions import Fraction
 from jinja2 import Environment, FileSystemLoader
-import shutil
 from json import JSONEncoder
 import json
-from fractions import Fraction
 from math import floor
-from urllib.parse import urlparse, urlunparse, urlencode
-from segno import make_qr
 import os
 import pandas as pd
+from segno import make_qr
+import shutil
+from urllib.parse import urlparse, urlunparse, urlencode
 
 
 # Directories
-file_directory = os.path.dirname(os.path.abspath(__file__))
-project_directory = os.path.split(file_directory)[0]
+src_directory = os.path.dirname(os.path.abspath(__file__))
+project_directory = os.path.split(src_directory)[0]
 builds_directory = os.path.join(project_directory, 'builds')
 data_directory = os.path.join(project_directory, 'data')
-src_directory = file_directory
-assets_directory = os.path.join(src_directory, 'assets')
+assets_directory = os.path.join(data_directory, 'assets')
 templates_directory = os.path.join(src_directory, 'templates')
 
 
@@ -98,18 +96,18 @@ def site_domain() -> str:
     return config('site', 'domain')
 
 
-def config_feedback_url() -> str:
-    """Read feedback url from config file."""
+# def config_feedback_url() -> str:
+#     """Read feedback url from config file."""
 
-    return config('feedback', 'url')
+#     return config('feedback', 'url')
 
 
 # Templates
 
 def render_template(template_name: str, **context):
-    file_directory = os.path.dirname(os.path.abspath(__file__))
-    templates_path = os.path.join(file_directory, 'templates')
-    environment = Environment(loader=FileSystemLoader(templates_path))
+    """Renders template with context."""
+
+    environment = Environment(loader=FileSystemLoader(templates_directory))
     template = environment.get_template(template_name)
     return template.render(context)
 
@@ -131,9 +129,10 @@ class icon:
     info = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"/></svg>'
     github = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>'
 
+
 # Units
 def is_weight(unit: str) -> bool:
-    """Returns True if unit is a weight unit, single or plural."""
+    """Returns True if unit is a single or plural weight unit."""
 
     weights_df = _units[_units['type'] == 'weight']
     single_weights = set(weights_df['unit'])
@@ -143,7 +142,7 @@ def is_weight(unit: str) -> bool:
 
 
 def is_volume(unit: str) -> bool:
-    """Returns True if unit is a volume unit, single or plural."""
+    """Returns True if unit is a single or plural volume unit."""
 
     volume_df = _units[_units['type'] == 'volume']
     single_weights = set(volume_df['unit'])
@@ -175,7 +174,7 @@ def is_equivalent(unit1: str, unit2: str) -> bool:
         return True
 
 
-def to_standard(unit):
+def to_standard(unit: str):
     """Returns a unit's conversion to standard."""
 
     unit_mask = _units['unit'] == unit
@@ -188,7 +187,7 @@ def to_standard(unit):
     return matching_item['to_standard']
 
 
-def numberize(unit: str, number) -> str:
+def numberize(unit: str, number: (int | float)) -> str:
     """Returns single or plural unit based on number."""
 
     return _plural(unit) if number > 1 else _single(unit)
@@ -261,7 +260,7 @@ unicode_fractions = {
 }
 
 
-def to_fraction(number) -> Fraction:
+def to_fraction(number: (int | float | str)) -> Fraction:
     """Converts number to Fraction.
 
     Args:
@@ -309,28 +308,11 @@ def fraction_to_string(my_fraction: Fraction) -> str:
     return amount_display
 
 
-def format_currency(cost) -> str:
+def format_currency(cost: (int | float)) -> str:
     """Formats a cost value as a currency string.
 
     This function converts a numeric cost value into a string formatted as currency. 
     The cost is rounded to two decimal places and prefixed with a dollar sign.
-
-    Args:
-        cost (float): The numeric cost value to be formatted. This value is converted 
-            to a float before formatting.
-
-    Returns:
-        str: The formatted currency string.
-
-    Example:
-        format_currency(1234.567) 
-        # Output: '$1234.57'
-        
-        format_currency(5) 
-        # Output: '$5.00'
-
-    Raises:
-        ValueError: If the `cost` cannot be converted to a float.
     """
     
     return '${:.2f}'.format(float(cost))
@@ -341,8 +323,8 @@ def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragm
     """Constructs a URL from components.
 
     Args:
-        scheme (str, optional): The URL scheme (e.g., 'http', 'https'). Defaults to 'https'.
-        domain (str, optional): The domain name of the URL. Defaults to the result of the `site_domain` function.
+        scheme (str, optional): The URL scheme. Defaults to 'https'.
+        domain (str, optional): The domain name of the URL. Defaults to the  `site_domain` from config file.
         path (str, optional): The path component of the URL. Defaults to an empty string.
         params (str, optional): The parameters component of the URL. Defaults to an empty string.
         query (dict, optional): The query parameters as a dictionary. If provided, it is URL-encoded.
@@ -350,26 +332,12 @@ def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragm
 
     Returns:
         str: The constructed URL as a string.
-
-    Example:
-        make_url(
-            scheme='https',
-            domain='example.com',
-            path='path/to/resource',
-            query={'key': 'value', 'key2': 'value2'},
-            fragment='section1'
-        )
-        # Output: 'https://example.com/path/to/resource?key=value&key2=value2#section1'
-
-    Notes:
-        - The `site_domain` function is expected to return a default domain if `domain` is not provided.
-        - The `urlencode` function is used to encode the query parameters.
     """
 
     if scheme is None:
         scheme = 'https'
     if domain is None:
-        domain = site_domain()
+        domain = config('site', 'domain')
     if path is None:
         path = ''
     if params is None:
@@ -384,9 +352,9 @@ def make_url(scheme=None, domain=None, path=None, params=None, query=None, fragm
 
 
 def feedback_url(page_name: str, source_url: str) -> str:
-    
+    """Create feedback url with prefilled values."""
 
-    components = urlparse(config_feedback_url())
+    components = urlparse(config('feedback', 'url'))
     query = {
         'prefill_page': page_name,
         'prefill_source_url': source_url
@@ -402,12 +370,6 @@ def sluggify(name: str) -> str:
     - Spaces and underscores are replaced with dashes
     - Invalid characters are removed
     - Any double dashes are removed
-
-    Args:
-        name: String to convert to slug
-
-    Returns:
-        URL slug as a string.
     """
 
     slug = name.lower()
@@ -429,15 +391,8 @@ def sluggify(name: str) -> str:
 def pipe(data: dict, log_path: str, *funcs) -> dict:
     """Pipe data through a sequence of functions.
 
-    Optionally saves data after each function in log files.
-
-    Args:
-        data: Data as a dictionary.
-        log_path: Directory to hold the pipe's log files. Saves no log if empty string.
-        *funcs: Functions that will be called on the data.
-
-    Returns:
-        Data after applying functions as a dictionary.
+    Optionally saves data after each function in log files. Saves 
+    no log if log_path is  empty string.
     """
 
     has_log = log_path != ''
@@ -503,6 +458,6 @@ _groceries = _load_groceries()
 
 
 # Qr codes
-def make_qr_file(link, filepath):
+def make_qr_file(link: str, filepath: str) -> None:
     qr_code = make_qr(link)
     qr_code.save(filepath, scale=5, border=0)

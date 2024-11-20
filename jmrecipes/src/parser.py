@@ -5,7 +5,7 @@ from fractions import Fraction
 from src.utils import to_fraction
 
 
-def parse_recipe(filepath: str) -> dict:
+def parse_recipe(file_path: str) -> dict:
     """Converts a recipe data file to a recipe dictionary.
 
     Args:
@@ -15,78 +15,89 @@ def parse_recipe(filepath: str) -> dict:
         Dict containing recipe data.
     """
 
-    with open(filepath, 'r', encoding='utf8') as f:
+    with open(file_path, 'r', encoding='utf8') as f:
         data = f.read()
-    format = get_format(filepath)
-    parser = get_parser(format)
-    return parser(data)
 
+    if file_path.endswith('.json'):
+        return recipe_dict(json.loads(data))
+    elif file_path.endswith('.yaml'):
+        return recipe_dict(yaml.safe_load(data))
 
-def get_format(file: str) -> str:
-    """Determines the format of a recipe data file.
-    
-    Args:
-        file: Filename as a str.
-
-    Returns:
-        Str defining the format, eg 'json' or 'yaml'.
-
-    Raises:
-        ValueError: File format is not 'json' or 'yaml'.
-    """
-
-    if file.endswith('.json'):
-        return 'json'
-    elif file.endswith('.yaml'):
-        return 'yaml'
     raise ValueError('file is not a valid format')
 
 
-def get_parser(format: str):
-    """Returns the parser function for a format.
+    # with open(file_path, 'r', encoding='utf8') as f:
+    #     data = f.read()
+    # format = get_format(file_path)
+    # parser = get_parser(format)
+    # return parser(data)
+
+
+# def get_format(file: str) -> str:
+#     """Determines the format of a recipe data file.
     
-    Args:
-        format: As a string.
+#     Args:
+#         file: Filename as a str.
 
-    Returns:
-        Function to parse the given format.
+#     Returns:
+#         Str defining the format, eg 'json' or 'yaml'.
 
-    Raises:
-        ValueError: Format is not 'json' or 'yaml'.
-    """
+#     Raises:
+#         ValueError: File format is not 'json' or 'yaml'.
+#     """
 
-    if format == 'json':
-        return parse_from_json
-    elif format == 'yaml':
-        return parse_from_yaml
+#     if file.endswith('.json'):
+#         return 'json'
+#     elif file.endswith('.yaml'):
+#         return 'yaml'
+#     raise ValueError('file is not a valid format')
+
+
+# def get_parser(format: str):
+#     """Returns the parser function for a format.
     
-    raise ValueError(format)
+#     Args:
+#         format: As a string.
+
+#     Returns:
+#         Function to parse the given format.
+
+#     Raises:
+#         ValueError: Format is not 'json' or 'yaml'.
+#     """
+
+#     if format == 'json':
+#         return parse_from_json
+#     elif format == 'yaml':
+#         return parse_from_yaml
+    
+#     raise ValueError(format)
 
 
-def parse_from_json(data: str) -> dict:
-    """Converts json data into a recipe input dictionary.
+# def parse_from_json(data: str) -> dict:
+#     """Converts json data into a recipe input dictionary.
 
-    Args:
-        data: Json data as string.
+#     Args:
+#         data: Json data as string.
 
-    Returns:
-        Recipe data dictionary.
-    """
+#     Returns:
+#         Recipe data dictionary.
+#     """
 
-    return recipe_dict(json.loads(data))
+#     return recipe_dict(json.loads(data))
 
 
-def parse_from_yaml(data: str) -> dict:
-    """Converts yaml data into a recipe input dictionary.
+# def parse_from_yaml(data: str) -> dict:
+#     """Converts yaml data into a recipe input dictionary.
 
-    Args:
-        data: Yaml data as string.
+#     Args:
+#         data: Yaml data as string.
 
-    Returns:
-        Recipe data dictionary.
-    """
+#     Returns:
+#         Recipe data dictionary.
+#     """
 
-    return recipe_dict(yaml.safe_load(data))
+#     return recipe_dict(yaml.safe_load(data))
 
 
 def recipe_dict(data: dict) -> dict:
