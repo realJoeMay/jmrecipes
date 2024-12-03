@@ -44,6 +44,7 @@ def recipe_dict(data: dict) -> dict:
     recipe['ingredients'] = parse_ingredients(data)
     recipe['instructions'] = parse_instructions(data)
     recipe['scales'] = parse_scales(data) 
+    recipe['videos'] = parse_videos(data)
 
     if 'description' in data:
         recipe['description'] = data['description']
@@ -229,6 +230,36 @@ def read_multiplier(scale) -> Fraction:
     if isinstance(scale, (int, float, str)):
         return to_fraction(scale)
     
+
+def parse_videos(data):
+    """Returns videos from input data."""
+
+    if 'video' not in data:
+        return []
+    if not isinstance(data['video'], list):
+        raise TypeError('Videos data must be a list.')
+    
+    return [parse_video(d) for d in data['video']]
+
+
+def parse_video(video_data):
+    """Returns video from input data."""
+
+    if not isinstance(video_data, dict):
+        raise TypeError('Video data must be a dict.')
+    if 'url' not in video_data:
+        raise KeyError('Video must have url.')
+    if not isinstance(video_data['url'], str):
+        raise TypeError('Video url must be a str.')
+    if 'list' in video_data and not isinstance(video_data['list'], str):
+        raise TypeError('Video instruction_list must be a str.')
+        
+    video = {}
+    video['url'] = video_data['url']
+    if 'list' in video_data:
+        video['list'] = video_data['list']
+    return video
+
 
 def parse_nutrition(nutrition):
     """Formats nutrition data from input file."""

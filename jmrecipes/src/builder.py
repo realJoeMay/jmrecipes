@@ -168,6 +168,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
                       set_instructions,
                       set_sources,
                       set_notes,
+                      set_videos,
                       set_schema,
                       set_search_targets)
 
@@ -213,13 +214,19 @@ def set_defaults(recipe):
     """Sets default values for keys if not already set.
     
     Sets the following default values:
-    - 'hide_cost': False.
-    - 'hide_nutrition': False.
+    - 'hide_cost': (from config)
+    - 'hide_nutrition': (from config)
 
-    Sets the following default values for each yield in recipe:
-    - 'unit': 'servings'.
-    - 'show_yield': True.
-    - 'show_serving_size': False.
+    Sets the following default values for each yield:
+    - 'unit': 'servings'
+    - 'show_yield': True
+    - 'show_serving_size': False
+
+    Sets the following default values for each video:
+    - 'list': (from config)
+
+    Sets the following default values for each instruction step:
+    - 'list': Instructions
     """
 
     for yielb in recipe['yield']:
@@ -229,6 +236,10 @@ def set_defaults(recipe):
             yielb['show_yield'] = True
         if 'show_serving_size' not in yielb:
             yielb['show_serving_size'] = False
+
+    for step in recipe['instructions']:
+        if 'list' not in step:
+            step['list'] = 'Instructions'
 
     if 'hide_cost' not in recipe:
         recipe['hide_cost'] = utils.config('default', 'hide_cost', as_boolean=True)
@@ -738,6 +749,7 @@ def set_instructions(recipe):
         for step in recipe['instructions']:
             if 'scale' not in step or utils.to_fraction(step['scale']) == scale['multiplier']:
                 scale['instructions'].append(step.copy())
+        
         scale['has_instructions'] = bool(scale['instructions'])
 
     recipe = set_instruction_lists(recipe)
@@ -747,11 +759,11 @@ def set_instructions(recipe):
 
 def set_instruction_lists(recipe):
     """Groups instruction steps into step lists."""
-    
+
     for scale in recipe['scales']:
         scale['instruction_lists'] = defaultdict(list)
         for step in scale['instructions']:
-            scale['instruction_lists'][step.get('list', 'Instructions')].append(step)
+            scale['instruction_lists'][step['list']].append(step)
     return recipe
 
 
@@ -837,6 +849,53 @@ def notes_for_scale(notes, scale) -> list:
         if 'scale' not in note or note['scale'] == scale['multiplier']:
             scale_notes.append(note)
     return scale_notes
+
+
+def set_videos(recipe):
+    """Set videos for the recipe.
+    
+    Sets the following keys for the recipe:
+    - 'embedded_videos' (list)
+    - 'linked_videos' (list)
+    - 'has_embedded_videos' (bool)
+    - 'has_linked_videos' (bool)
+
+    Sets the following keys for box_video:
+    - 'url' (str)
+
+    Sets the following keys for description_video:
+    - 'url' (str)
+    """
+
+    recipe['embedded_videos'] = []
+    recipe['linked_videos'] = []
+
+    for video in recipe['videos']:
+        url = video['url']
+        if is_video_yt(url):
+            recipe['embedded_videos'].append({
+                'url': url,
+                'embed_url': embed_url_yt(url)
+                })
+        else:
+            recipe['linked_videos'].append({'url': url})
+
+    recipe['has_embedded_videos'] = bool(recipe['embedded_videos'])
+    recipe['has_linked_videos'] = bool(recipe['linked_videos'])
+    return recipe
+
+
+def is_video_yt(url: str) -> bool:
+    """True if url is a youtube video."""
+
+    return 'youtube.com/watch' in url
+
+
+def embed_url_yt(video_url: str) -> str:
+    """Returns embed url for a youtube video."""
+
+    video_id = utils.yt_video_id(video_url)
+    return f'<iframe src="https://www.youtube.com/embed/{video_id}" allowfullscreen></iframe>'
 
 
 def set_search_targets(recipe):

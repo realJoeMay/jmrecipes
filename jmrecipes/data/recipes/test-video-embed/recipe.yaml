@@ -1,0 +1,13 @@
+title: Embedded Video
+scale:
+- multiplier: 2
+ingredients:
+- number: '2'
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
+video:
+- url: https://www.youtube.com/watch?v=JYg1UfVCfiw
+- url: https://www.youtube.com/watch?v=RmeM7WYB5Os
+instructions:
+- text: Crumble ground chuck into a large stock pot.

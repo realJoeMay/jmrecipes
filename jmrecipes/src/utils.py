@@ -8,7 +8,7 @@ import os
 import pandas as pd
 from segno import make_qr
 import shutil
-from urllib.parse import urlparse, urlunparse, urlencode
+from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 
 
 # Directories
@@ -385,6 +385,15 @@ def sluggify(name: str) -> str:
         slug = slug.replace('--', '-')
 
     return name
+
+
+def yt_video_id(url: str) -> str:
+    """Returns youtube video ID from url."""
+
+    parsed_url = urlparse(url)
+    query_string = parsed_url.query
+    query_params = parse_qs(query_string)
+    return query_params['v'][0]
 
 
 # Pipe
