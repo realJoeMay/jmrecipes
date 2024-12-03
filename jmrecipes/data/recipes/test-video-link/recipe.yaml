@@ -1,12 +1,6 @@
-title: Embedded Video
-scale:
-- multiplier: 2
-ingredients:
-- number: '2'
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+title: Linked Video
 video:
-- url: https://www.youtube.com/watch?v=mhDJNfV7hjk
+- url: https://rumble.com/vldkuj-strawberry-tiramisu-amazing-short-cooking-video-recipe-and-food-hacks.html\
+- url: https://rumble.com/vlcvm7-strawberry-cake-amazing-short-cooking-video-recipe-and-food-hacks.html?e9s=rel_v2_ep
 instructions:
 - text: Crumble ground chuck into a large stock pot.

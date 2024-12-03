@@ -1616,7 +1616,8 @@ def set_description_areas(site):
             or scale['has_times'] 
             or scale['has_visible_cost'] 
             or recipe['has_description'] 
-            or recipe['used_in_any'])
+            or recipe['used_in_any']
+            or recipe['has_linked_videos'])
     return site
 
 

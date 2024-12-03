@@ -28,7 +28,16 @@ h1, h2, h3 {
 
 a, a:hover {
     text-decoration: none;
-    color: #146EBE
+    color: #146EBE;
+    fill: #146EBE;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.menu a:hover {
+    text-decoration: none;
 }
 
 
@@ -149,6 +158,16 @@ a, a:hover {
 .scale-cost-per-serving {
     color: #888;
     font-style: italic;
+}
+
+.video-link a {
+    display: flex;
+    align-items: center;
+}
+
+.video-link svg {
+    width: 0.9rem;
+    padding-left: 6px;
 }
 
 /* ICONS */
@@ -546,6 +565,21 @@ a.menu-header:hover {
     color: #bbb;
 }
 
+.theme-dark a, 
+.theme-dark a:hover {
+    color: #318ddf;
+    fill: #318ddf;
+}
+
+.theme-dark .menu-button.selected {
+    border-color: #318ddf;
+    color: #318ddf;
+}
+
+.theme-dark .child-recipe-link svg {
+    fill: #318ddf;
+}
+
 .theme-dark .ingredient-item,
 .theme-dark .ingredient-detail,
 .theme-dark .step-text {
@@ -597,6 +631,22 @@ a.menu-header:hover {
         background-color: #222;
         color: #bbb;
     }
+
+    .theme-system a, 
+    .theme-system a:hover {
+        color: #318ddf;
+        fill: #318ddf;
+    }
+
+    .theme-system .menu-button.selected {
+        border-color: #318ddf;
+        color: #318ddf;
+    }
+
+    .theme-system .child-recipe-link svg {
+        fill: #318ddf;
+    }
+
 
     .theme-system .ingredient-item,
     .theme-system .ingredient-detail,
@@ -896,6 +946,17 @@ a.menu-header:hover {
                             </span>
                         </div>
                         {% endif %}
+
+                        {% if r.has_linked_videos %}
+                        <div class=''>
+                            {% for video in r.linked_videos %}
+                            <span class='description-value video-link'>
+                                <a href="{{ video.url }}" target="_blank">Link to video {{ icon.link }}</a>
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
 
                     </div><!-- description area -->
                 </div><!-- scale -->

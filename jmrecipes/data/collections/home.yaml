@@ -28,9 +28,9 @@ recipes:
 - test-recipe-child-1
 - test-recipe-child-2
 - test-recipe-child-3
+- test-video-embed
+- test-video-link
 - test-search-ingredient-tag
 - test-search-ingredient
 - test-search-subtitle
 - test-search-title
-- test-video-embed
-- test-video-link
