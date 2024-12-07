@@ -28,3 +28,18 @@ def test_unit_to_standard():
     assert utils.to_standard('slice') == 1
     assert utils.to_standard('slices') == 1
     assert utils.to_standard('fake unit') == 1
+
+
+def test_is_youtube_url():
+    assert utils.is_youtube_url('https://www.youtube.com/watch?v=RmeM7WYB5Os') is True
+    assert utils.is_youtube_url('https://www.youtube.com/watch?v=RmeM7WYB5Os&t=100s') is True
+    assert utils.is_youtube_url('https://youtu.be/RmeM7WYB5Os') is True
+    assert utils.is_youtube_url('https://youtu.be/RmeM7WYB5Os?t=2') is True
+    assert utils.is_youtube_url('https://rumble.com/vlcvm7-strawberry-cake-amazing-short-cooking-video-recipe-and-food-hacks.html?e9s=rel_v2_ep') is False
+
+
+def youtube_url_id():
+    assert utils.youtube_url_id('https://www.youtube.com/watch?v=RmeM7WYB5Os') == 'RmeM7WYB5Os'
+    assert utils.youtube_url_id('https://www.youtube.com/watch?v=RmeM7WYB5Os&t=100s') == 'RmeM7WYB5Os'
+    assert utils.youtube_url_id('https://youtu.be/RmeM7WYB5Os') == 'RmeM7WYB5Os'
+    assert utils.youtube_url_id('https://youtu.be/RmeM7WYB5Os?t=2') == 'RmeM7WYB5Os'

@@ -872,10 +872,11 @@ def set_videos(recipe):
 
     for video in recipe['videos']:
         url = video['url']
-        if is_video_yt(url):
+        if utils.is_youtube_url(url):
+            video_id = utils.youtube_url_id(url)
             recipe['embedded_videos'].append({
                 'url': url,
-                'embed_url': embed_url_yt(url)
+                'embed_url': utils.youtube_embed_url(video_id)
                 })
         else:
             recipe['linked_videos'].append({'url': url})
@@ -883,19 +884,6 @@ def set_videos(recipe):
     recipe['has_embedded_videos'] = bool(recipe['embedded_videos'])
     recipe['has_linked_videos'] = bool(recipe['linked_videos'])
     return recipe
-
-
-def is_video_yt(url: str) -> bool:
-    """True if url is a youtube video."""
-
-    return 'youtube.com/watch' in url
-
-
-def embed_url_yt(video_url: str) -> str:
-    """Returns embed url for a youtube video."""
-
-    video_id = utils.yt_video_id(video_url)
-    return f'<iframe src="https://www.youtube.com/embed/{video_id}" allowfullscreen></iframe>'
 
 
 def set_search_targets(recipe):

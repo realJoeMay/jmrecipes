@@ -387,13 +387,52 @@ def sluggify(name: str) -> str:
     return name
 
 
-def yt_video_id(url: str) -> str:
+def is_youtube_url(url: str) -> bool:
+
+    return _is_youtube_full_url(url) or _is_youtube_short_url(url)
+
+
+def youtube_url_id(url: str) -> str:
     """Returns youtube video ID from url."""
+
+    if _is_youtube_full_url(url):
+        return _youtube_full_url_id(url)
+    elif _is_youtube_short_url(url):
+        return _youtube_short_url_id(url)
+    raise Exception(f'Cannot get youtube video ID from url: {url}')
+
+
+def youtube_embed_url(video_id: str) -> str:
+    """Returns embed url for a youtube video."""
+
+    return f'<iframe src="https://www.youtube.com/embed/{video_id}" allowfullscreen></iframe>'
+
+
+def _is_youtube_full_url(url: str) -> bool:
+
+    return 'youtube.com/watch' in url
+
+
+def _is_youtube_short_url(url: str) -> bool:
+
+    return 'youtu.be/' in url
+
+
+def _youtube_full_url_id(url: str) -> str:
+    """Returns youtube video ID from full url."""
 
     parsed_url = urlparse(url)
     query_string = parsed_url.query
     query_params = parse_qs(query_string)
     return query_params['v'][0]
+
+
+def _youtube_short_url_id(url: str) -> str:
+    """Returns youtube video ID from short url."""
+
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+    return path.strip('/')
 
 
 # Pipe
