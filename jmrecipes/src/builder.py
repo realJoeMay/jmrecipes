@@ -323,7 +323,7 @@ def set_scales(recipe):
     """
 
     for i, scale in enumerate(recipe['scales'], 1):
-        label = str(scale['multiplier'].limit_denominator(100)) + 'x'
+        label = str(scale['multiplier'].limit_denominator(100)).replace('/', '_') + 'x'
         scale['label'] = label
         scale['item_class'] = f'scale-{label}'
         scale['select_class'] = f'display-scale-{label}'
