@@ -1901,7 +1901,7 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
         if verbose:
             print(f'Collection: {collection["name"]}')
 
-    make_404_page(os.path.join(site_path, 'error.html'))
+    make_404_page(os.path.join(site_path, '404.html'))
     make_summary_page(site, os.path.join(site_path, 'summary.html'))
 
     shutil.copyfile(
