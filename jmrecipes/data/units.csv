@@ -2,7 +2,6 @@ unit,plural,type,to_standard
 ml,ml,volume,1
 milliliter,milliliters,volume,1
 liter,liters,volume,1000
-,,,
 tsp,tsp,volume,4.92892
 teaspoon,teaspoons,volume,4.92892
 tbsp,tbsp,volume,14.7868
@@ -12,22 +11,17 @@ pint,pints,volume,473.176
 quart,quarts,volume,946.3525
 gallon,gallons,volume,3785.41
 fl oz,fl oz,volume,29.5735
-,,,
-,,,
-,,,
-g ,g ,weight,1
+g,g,weight,1
 gram,grams,weight,1
-,,,
 oz,oz,weight,28.3495
 ounce,ounces,weight,28.3495
 lb,lbs,weight,453.592
 pound,pounds,weight,453.592
-,,,
 serving,servings,,
 box,boxes,,
 head,heads,,
 scoop,scoops,,
 stick,sticks,,
-loaf,loaves,,
+loaf,loaves,`,
 slice,slices,,
 burger,burgers,,
