@@ -1,10 +1,12 @@
+"""Collection Builder Utilities"""
+
 from urllib.parse import urlparse
 from collections import defaultdict
 import json
 
 from src.utils import utils
 from src.utils import units
-from src.utils.utils import ingredients_in, scales_in, multiply_nutrition
+from src.utils.utils import ingredients_in, multiply_nutrition
 
 
 def set_defaults(recipe):
@@ -308,7 +310,7 @@ def set_ingredients_type(recipe):
 
     for ingredient in recipe["ingredients"]:
         ingredient["is_recipe"] = "recipe_slug" in ingredient
-        ingredient["is_grocery"] = not (ingredient["is_recipe"])
+        ingredient["is_grocery"] = not ingredient["is_recipe"]
     return recipe
 
 
@@ -479,11 +481,11 @@ def grocery_count(ingredient) -> float:
 def grocery_number_discrete(ingredient):
     """Number of groceries in ingredient, measured by count."""
 
-    grocery_count = ingredient["grocery"]["discrete_amount"]
-    if grocery_count == 0:
+    count = ingredient["grocery"]["discrete_amount"]
+    if count == 0:
         return 0
 
-    return ingredient["number"] / grocery_count
+    return ingredient["number"] / count
 
 
 def grocery_number_volume(ingredient):

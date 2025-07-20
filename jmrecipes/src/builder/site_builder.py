@@ -1,3 +1,5 @@
+"""Collection Builder Utilities"""
+
 from collections import defaultdict
 import math
 from src.utils import units
@@ -333,9 +335,6 @@ def set_nutrition(site):
     return site
 
 
-# todo has_nutrition to flags
-
-
 def recipes_nutrition_pending_count(site) -> int:
     """Number of recipe scales where nutrition_final is False."""
 
@@ -601,7 +600,7 @@ def info_for_recipe(collection) -> dict:
     return {k: collection[k] for k in keys if k in collection}
 
 
-def set_search_values(site):
+def set_search_values(site) -> dict:
     """Adds data needed for search function.
 
     Sets the following keys for each collection:
@@ -614,7 +613,10 @@ def set_search_values(site):
     for collection in site["collections"]:
         for i, recipe in enumerate(collection["recipes"], 1):
             recipe["index"] = i
-        collection["search_group_interval"] = 10 ** math.ceil(math.log10(i))
+
+        count = len(collection["recipes"])
+        interval = 10 ** math.ceil(math.log10(count)) if count > 0 else 1
+        collection["search_group_interval"] = interval
 
     return site
 

@@ -1,6 +1,4 @@
-"""Provides functionality to read and convert structured recipe data
-files into standardized Python dictionaries.
-"""
+"""Read recipe and collection files for build."""
 
 import json
 from fractions import Fraction
@@ -61,32 +59,32 @@ def _recipe_dict(data: dict) -> dict:
         Recipe data dictionary.
     """
 
-    recipe = {}
-    recipe["title"] = _read_title(data)
-    recipe["subtitle"] = data.get("subtitle", "")
-    recipe["times"] = _read_times(data)
-    recipe["yield"] = _read_yield(data)
-    recipe["ingredients"] = _read_ingredients(data)
-    recipe["instructions"] = _read_instructions(data)
-    recipe["scales"] = _read_scales(data)
-    recipe["videos"] = _read_videos(data)
+    loaded_recipe = {}
+    loaded_recipe["title"] = _read_title(data)
+    loaded_recipe["subtitle"] = data.get("subtitle", "")
+    loaded_recipe["times"] = _read_times(data)
+    loaded_recipe["yield"] = _read_yield(data)
+    loaded_recipe["ingredients"] = _read_ingredients(data)
+    loaded_recipe["instructions"] = _read_instructions(data)
+    loaded_recipe["scales"] = _read_scales(data)
+    loaded_recipe["videos"] = _read_videos(data)
 
     if "description" in data:
-        recipe["description"] = data["description"]
+        loaded_recipe["description"] = data["description"]
     if "cost" in data:
-        recipe["explicit_cost"] = data["cost"]
+        loaded_recipe["explicit_cost"] = data["cost"]
     if "nutrition" in data:
-        recipe["explicit_nutrition"] = _read_nutrition(data["nutrition"])
+        loaded_recipe["explicit_nutrition"] = _read_nutrition(data["nutrition"])
     if "hide_cost" in data:
-        recipe["hide_cost"] = bool(data["hide_cost"])
+        loaded_recipe["hide_cost"] = bool(data["hide_cost"])
     if "hide_nutrition" in data:
-        recipe["hide_nutrition"] = bool(data["hide_nutrition"])
+        loaded_recipe["hide_nutrition"] = bool(data["hide_nutrition"])
     if "sources" in data:
-        recipe["sources"] = _read_sources(data)
+        loaded_recipe["sources"] = _read_sources(data)
     if "notes" in data:
-        recipe["notes"] = _read_notes(data)
+        loaded_recipe["notes"] = _read_notes(data)
 
-    return recipe
+    return loaded_recipe
 
 
 def _read_title(data):
@@ -131,7 +129,7 @@ def _read_time(time: dict) -> dict:
 
 def _read_yield(data):
     """Sets yield data from input file."""
-    # todo work on this
+
     if "yield" not in data:
         return []
 
@@ -143,7 +141,7 @@ def _read_yield(data):
     if isinstance(yield_data, (int, float)):
         return [{"number": yield_data}]
 
-    # yield is list
+    # list
     yields = []
     for yield_item in data["yield"]:
         yields.append(_read_yield_item(yield_item))
@@ -156,7 +154,8 @@ def _read_yield_item(data):
     if "number" not in data:
         raise KeyError("Yield data must have number field.")
 
-    yielb = {"number": to_fraction(data["number"])}
+    yielb = {}
+    yielb["number"] = to_fraction(data["number"])
     if "unit" in data:
         yielb["unit"] = data["unit"]
     if "show_yield" in data:

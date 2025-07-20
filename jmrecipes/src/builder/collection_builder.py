@@ -1,3 +1,5 @@
+"""Collection Builder Utilities"""
+
 from src.utils import utils
 
 

@@ -3,22 +3,14 @@
 import os
 import datetime
 import shutil
-
-# import json
-# import math
-# from collections import defaultdict
-# from urllib.parse import urlparse
+from typing import Optional
 
 from src.builder import from_file
 from src.builder import recipe_builder
 from src.builder import collection_builder
 from src.builder import site_builder
 from src.utils import utils
-
-# from src.utils.utils import ingredients_in, scales_in, multiply_nutrition
 from src.utils import template
-
-# from src.utils import units
 
 
 def build():
@@ -107,7 +99,7 @@ def load_site(data_path, log_path=None) -> dict:
     )
 
 
-def load_recipes(recipes_path: str, log_path: str = None) -> list:
+def load_recipes(recipes_path: str, log_path: Optional[str] = None) -> list:
     """Loads data for recipes.
 
     Args:
@@ -234,7 +226,7 @@ def recipe_image(recipe_path: str) -> str:
     return ""
 
 
-def load_collections(collections_path: str, log_path: str = None) -> list:
+def load_collections(collections_path: str, log_path: Optional[str] = None) -> list:
     """Generates data for collections.
 
     Args:
