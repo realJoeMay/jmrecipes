@@ -333,7 +333,7 @@ def make_recipe_page(recipe: dict, output_dir: str, local: bool) -> None:
 
     Args:
         recipe: Recipe data as a dictionary.
-        dir: Path to build the page inside.
+        output_dir: Path to build the page inside.
         local: Builds local version if true, web version otherwise.
     """
 
@@ -354,7 +354,7 @@ def make_print_page(recipe: dict, output_dir: str, local: bool) -> None:
 
     Args:
         recipe: Recipe data as a dictionary.
-        dir: Path to build the page inside.
+        output_dir: Path to build the page inside.
         local: Builds local version if true, web version otherwise.
     """
 
@@ -375,7 +375,7 @@ def make_collection_page(collection: dict, output_dir: str, local: bool) -> None
 
     Args:
         collection: Collection data as a dictionary.
-        dir: Path to build the page inside.
+        output_dir: Path to build the page inside.
         local: Builds local version if true, web version otherwise.
     """
 
@@ -418,7 +418,3 @@ def make_404_page(page_path: str) -> None:
 
     content = template.render("404.html", site_title=utils.site_title())
     utils.write_file(content, page_path)
-
-
-if __name__ == "__main__":
-    build()

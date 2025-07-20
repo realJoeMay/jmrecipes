@@ -1,8 +1,4 @@
-"""Unit utilities for parsing, identifying, and converting units.
-
-It loads unit definitions from a `units.csv` file located in the
-project's data directory.
-"""
+"""Unit utilities for parsing, identifying, and converting units."""
 
 import os
 import pandas as pd

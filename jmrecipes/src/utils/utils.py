@@ -1,3 +1,5 @@
+"""Various utilities."""
+
 from configparser import ConfigParser
 from fractions import Fraction
 import json
@@ -5,10 +7,12 @@ from math import floor
 import os
 import shutil
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 import pandas as pd
 
 from segno import make_qr
+
+from src.utils import units
 
 
 # Directories
@@ -29,11 +33,14 @@ def create_dir(path):
 
 
 def make_empty_dir(path):
-    """Create a folder. Empty folder if already exists."""
+    """Create a folder.
 
-    create_dir(path)
-    # shutil.rmtree(path)
-    create_dir(path)
+    Empty folder if already exists.
+    """
+
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path, exist_ok=True)
 
 
 def write_file(content: str, path: str):
@@ -74,7 +81,7 @@ class JMREncoder(json.JSONEncoder):
 # Config data
 
 
-def config(section: str, name: str, as_boolean: bool = False) -> Union[str, bool]:
+def config(section: str, name: str, as_boolean: bool = False) -> str | bool:
     """Read string from config file."""
 
     config_path = os.path.join(data_directory, "config.ini")
@@ -107,20 +114,22 @@ def site_domain() -> str:
 
 
 def split_unit_and_text(text: str) -> tuple[str, str]:
-    """
-    Splits a string into a unit and the remaining text.
+    """Splits a string into a unit and the remaining text.
 
-    This function attempts to extract the longest prefix from the beginning of
-    the input string that matches a known unit. The rest of the string is returned as the remaining text.
+    This function attempts to extract the longest prefix from the
+    beginning of the input string that matches a known unit. The rest
+    of the string is returned as the remaining text.
 
-    For example, given "tablespoons sugar", it might return ("tablespoons", "sugar").
+    For example, given "tablespoons sugar", it might return
+    ("tablespoons", "sugar").
 
     Args:
-        text (str): The input string containing a unit followed by additional text.
+        text (str): The input string containing a unit followed by
+        additional text.
 
     Returns:
         tuple[str, str]: A tuple containing:
-            - The matched unit (or an empty string if no unit is found).
+            - The matched unit (or empty string if no unit is found).
             - The remaining portion of the input text.
     """
 
@@ -128,7 +137,7 @@ def split_unit_and_text(text: str) -> tuple[str, str]:
 
     for i in range(len(words), 0, -1):
         candidate = " ".join(words[:i])
-        if is_unit(candidate):
+        if units.is_unit(candidate):
             return candidate, " ".join(words[i:])
 
     # No unit found
@@ -162,7 +171,8 @@ def to_fraction(number: Union[int, float, str]) -> Fraction:
     """Converts number to Fraction.
 
     Args:
-        number: Number or number-like string. String can include mixed numbers and unicode fractions.
+        number: Number or number-like string. String can include mixed
+        numbers and unicode fractions.
 
     Returns:
         Number as a Fraction object.
@@ -175,29 +185,36 @@ def to_fraction(number: Union[int, float, str]) -> Fraction:
         return Fraction(number)
 
     # str
-    amount, remaining = split_amount_and_text(number)
+    amount, remaining = _split_fraction_amount_and_text(number)
     if remaining:
         raise ValueError(f"{number} is not a number.")
 
     return amount
 
 
-def split_amount_and_text(
-    text, amount_as_str=False
-) -> Tuple[Union[Fraction, str], str]:
-    """
-    Splits a text string into a numeric amount and the remaining text.
+def split_amount_and_text(text, amount_as_str=False) -> Tuple[Fraction | str, str]:
+    """Splits a text string into an amount and the remaining text.
 
-    It recognizes Unicode vulgar fractions and converts them to ASCII equivalents.
+    It recognizes Unicode vulgar fractions and converts them to ASCII
+    equivalents.
 
     Args:
         text (str): The input text, e.g., "1½ cups flour".
-        amount_as_str (bool): If True, return the amount as a formatted string (e.g., '1 1/2').
+        amount_as_str (bool): If True, return the amount as a formatted
+        string (e.g., '1 1/2').
 
     Returns:
-        Tuple[Union[Fraction, str], str]: The numeric part (as Fraction or string) and the
-        remaining text.
+        Tuple[Union[Fraction, str], str]: The numeric part (as Fraction
+        or string) and the remaining text.
     """
+
+    if amount_as_str:
+        return _split_string_amount_and_text(text)
+
+    return _split_fraction_amount_and_text(text)
+
+
+def _split_fraction_amount_and_text(text) -> Tuple[Fraction, str]:
 
     # replace "1½" with "1 1/2"
     for asci, unicode in _unicode_fractions.items():
@@ -213,10 +230,12 @@ def split_amount_and_text(
             remaining_words = words[i:]
             break
 
-    if amount_as_str:
-        amount = fraction_to_string(amount)
-
     return amount, " ".join(remaining_words)
+
+
+def _split_string_amount_and_text(text) -> Tuple[str, str]:
+    amount, text = _split_fraction_amount_and_text(text)
+    return fraction_to_string(amount), text
 
 
 def fraction_to_string(frac: Fraction, to_unicode: bool = True) -> str:
@@ -247,52 +266,51 @@ def fraction_to_string(frac: Fraction, to_unicode: bool = True) -> str:
 def format_currency(cost: Union[int, float]) -> str:
     """Formats a cost value as a currency string.
 
-    This function converts a numeric cost value into a string formatted as currency.
-    The cost is rounded to two decimal places and prefixed with a dollar sign.
-    """
+    This function converts a numeric cost value into a string
+    formatted as currency. The cost is rounded to two decimal places
+    and prefixed with a dollar sign.
 
-    return "${:.2f}".format(float(cost))
+    Args:
+        cost (int | float): The numeric value to format.
+
+    Returns:
+        str: A string formatted like "$1.23".
+    """
+    return f"${float(cost):.2f}"
 
 
 # URLs
-def make_url(
-    scheme=None, domain=None, path=None, params=None, query=None, fragment=None
-) -> str:
-    """Constructs a URL from components.
+def make_url(**kwargs) -> str:
+    """Constructs a URL from components passed as keyword arguments.
 
-    Args:
-        scheme (str, optional): The URL scheme. Defaults to 'https'.
-        domain (str, optional): The domain name of the URL. Defaults to the  `site_domain` from config file.
-        path (str, optional): The path component of the URL. Defaults to an empty string.
-        params (str, optional): The parameters component of the URL. Defaults to an empty string.
-        query (dict, optional): The query parameters as a dictionary. If provided, it is URL-encoded.
-        fragment (str, optional): The fragment component of the URL. Defaults to an empty string.
+    Keyword Args:
+        scheme (str): URL scheme (default: 'https')
+        domain (str): Domain name (default: from config file)
+        path (str): URL path (default: '')
+        params (str): URL parameters (default: '')
+        query (dict): Query parameters as a dictionary (default: None)
+        fragment (str): URL fragment (default: '')
 
     Returns:
-        str: The constructed URL as a string.
+        str: A fully constructed URL string.
     """
 
-    if scheme is None:
-        scheme = "https"
-    if domain is None:
-        domain = config("site", "domain")
-    if path is None:
-        path = ""
-    if params is None:
-        params = ""
-    if fragment is None:
-        fragment = ""
-    if query is None:
-        query = ""
-    else:
-        query = urlencode(query)
+    scheme = kwargs.get("scheme", "https")
+    domain = kwargs.get("domain", config("site", "domain"))
+    path = kwargs.get("path", "")
+    params = kwargs.get("params", "")
+    fragment = kwargs.get("fragment", "")
+
+    query_dict = kwargs.get("query")
+    query = urlencode(query_dict) if query_dict else ""
+
     return urlunparse([scheme, domain, path, params, query, fragment])
 
 
 def feedback_url(page_name: str, source_url: str) -> str:
     """Create feedback url with prefilled values."""
 
-    components = urlparse(config("feedback", "url"))
+    components = urlparse(str(config("feedback", "url")))
     query = {"prefill_page": page_name, "prefill_source_url": source_url}
     return make_url(domain=components[1], path=components[2], query=query)
 
@@ -323,6 +341,7 @@ def sluggify(name: str) -> str:
 
 
 def is_youtube_url(url: str) -> bool:
+    """Determines whether the given URL is a YouTube video link."""
 
     return _is_youtube_full_url(url) or _is_youtube_short_url(url)
 
@@ -334,7 +353,7 @@ def youtube_url_id(url: str) -> str:
         return _youtube_full_url_id(url)
     elif _is_youtube_short_url(url):
         return _youtube_short_url_id(url)
-    raise Exception(f"Cannot get youtube video ID from url: {url}")
+    raise ValueError(f"Cannot get youtube video ID from url: {url}")
 
 
 def youtube_embed_url(video_id: str) -> str:
@@ -374,8 +393,8 @@ def _youtube_short_url_id(url: str) -> str:
 def pipe(data: dict, log_path: str, *funcs) -> dict:
     """Pipe data through a sequence of functions.
 
-    Optionally saves data after each function in log files. Saves
-    no log if log_path is empty string.
+    Optionally saves data after each function in log files. Saves no log
+    if log_path is empty string.
     """
 
     has_log = log_path != ""
@@ -398,6 +417,20 @@ def pipe(data: dict, log_path: str, *funcs) -> dict:
 
 
 def grocery_info(ingredient_name):
+    """Look up grocery information for a given ingredient name.
+
+    This function searches the `_groceries` DataFrame for a row
+    matching the lowercase version of the provided ingredient name.
+    If found, it returns the row as a dictionary.
+
+    Args:
+        ingredient_name (str): The name of the ingredient to look up.
+
+    Returns:
+        dict | None: A dictionary containing grocery info if a match
+        is found, otherwise None.
+    """
+
     search_name = ingredient_name.lower()
     matching_items = _groceries[_groceries.name == search_name]
 
@@ -448,23 +481,24 @@ def make_qr_file(link: str, filepath: str) -> None:
 
 
 def split_ingredient_and_description(text: str) -> tuple[str, str]:
-    """Splits an ingredient string into the main ingredient and its description.
+    """Splits an ingredient string into the main ingredient and its
+    description.
 
-    This function separates a descriptive note from the main ingredient text.
-    It checks for two possible patterns:
+    This function separates a descriptive note from the main ingredient
+    text. It checks for two possible patterns:
 
-    1. A parenthetical comment at the end (e.g., "flour (sifted)") — returns "flour" and "sifted".
-    2. A comma-separated description at the end (e.g., "sugar, divided") — returns "sugar" and
-        "divided".
+    1. A parenthetical comment at the end.
+    2. A comma-separated description at the end.
 
-    If neither is found, the entire input is returned as the ingredient with an empty description.
+    If neither is found, the entire input is returned as the ingredient
+    with an empty description.
 
     Args:
         text (str): A string representing a single ingredient line.
 
     Returns:
-        tuple[str, str]: A tuple where the first element is the main ingredient,
-                         and the second is a description or note (if any).
+        tuple[str, str]: A tuple where the first element is the main
+        ingredient, and the second is a description or note (if any).
     """
 
     if "(" in text and text.endswith(")"):
@@ -482,9 +516,9 @@ def split_ingredient_and_description(text: str) -> tuple[str, str]:
 
 def ingredients_in(
     container: dict | list,
-    keys: str | list = None,
-    values: dict = None,
-    include: str = None,
+    keys: Optional[str | list] = None,
+    values: Optional[dict] = None,
+    include: Optional[str] = None,
 ) -> list:
     """Returns a list of ingredients from the container.
 
