@@ -4,7 +4,7 @@ import json
 from fractions import Fraction
 import yaml
 
-from src.utils.utils import to_fraction
+from src.utils import utils
 
 
 def collection(file_path: str) -> dict:
@@ -122,7 +122,7 @@ def _read_time(time: dict) -> dict:
         raise TypeError(f'time unit is a {type(time["unit"])}, not a string.')
 
     name = time["name"]
-    time_time = to_fraction(time["time"])
+    time_time = utils.to_fraction(time["time"])
     time_data = {"name": name, "time": time_time, "unit": time.get("unit", "")}
     return time_data
 
@@ -155,7 +155,7 @@ def _read_yield_item(data):
         raise KeyError("Yield data must have number field.")
 
     yielb = {}
-    yielb["number"] = to_fraction(data["number"])
+    yielb["number"] = utils.to_fraction(data["number"])
     if "unit" in data:
         yielb["unit"] = data["unit"]
     if "show_yield" in data:
@@ -178,25 +178,51 @@ def _read_ingredients(data):
 def _read_ingredient(data: dict) -> dict:
     """Formats ingredient data from input file."""
 
+    # default values
     ingredient = {
-        "number": to_fraction(data.get("number", 0)),
-        "unit": data.get("unit", ""),
-        "item": data.get("item", ""),
-        "descriptor": data.get("descriptor", ""),
-        "display_number": to_fraction(data.get("display_number", 0)),
-        "display_unit": data.get("display_unit", ""),
-        "display_item": data.get("display_item", ""),
+        "number": 0,
+        "unit": "",
+        "item": "",
+        "descriptor": "",
+        "display_number": 0,
+        "display_unit": "",
+        "display_item": "",
     }
-    if "list" in data:
-        ingredient["list"] = data["list"]
-    if "scale" in data:
-        ingredient["scale"] = data["scale"]
+
+    # read from 'text' field
+    if "text" in data:
+        ingredient["number"], remainder = utils.split_amount_and_text(data["text"])
+        ingredient["unit"], remainder = utils.split_unit_and_text(remainder)
+        ingredient["item"], ingredient["descriptor"] = (
+            utils.split_ingredient_and_description(remainder)
+        )
+
+    # read number fields
+    for field in ["number", "display_number"]:
+        if field in data:
+            ingredient[field] = utils.to_fraction(data[field])
+
+    # read text fields
+    for field in [
+        "unit",
+        "item",
+        "descriptor",
+        "display_unit",
+        "display_item",
+        "list",
+        "scale",
+    ]:
+        if field in data:
+            ingredient[field] = data[field]
+
+    # read fields that change name
     if "cost" in data:
         ingredient["explicit_cost"] = data["cost"]
     if "nutrition" in data:
         ingredient["explicit_nutrition"] = _read_nutrition(data["nutrition"])
     if "recipe" in data:
         ingredient["recipe_slug"] = data["recipe"]
+
     return ingredient
 
 
@@ -246,10 +272,10 @@ def _read_multiplier(scale) -> Fraction:
         raise TypeError("Scale must be a dict or number.")
 
     if isinstance(scale, (int, float, str)):
-        return to_fraction(scale)
+        return utils.to_fraction(scale)
 
     # dict
-    return to_fraction(scale["multiplier"])
+    return utils.to_fraction(scale["multiplier"])
 
 
 def _read_videos(data):
@@ -341,5 +367,5 @@ def _read_note(note_data):
 
     note = {"text": note_data["text"]}
     if "scale" in note_data:
-        note["scale"] = to_fraction(note_data["scale"])
+        note["scale"] = utils.to_fraction(note_data["scale"])
     return note

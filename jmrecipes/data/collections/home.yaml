@@ -20,6 +20,7 @@ recipes:
 - test-cost-explicit
 - test-recipe-nutrition-explicit
 - test-nutrition-0
+- test-ingredient-text
 - test-ingredient-explicit-cost
 - test-ingredient-explicit-nutrition
 - test-notes

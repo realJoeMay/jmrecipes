@@ -1,0 +1,10 @@
+title: Ingredient Text
+scale:
+- multiplier: 2
+ingredients:
+- text: 2 lb Ground Beef, from text
+- number: '2'
+  item: Ground Beef
+  list: Ingredients
+  unit: lb
+  descriptor: from fields
