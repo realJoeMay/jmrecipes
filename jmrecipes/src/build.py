@@ -1,7 +1,7 @@
 """Recipe Site Builder"""
 
-import os
 import datetime
+import os
 import shutil
 from typing import Optional
 
@@ -11,6 +11,7 @@ from src.builder import collection_builder
 from src.builder import site_builder
 from src.utils import utils
 from src.utils import template
+from src.utils import qr
 
 
 def build():
@@ -292,7 +293,7 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
     for recipe in site["recipes"]:
         recipe_dir = os.path.join(site_path, recipe["url_slug"])
         make_recipe_page(recipe, recipe_dir, local)
-        utils.make_qr_file(recipe["url"], os.path.join(recipe_dir, "recipe-qr.png"))
+        qr.create(recipe["url"], os.path.join(recipe_dir, "recipe-qr.png"))
         make_print_page(recipe, os.path.join(recipe_dir, "p"), local)
         if recipe["has_image"]:
             shutil.copyfile(

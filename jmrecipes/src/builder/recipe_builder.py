@@ -6,7 +6,10 @@ import json
 
 from src.utils import utils
 from src.utils import units
-from src.utils.utils import ingredients_in, multiply_nutrition
+from src.utils import grocery
+from src.utils import parse
+from src.utils import nutrition
+from src.builder.iterate import ingredients_in
 
 
 def set_defaults(recipe):
@@ -153,7 +156,7 @@ def set_times(recipe):
         if "unit" not in time or time["unit"] == "":
             time["unit"] = "minutes" if time["time"] > 1 else "minute"
 
-        time_string = utils.fraction_to_string(time["time"])
+        time_string = parse.fraction_to_string(time["time"])
         time["time_string"] = f'{time_string} {time["unit"]}'
 
     for scale in recipe["scales"]:
@@ -232,7 +235,7 @@ def set_visible_yields(recipe):
 def yield_string(yielb: dict) -> str:
     """String represeentation of a yield."""
 
-    number = utils.fraction_to_string(yielb["number"])
+    number = parse.fraction_to_string(yielb["number"])
     return f'{number} {yielb["unit"]}'
 
 
@@ -263,7 +266,7 @@ def set_serving_size(scale):
         if yielb["show_serving_size"]:
             scale["has_visible_serving_sizes"] = True
             number = yielb["number"] / scale["servings"]
-            number_string = utils.fraction_to_string(number)
+            number_string = parse.fraction_to_string(number)
             unit = units.numberize(yielb["unit"], number)
             yielb["serving_size_string"] = f"{number_string} {unit}"
     return scale
@@ -342,7 +345,7 @@ def ingredients_in_scale(base_ingredients, multiplier) -> list:
     for ingredient in base_ingredients:
         if "scale" not in ingredient:
             ingredients.append(multiply_ingredient(ingredient, multiplier))
-        elif utils.to_fraction(ingredient["scale"]) == multiplier:
+        elif parse.to_fraction(ingredient["scale"]) == multiplier:
             ingredients.append(ingredient)
     return ingredients
 
@@ -356,7 +359,7 @@ def multiply_ingredient(ingredient, multiplier) -> dict:
     if "explicit_cost" in ingredient:
         scaled["explicit_cost"] = ingredient["explicit_cost"] * multiplier
     if "explicit_nutrition" in ingredient:
-        scaled["explicit_nutrition"] = multiply_nutrition(
+        scaled["explicit_nutrition"] = nutrition.multiply(
             ingredient["explicit_nutrition"], multiplier
         )
     return scaled
@@ -387,7 +390,7 @@ def ingredient_string(ing: dict) -> str:
 
     i_str = []
     if ing["display_number"]:
-        i_str.append(utils.fraction_to_string(ing["display_number"]))
+        i_str.append(parse.fraction_to_string(ing["display_number"]))
     if ing["display_unit"]:
         i_str.append((ing["display_unit"]))
     if ing["display_item"]:
@@ -401,7 +404,7 @@ def ingredient_display_amount(ingredient):
 
     amount = []
     if ingredient["display_number"]:
-        amount.append(utils.fraction_to_string(ingredient["display_number"]))
+        amount.append(parse.fraction_to_string(ingredient["display_number"]))
     if ingredient["display_unit"]:
         amount.append((ingredient["display_unit"]))
     return " ".join(amount)
@@ -426,9 +429,9 @@ def lookup_grocery(ingredient):
     """Adds grocery data to ingredient."""
 
     ingredient["has_matching_grocery"] = False
-    grocery = utils.grocery_info(ingredient["item"])
+    grocery_item = grocery.lookup(ingredient["item"])
 
-    if grocery is None:
+    if grocery_item is None:
         return
 
     ingredient["has_matching_grocery"] = True
@@ -448,7 +451,7 @@ def lookup_grocery(ingredient):
         "protein",
         "tags",
     ]
-    ingredient["grocery"] = {k: grocery[k] for k in grocery_keys}
+    ingredient["grocery"] = {k: grocery_item[k] for k in grocery_keys}
     ingredient["grocery"]["nutrition"] = {
         "calories": ingredient["grocery"].pop("calories"),
         "fat": ingredient["grocery"].pop("fat"),
@@ -569,7 +572,7 @@ def set_instructions(recipe):
         for step in recipe["instructions"]:
             if (
                 "scale" not in step
-                or utils.to_fraction(step["scale"]) == scale["multiplier"]
+                or parse.to_fraction(step["scale"]) == scale["multiplier"]
             ):
                 scale["instructions"].append(step.copy())
 

@@ -4,7 +4,7 @@ import json
 from fractions import Fraction
 import yaml
 
-from src.utils import utils
+from src.utils import parse
 
 
 def collection(file_path: str) -> dict:
@@ -22,7 +22,7 @@ def collection(file_path: str) -> dict:
 
     if file_path.endswith(".json"):
         return json.loads(data)
-    elif file_path.endswith(".yaml"):
+    if file_path.endswith(".yaml"):
         return yaml.safe_load(data)
 
     raise ValueError("file is not a valid format")
@@ -122,7 +122,7 @@ def _read_time(time: dict) -> dict:
         raise TypeError(f'time unit is a {type(time["unit"])}, not a string.')
 
     name = time["name"]
-    time_time = utils.to_fraction(time["time"])
+    time_time = parse.to_fraction(time["time"])
     time_data = {"name": name, "time": time_time, "unit": time.get("unit", "")}
     return time_data
 
@@ -155,7 +155,7 @@ def _read_yield_item(data):
         raise KeyError("Yield data must have number field.")
 
     yielb = {}
-    yielb["number"] = utils.to_fraction(data["number"])
+    yielb["number"] = parse.to_fraction(data["number"])
     if "unit" in data:
         yielb["unit"] = data["unit"]
     if "show_yield" in data:
@@ -191,16 +191,12 @@ def _read_ingredient(data: dict) -> dict:
 
     # read from 'text' field
     if "text" in data:
-        ingredient["number"], remainder = utils.split_amount_and_text(data["text"])
-        ingredient["unit"], remainder = utils.split_unit_and_text(remainder)
-        ingredient["item"], ingredient["descriptor"] = (
-            utils.split_ingredient_and_description(remainder)
-        )
+        ingredient.update(parse.ingredient(data["text"]))
 
     # read number fields
     for field in ["number", "display_number"]:
         if field in data:
-            ingredient[field] = utils.to_fraction(data[field])
+            ingredient[field] = parse.to_fraction(data[field])
 
     # read text fields
     for field in [
@@ -272,10 +268,10 @@ def _read_multiplier(scale) -> Fraction:
         raise TypeError("Scale must be a dict or number.")
 
     if isinstance(scale, (int, float, str)):
-        return utils.to_fraction(scale)
+        return parse.to_fraction(scale)
 
     # dict
-    return utils.to_fraction(scale["multiplier"])
+    return parse.to_fraction(scale["multiplier"])
 
 
 def _read_videos(data):
@@ -367,5 +363,5 @@ def _read_note(note_data):
 
     note = {"text": note_data["text"]}
     if "scale" in note_data:
-        note["scale"] = utils.to_fraction(note_data["scale"])
+        note["scale"] = parse.to_fraction(note_data["scale"])
     return note

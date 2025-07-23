@@ -2,9 +2,11 @@
 
 from collections import defaultdict
 import math
+
 from src.utils import units
 from src.utils import utils
-from src.utils.utils import ingredients_in, scales_in, multiply_nutrition
+from src.utils import nutrition
+from src.builder.iterate import ingredients_in, scales_in
 
 
 def set_child_recipe_links(site):
@@ -311,7 +313,7 @@ def set_nutrition(site):
             ingredient["nutrition"] = empty_nutrition()
             ingredient["has_nutrition"] = False
         else:
-            ingredient["nutrition"] = multiply_nutrition(
+            ingredient["nutrition"] = nutrition.multiply(
                 ingredient["grocery"]["nutrition"], ingredient["grocery_count"]
             )
             ingredient["has_nutrition"] = True
@@ -319,7 +321,7 @@ def set_nutrition(site):
 
     for recipe, scale in scales_in(site, include="r"):
         if "explicit_nutrition" in recipe:
-            scale["nutrition"] = multiply_nutrition(
+            scale["nutrition"] = nutrition.multiply(
                 recipe["explicit_nutrition"], scale["multiplier"]
             )
             scale["nutrition_final"] = True
@@ -356,7 +358,7 @@ def calculate_ingredient_nutrition(site) -> None:
             child_recipe = recipe_from_slug(ingredient["recipe_slug"], site["recipes"])
             if child_recipe["scales"][0]["nutrition_final"]:
                 ingredient["recipe_nutrition"] = child_recipe["scales"][0]["nutrition"]
-                ingredient["nutrition"] = multiply_nutrition(
+                ingredient["nutrition"] = nutrition.multiply(
                     ingredient["recipe_nutrition"], ingredient["recipe_quantity"]
                 )
                 ingredient["has_nutrition"] = True
@@ -419,13 +421,13 @@ def set_display_nutrition(site):
 
     for scale, ingredient in ingredients_in(site, include="s"):
         servings = scale.get("servings", 1)
-        ingredient["nutrition_display"] = multiply_nutrition(
+        ingredient["nutrition_display"] = nutrition.multiply(
             ingredient["nutrition"], 1 / servings, round_result=True
         )
 
     for recipe, scale in scales_in(site, include="r"):
         servings = scale.get("servings", 1)
-        scale["nutrition_display"] = multiply_nutrition(
+        scale["nutrition_display"] = nutrition.multiply(
             scale["nutrition"], 1 / servings, round_result=True
         )
         scale["has_visible_nutrition"] = scale_has_visible_nutrition(scale, recipe)
