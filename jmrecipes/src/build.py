@@ -31,23 +31,25 @@ def build():
         None
     """
 
-    ts = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+    timestamp = datetime.datetime.now()
 
-    latest = os.path.join(utils.builds_directory, "latest")
-    site_web = os.path.join(latest, "web")
-    site_local = os.path.join(latest, "local")
-    log = os.path.join(latest, "build-log")
+    latest_folder = os.path.join(utils.builds_directory, "latest")
+    site_web = os.path.join(latest_folder, "web")
+    site_local = os.path.join(latest_folder, "local")
+    log = os.path.join(latest_folder, "build-log")
 
     utils.create_dir(utils.builds_directory)
-    utils.make_empty_dir(latest)
+    utils.make_empty_dir(latest_folder)
     utils.create_dir(log)
 
     site = load_site(utils.data_directory, log)
-    build_site(site, site_web, verbose=True)
-    build_site(site, site_local, local=True)
+    build_site(site, site_web, timestamp, verbose=True)
+    build_site(site, site_local, timestamp, local=True)
 
-    stamp = os.path.join(utils.builds_directory, ts)
-    shutil.copytree(latest, stamp)
+    timestamp_folder = os.path.join(
+        utils.builds_directory, timestamp.strftime("%Y-%m-%d %H-%M-%S")
+    )
+    shutil.copytree(latest_folder, timestamp_folder)
     print("Build complete")
 
 
@@ -279,7 +281,9 @@ def load_collection(file_path, log_path=None) -> dict:
     )
 
 
-def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
+def build_site(
+    site: dict, site_path: str, timestamp: datetime.datetime, local=False, verbose=False
+) -> None:
     """Builds a recipe site using site data.
 
     Args:
@@ -308,8 +312,11 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
         if verbose:
             print(f'Collection: {collection["name"]}')
 
-    make_404_page(os.path.join(site_path, "404.html"))
-    make_summary_page(site, os.path.join(site_path, "summary.html"))
+    error_path = os.path.join(site_path, "404.html")
+    make_404_page(error_path)
+
+    summary_path = os.path.join(site_path, "summary.html")
+    make_summary_page(site, timestamp, local, summary_path)
 
     shutil.copyfile(
         os.path.join(utils.assets_directory, "icon.png"),
@@ -319,6 +326,7 @@ def build_site(site: dict, site_path: str, local=False, verbose=False) -> None:
         os.path.join(utils.assets_directory, "default_720x540.jpg"),
         os.path.join(site_path, "default.jpg"),
     )
+    shutil.copytree(utils.data_directory, os.path.join(site_path, "data"))
 
 
 def get_collection_dir(collection: dict, site_path: str) -> str:
@@ -392,7 +400,9 @@ def make_collection_page(collection: dict, output_dir: str, local: bool) -> None
     utils.write_file(content, file)
 
 
-def make_summary_page(site: dict, page_path: str) -> None:
+def make_summary_page(
+    site: dict, timestamp: datetime.datetime, local: bool, page_path: str
+) -> None:
     """Create summary page for recipe site.
 
     Args:
@@ -402,10 +412,13 @@ def make_summary_page(site: dict, page_path: str) -> None:
 
     content = template.render(
         "summary-page.html",
+        timestamp_str=timestamp.strftime("%B %d, %Y").replace(" 0", " "),
         recipes=site["summary"]["recipes"],
         collections=site["summary"]["collections"],
         ingredients=site["summary"]["ingredients"],
+        groceries=site["summary"]["groceries"],
         site_title=utils.site_title(),
+        is_local=local,
     )
     utils.write_file(content, page_path)
 

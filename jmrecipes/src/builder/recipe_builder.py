@@ -1,4 +1,4 @@
-"""Collection Builder Utilities"""
+"""Recipe Builder Utilities"""
 
 from urllib.parse import urlparse
 from collections import defaultdict
@@ -436,6 +436,7 @@ def lookup_grocery(ingredient):
 
     ingredient["has_matching_grocery"] = True
     grocery_keys = [
+        "grocery_id",
         "name",
         "cost",
         "volume_amount",

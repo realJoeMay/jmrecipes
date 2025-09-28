@@ -1,8 +1,9 @@
-"""Collection Builder Utilities"""
+"""Site Builder Utilities"""
 
 from collections import defaultdict
 import math
 
+from src.utils import grocery
 from src.utils import units
 from src.utils import utils
 from src.utils import nutrition
@@ -624,7 +625,7 @@ def set_search_values(site) -> dict:
 
 
 def set_summary(site):
-    """Adds summary data to site.
+    """Adds data for summary page.
 
     Sets the following keys for the site:
     - 'summary' (dict)
@@ -634,6 +635,7 @@ def set_summary(site):
         "recipes": summary_recipes(site),
         "collections": summary_collections(site),
         "ingredients": summary_ingredients(site),
+        "groceries": summary_groceries(site),
     }
     return site
 
@@ -646,6 +648,7 @@ def summary_recipes(site):
         recipes.append(
             {
                 "title": recipe["title"],
+                "slug": recipe["url_slug"],
                 "collections": [c["name"] for c in recipe["collections"]],
             }
         )
@@ -661,6 +664,8 @@ def summary_collections(site):
             {
                 "name": collection["name"],
                 "recipes": [r["title"] for r in collection["recipes"]],
+                "url_path": collection["url_path"],
+                "is_homepage": collection["is_homepage"],
             }
         )
     return collections
@@ -681,3 +686,22 @@ def summary_ingredients(site: dict) -> list[dict]:
             }
         )
     return ingredients
+
+
+def summary_groceries(site: dict) -> list[dict]:
+    """Summary data for Groceries."""
+
+    all_groceries = grocery.full_list()
+    keys_to_keep = ["grocery_id", "name"]
+    groceries_dict = {}
+    for g in all_groceries:
+        groceries_dict[g["grocery_id"]] = {k: g.get(k) for k in keys_to_keep}
+        groceries_dict[g["grocery_id"]]["recipe-scales"] = []
+
+    for recipe, scale, ingredient in ingredients_in(site, include="rs"):
+        if ingredient["has_matching_grocery"]:
+            groceries_dict[ingredient["grocery"]["grocery_id"]]["recipe-scales"].append(
+                f"{recipe['title']} ({scale['label']})"
+            )
+
+    return list(groceries_dict.values())

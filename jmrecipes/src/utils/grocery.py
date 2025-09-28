@@ -36,6 +36,11 @@ def lookup(ingredient_name: str) -> dict | None:
     return grocery_dict
 
 
+def full_list() -> list[dict]:
+    """Return list of all loaded groceries."""
+    return _groceries.to_dict(orient="records")
+
+
 def _load_groceries():
     groceries_path = os.path.join(data_directory, "groceries.xlsx")
     groceries = pd.read_excel(groceries_path)
@@ -59,6 +64,9 @@ def _load_groceries():
         "notes": "",
     }
     groceries.fillna(value=column_defaults, inplace=True)
+    groceries.index = groceries.index + 1
+    groceries.index.name = "grocery_id"
+    groceries = groceries.reset_index()
     return groceries
 
 
