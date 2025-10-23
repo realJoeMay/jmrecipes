@@ -2,9 +2,7 @@ name: JMRecipes
 label: More Recipes
 url_path: ""
 recipes: 
-- test-chili
-- test-no-banner
-- test-no-subtitle
+- french-toast
 - test-yields
 - test-no-servings
 - test-times
@@ -23,14 +21,13 @@ recipes:
 - test-ingredient-text
 - test-ingredient-explicit-cost
 - test-ingredient-explicit-nutrition
-- test-notes
 - test-description
-- test-recipe-parent
-- test-recipe-child-1
-- test-recipe-child-2
-- test-recipe-child-3
 - test-videos
-- test-search-ingredient-tag
-- test-search-ingredient
-- test-search-subtitle
-- test-search-title
+- linked-parent
+- linked-child-1
+- linked-child-2
+- linked-child-3
+- search-ingredient-tag
+- search-ingredient
+- search-subtitle
+- search-title

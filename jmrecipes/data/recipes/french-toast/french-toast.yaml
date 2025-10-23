@@ -1,0 +1,28 @@
+title: French Toast
+subtitle: with brioche bread
+description: It's very good.
+yield:
+- number: 2
+  unit: servings
+- number: 4
+  unit: toasts
+  show_serving_size: true
+  show_yield: false
+scale:
+- multiplier: 2
+ingredients:
+- text: 4 Eggs
+- text: 1/4 cup Milk
+- text: 1/2 tsp Vanilla Extract
+- text: 1 tsp Cinnamon
+- text: 8 slices Brioche Bread
+- text: 1/2 cup Maple Syrup
+instructions:
+- text: In a skillet, melt butter over medium heat. Whisk together cinnamon, eggs, milk, and vanilla and pour into a shallow container.
+- text: Dip bread in egg mixture. Fry slices until golden brown, then flip to cook the other side.
+- text: Serve with syrup.
+sources:
+- name: Robert Irvine
+  url: https://www.foodnetwork.com/recipes/robert-irvine/french-toast-recipe-1951408
+notes:
+- text: For a vegan option, eat a banana. 

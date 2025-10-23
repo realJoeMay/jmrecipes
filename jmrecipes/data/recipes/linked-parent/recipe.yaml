@@ -8,12 +8,12 @@ ingredients:
 - number: '2'
   unit: pint
   item: Child Recipe 1
-  recipe: test-recipe-child-1
+  recipe: linked-child-1
 - number: '1.5'
   unit: lb
   item: Child Recipe 2
-  recipe: test-recipe-child-2
+  recipe: linked-child-2
 - number: '2'
   unit: loaves
   item: Child Recipe 3
-  recipe: test-recipe-child-3
+  recipe: linked-child-3

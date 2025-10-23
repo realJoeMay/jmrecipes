@@ -141,11 +141,11 @@ def set_title(recipe):
         raise KeyError("Recipe must have a title")
 
     recipe["title"] = recipe["file"]["title"]
-    recipe["has_subtitle"] = False
 
-    if "subtitle" in recipe and recipe["subtitle"] != "":
+    recipe["has_subtitle"] = False
+    if recipe["file"].get("subtitle"):
         recipe["has_subtitle"] = True
-        recipe["subtitle"] = recipe["subtitle"].lower()
+        recipe["subtitle"] = recipe["file"]["subtitle"].lower()
 
     return recipe
 

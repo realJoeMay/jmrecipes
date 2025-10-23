@@ -326,7 +326,7 @@ def build_site(
         os.path.join(utils.assets_directory, "default_720x540.jpg"),
         os.path.join(site_path, "default.jpg"),
     )
-    shutil.copytree(utils.data_directory, os.path.join(site_path, "data"))
+    # shutil.copytree(utils.data_directory, os.path.join(site_path, "data"))
 
 
 def get_collection_dir(collection: dict, site_path: str) -> str:
