@@ -24,3 +24,14 @@ def multiply(
         multiplied = {key: round(value) for key, value in multiplied.items()}
 
     return multiplied
+
+
+def read(data: dict) -> dict:
+    """Formats nutrition data from input file."""
+
+    return {
+        "calories": data.get("calories", 0),
+        "fat": data.get("fat", 0),
+        "protein": data.get("protein", 0),
+        "carbohydrates": data.get("carbohydrates", 0),
+    }

@@ -1,8 +1,9 @@
 """Recipe Builder Utilities"""
 
-from urllib.parse import urlparse
 from collections import defaultdict
+from fractions import Fraction
 import json
+from urllib.parse import urlparse
 
 from src.utils import utils
 from src.utils import units
@@ -12,43 +13,139 @@ from src.utils import nutrition
 from src.builder.iterate import ingredients_in
 
 
-def set_defaults(recipe):
-    """Sets default values for keys if not already set.
+def standardize_yields(recipe):
+    """Sets yield data from input file."""
 
-    Sets the following default values:
-    - 'hide_cost': (from config)
-    - 'hide_nutrition': (from config)
+    yield_data = recipe["file"].get("yield", [])
+    if not isinstance(yield_data, (int, float, list)):
+        raise TypeError("Yield data must be a number or a list.")
 
-    Sets the following default values for each yield:
-    - 'unit': 'servings'
-    - 'show_yield': True
-    - 'show_serving_size': False
+    recipe["yield"] = []
+    if isinstance(yield_data, (int, float)):
+        recipe["yield"].append(make_yield_item({"number": yield_data}))
+    else:  # list
+        for yield_item in yield_data:
+            recipe["yield"].append(make_yield_item(yield_item))
 
-    Sets the following default values for each video:
-    - 'list': (from config)
+    return recipe
 
-    Sets the following default values for each instruction step:
-    - 'list': Instructions
+
+def make_yield_item(data: dict) -> dict:
+    """Formats yield data from input file."""
+
+    if "number" not in data:
+        raise KeyError("Yield data must have number field.")
+
+    yielb = {}
+    yielb["number"] = parse.to_fraction(data["number"])
+    yielb["unit"] = data.get("unit", "servings")
+    yielb["show_yield"] = bool(data.get("show_yield", True))
+    yielb["show_serving_size"] = bool(data.get("show_serving_size", False))
+    return yielb
+
+
+def standardize_instructions(recipe):
+    """Sets instructions data from input file."""
+
+    recipe["instructions"] = []
+    for step in recipe["file"].get("instructions", []):
+        recipe["instructions"].append(make_step(step))
+
+    return recipe
+
+
+def make_step(data: str | dict) -> dict:
+    """Formats instructions data from input file."""
+
+    if not isinstance(data, (str, dict)):
+        raise TypeError("Instructions step must be a string or dictionary.")
+
+    if isinstance(data, dict) and "text" not in data:
+        raise KeyError('Instructions step must include "text" field.')
+
+    if isinstance(data, str):
+        return {"text": data}
+
+    # data is dict with 'text'
+    step = {"text": data["text"], "list": data.get("list", "Instructions")}
+    if "scale" in data:
+        step["scale"] = data["scale"]
+    if "list" in data:
+        step["list"] = data["list"]
+    return step
+
+
+def standardize_ingredients(recipe):
+    """Saves ingredient info from input file formats."""
+
+    recipe["ingredients"] = []
+    for ingredient in recipe["file"].get("ingredients", []):
+        recipe["ingredients"].append(_read_ingredient(ingredient))
+    return recipe
+
+
+def _read_ingredient(data: dict) -> dict:
+    """Formats ingredient data from input file."""
+
+    # default values
+    ingredient = {
+        "number": 0,
+        "unit": "",
+        "item": "",
+        "descriptor": "",
+        "display_number": 0,
+        "display_unit": "",
+        "display_item": "",
+    }
+
+    if "text" in data:
+        ingredient.update(parse.ingredient(data["text"]))
+
+    # read number fields
+    for field in ["number", "display_number"]:
+        if field in data:
+            ingredient[field] = parse.to_fraction(data[field])
+
+    # read text fields
+    for field in [
+        "unit",
+        "item",
+        "descriptor",
+        "display_unit",
+        "display_item",
+        "list",
+        "scale",
+    ]:
+        if field in data:
+            ingredient[field] = data[field]
+
+    # read fields that change name
+    if "cost" in data:
+        ingredient["explicit_cost"] = data["cost"]
+    if "nutrition" in data:
+        ingredient["explicit_nutrition"] = nutrition.read(data["nutrition"])
+    if "recipe" in data:
+        ingredient["recipe_slug"] = data["recipe"]
+
+    return ingredient
+
+
+def set_title(recipe):
+    """Sets values related to the recipe's title and subtitle.
+
+    Sets the following keys:
+    - 'has_subtitle' (bool)
     """
 
-    for yielb in recipe["yield"]:
-        if "unit" not in yielb:
-            yielb["unit"] = "servings"
-        if "show_yield" not in yielb:
-            yielb["show_yield"] = True
-        if "show_serving_size" not in yielb:
-            yielb["show_serving_size"] = False
+    if "title" not in recipe["file"]:
+        raise KeyError("Recipe must have a title")
 
-    for step in recipe["instructions"]:
-        if "list" not in step:
-            step["list"] = "Instructions"
+    recipe["title"] = recipe["file"]["title"]
+    recipe["has_subtitle"] = False
 
-    if "hide_cost" not in recipe:
-        recipe["hide_cost"] = utils.config("default", "hide_cost", as_boolean=True)
-    if "hide_nutrition" not in recipe:
-        recipe["hide_nutrition"] = utils.config(
-            "default", "hide_nutrition", as_boolean=True
-        )
+    if "subtitle" in recipe and recipe["subtitle"] != "":
+        recipe["has_subtitle"] = True
+        recipe["subtitle"] = recipe["subtitle"].lower()
 
     return recipe
 
@@ -62,25 +159,10 @@ def set_url(recipe):
     - 'feedback_url' (str)
     """
 
+    recipe["url_slug"] = utils.sluggify(recipe["file"]["folder_name"])
     recipe["url_path"] = "/" + recipe["url_slug"]
     recipe["url"] = utils.make_url(path=recipe["url_path"])
     recipe["feedback_url"] = utils.feedback_url(recipe["title"], recipe["url"])
-    return recipe
-
-
-def set_subtitle(recipe):
-    """Sets values related to the recipe's subtitle.
-
-    Sets the following keys:
-    - 'has_subtitle' (bool)
-    """
-
-    if "subtitle" in recipe and recipe["subtitle"] != "":
-        recipe["has_subtitle"] = True
-        recipe["subtitle"] = recipe["subtitle"].lower()
-    else:
-        recipe["has_subtitle"] = False
-
     return recipe
 
 
@@ -91,7 +173,13 @@ def set_description(recipe):
     - 'has_description' (bool)
     """
 
-    recipe["has_description"] = "description" in recipe
+    description = recipe["file"].get("description", "")
+    if not isinstance(description, str):
+        raise TypeError("Description must be a str.")
+
+    recipe["has_description"] = bool(description)
+    if description:
+        recipe["description"] = description
     return recipe
 
 
@@ -103,8 +191,9 @@ def set_image(recipe):
     - 'image_url' (str)
     """
 
+    recipe["has_image"] = "image" in recipe["file"]
     if recipe["has_image"]:
-        recipe["image_url"] = "/".join((recipe["url_slug"], recipe["image"]))
+        recipe["image_url"] = "/".join((recipe["url_slug"], recipe["file"]["image"]))
     else:
         recipe["image_url"] = "default.jpg"
     return recipe
@@ -114,8 +203,9 @@ def set_scales(recipe):
     """Sets scale-related values for each scale.
 
     Sets the following keys:
-    - 'base_select_class' (str)
+    - 'scales' (list)
     - 'has_scales' (bool)
+    - 'base_select_class' (str)
 
     Sets the following keys for each scale:
     - 'label' (str)
@@ -126,6 +216,11 @@ def set_scales(recipe):
     - 'keyboard_shortcut' (str)
     """
 
+    recipe["scales"] = [{"multiplier": Fraction(1)}]
+    for scale in recipe["file"].get("scale", []):
+        recipe["scales"].append({"multiplier": _read_multiplier(scale)})
+    # return scales
+
     for i, scale in enumerate(recipe["scales"], 1):
         label = str(scale["multiplier"].limit_denominator(100)).replace("/", "_") + "x"
         scale["label"] = label
@@ -134,9 +229,22 @@ def set_scales(recipe):
         scale["button_class"] = f"display-scale-{label}-btn"
         scale["js_function_name"] = f"scale{label}"
         scale["keyboard_shortcut"] = i
-    recipe["base_select_class"] = recipe["scales"][0]["select_class"]
     recipe["has_scales"] = len(recipe["scales"]) > 1
+    recipe["base_select_class"] = recipe["scales"][0]["select_class"]
     return recipe
+
+
+def _read_multiplier(scale) -> Fraction:
+    """Returns multiplier of a scale."""
+
+    if not isinstance(scale, (int, float, str, dict)):
+        raise TypeError("Scale must be a dict or number.")
+
+    if isinstance(scale, (int, float, str)):
+        return parse.to_fraction(scale)
+
+    # dict
+    return parse.to_fraction(scale["multiplier"])
 
 
 def set_times(recipe):
@@ -151,19 +259,45 @@ def set_times(recipe):
     - 'time_string' (str)
     """
 
-    for time in recipe["times"]:
+    recipe["times"] = []
 
-        if "unit" not in time or time["unit"] == "":
-            time["unit"] = "minutes" if time["time"] > 1 else "minute"
-
-        time_string = parse.fraction_to_string(time["time"])
-        time["time_string"] = f'{time_string} {time["unit"]}'
+    for time in recipe["file"].get("times", []):
+        recipe["times"].append(_read_time(time))
 
     for scale in recipe["scales"]:
         scale["times"] = recipe["times"]
         scale["has_times"] = bool(scale["times"])
 
     return recipe
+
+
+def _read_time(time_data: dict) -> dict:
+    """Formats a time entry."""
+
+    if not isinstance(time_data, dict):
+        raise TypeError("time must be a dict.")
+    if "name" not in time_data:
+        raise KeyError("time must have a name.")
+    if not isinstance(time_data["name"], str):
+        raise TypeError("time name must be a string.")
+    if "time" not in time_data:
+        raise KeyError("time must have a time.")
+    if not isinstance(time_data["time"], (int, float)):
+        raise TypeError(f'time time is a {type(time_data["time"])}, not a number.')
+    if not isinstance(time_data.get("unit", ""), str):
+        raise TypeError(f'time unit is a {type(time_data["unit"])}, not a string.')
+
+    name = time_data["name"]
+    time_time = parse.to_fraction(time_data["time"])
+    default_unit = "minutes" if time_time > 1 else "minute"
+    time = {
+        "name": name,
+        "time": time_time,
+        "unit": time_data.get("unit", default_unit),
+    }
+    time["time_string"] = f'{parse.fraction_to_string(time_time)} {time["unit"]}'
+
+    return time_data
 
 
 def scale_yields(recipe):
@@ -604,7 +738,7 @@ def number_steps(recipe):
     return recipe
 
 
-def set_sources(recipe):
+def set_sources(recipe: dict) -> dict:
     """Sets sources data.
 
     Sets the following keys:
@@ -614,36 +748,52 @@ def set_sources(recipe):
     - 'html' (str)
     """
 
-    if "sources" not in recipe:
-        recipe["has_sources"] = False
-        return recipe
+    sources_data = recipe["file"].get("sources", [])
+    if not isinstance(sources_data, (list)):
+        raise TypeError("Sources must be a list.")
 
-    for source in recipe["sources"]:
-        source["html"] = source_html(source)
+    recipe["sources"] = []
+    for source_data in sources_data:
+        recipe["sources"].append(_read_source(source_data))
 
-    recipe["has_sources"] = True
+    # if "sources" not in recipe:
+    #     # recipe["has_sources"] = False
+    #     return recipe
+
+    # for source in recipe["sources"]:
+    #     source["html"] = source_html(source)
+
+    recipe["has_sources"] = bool(recipe["sources"])
 
     return recipe
 
 
-def source_html(source):
-    """Returns link html for a source."""
+def _read_source(source_data):
+    """Returns formatted source data from input file."""
 
-    if "name" in source and "url" in source:
-        return source_link(source["name"], source["url"])
-    if "name" in source and "url" not in source:
-        return source["name"]
-    if "name" not in source and "url" in source:
-        name = urlparse(source["url"]).netloc
-        return source_link(name, source["url"])
+    name = source_data.get("name", "")
+    url = source_data.get("url", "")
+    if not isinstance(name, str):
+        raise TypeError("Source name must be str.")
+    if not isinstance(url, str):
+        raise TypeError("Source url must be str.")
+    if not name and not url:
+        raise ValueError("Source must have name or url.")
 
-    return ""
+    source = {}
+    if name:
+        source["name"] = name
+    if url:
+        source["url"] = url
 
+    if name and url:
+        source["html"] = f'<a href="{url}" target="_blank">{name}</a>'
+    elif not name and url:
+        source["html"] = f'<a href="{url}" target="_blank">{urlparse(url).netloc}</a>'
+    else:  # name and not url:
+        source["html"] = name
 
-def source_link(name, url) -> str:
-    """Returns html for link given name and url."""
-
-    return f'<a href="{url}" target="_blank">{name}</a>'
+    return source
 
 
 def set_notes(recipe):
@@ -655,16 +805,34 @@ def set_notes(recipe):
     - 'has_notes_box' (bool)
     """
 
+    notes_data = recipe["file"].get("notes", [])
+    if not isinstance(notes_data, list):
+        raise TypeError("Notes must be a list.")
+
+    recipe["notes"] = []
+    for note_data in notes_data:
+        recipe["notes"].append(_read_note(note_data))
+
     for scale in recipe["scales"]:
-
-        if "notes" in recipe:
-            scale["notes"] = notes_for_scale(recipe["notes"], scale)
-        else:
-            scale["notes"] = []
-
+        scale["notes"] = notes_for_scale(recipe["notes"], scale)
         scale["has_notes"] = bool(scale["notes"])
         scale["has_notes_box"] = recipe["has_sources"] or scale["has_notes"]
+
     return recipe
+
+
+def _read_note(note_data):
+    """Returns formatted note data from input file."""
+
+    if not isinstance(note_data, dict):
+        raise TypeError("Note must be a dictionary.")
+    if "text" not in note_data:
+        raise KeyError("Note must have text.")
+
+    note = {"text": note_data["text"]}
+    if "scale" in note_data:
+        note["scale"] = parse.to_fraction(note_data["scale"])
+    return note
 
 
 def notes_for_scale(notes, scale) -> list:
@@ -681,34 +849,54 @@ def set_videos(recipe):
     """Set videos for the recipe.
 
     Sets the following keys for the recipe:
-    - 'embedded_videos' (list)
-    - 'linked_videos' (list)
-    - 'has_embedded_videos' (bool)
-    - 'has_linked_videos' (bool)
-
-    Sets the following keys for box_video:
-    - 'url' (str)
-
-    Sets the following keys for description_video:
-    - 'url' (str)
+    - 'videos_embedded' (list)
+    - 'videos_linked' (list)
+    - 'has_videos_embedded' (bool)
+    - 'has_videos_linked' (bool)
     """
 
-    recipe["embedded_videos"] = []
-    recipe["linked_videos"] = []
+    videos_data = recipe["file"].get("videos", [])
+    if not isinstance(videos_data, list):
+        raise TypeError("Videos data must be a list.")
 
-    for video in recipe["videos"]:
+    recipe["videos_embedded"] = []
+    recipe["videos_linked"] = []
+
+    for video_data in videos_data:
+
+        video = _read_video(video_data)
+
         url = video["url"]
         if utils.is_youtube_url(url):
             video_id = utils.youtube_url_id(url)
-            recipe["embedded_videos"].append(
+            recipe["videos_embedded"].append(
                 {"url": url, "embed_url": utils.youtube_embed_url(video_id)}
             )
         else:
-            recipe["linked_videos"].append({"url": url})
+            recipe["videos_linked"].append({"url": url})
 
-    recipe["has_embedded_videos"] = bool(recipe["embedded_videos"])
-    recipe["has_linked_videos"] = bool(recipe["linked_videos"])
+    recipe["has_videos_embedded"] = bool(recipe["videos_embedded"])
+    recipe["has_videos_linked"] = bool(recipe["videos_linked"])
     return recipe
+
+
+def _read_video(video_data):
+    """Returns video from input data."""
+
+    if not isinstance(video_data, dict):
+        raise TypeError("Video data must be a dict.")
+    if "url" not in video_data:
+        raise KeyError("Video must have url.")
+    if not isinstance(video_data["url"], str):
+        raise TypeError("Video url must be a str.")
+    if "list" in video_data and not isinstance(video_data["list"], str):
+        raise TypeError("Video instruction_list must be a str.")
+
+    video = {}
+    video["url"] = video_data["url"]
+    if "list" in video_data:
+        video["list"] = video_data["list"]
+    return video
 
 
 def set_schema(recipe):
@@ -787,5 +975,23 @@ def set_search_targets(recipe):
 
     for target in recipe["search_targets"]:
         target["class"] = "target-" + target["type"]
+
+    return recipe
+
+
+def set_special_cases(recipe):
+    """Checks input file for special cases."""
+
+    if "cost" in recipe["file"]:
+        recipe["explicit_cost"] = recipe["file"]["cost"]
+    if "nutrition" in recipe["file"]:
+        recipe["explicit_nutrition"] = nutrition.read(recipe["file"]["nutrition"])
+
+    default_hide_cost = utils.config("default", "hide_cost", as_boolean=True)
+    recipe["hide_cost"] = bool(recipe["file"].get("hide_cost", default_hide_cost))
+    default_hide_nutrition = utils.config("default", "hide_nutrition", as_boolean=True)
+    recipe["hide_nutrition"] = bool(
+        recipe["file"].get("hide_nutrition", default_hide_nutrition)
+    )
 
     return recipe

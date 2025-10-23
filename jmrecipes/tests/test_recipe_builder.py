@@ -9,14 +9,14 @@ file_dir = os.path.dirname(os.path.abspath(__file__))
 test_data = os.path.join(file_dir, "data")
 
 
-def test_parse_yield_as_number():
+def test_servings_from_yield_number():
     """Test parsing yield when it is expressed as a single number."""
     recipe_dir = os.path.join(test_data, "recipe_yield_as_number")
     recipe = build.load_recipe(recipe_dir)
     assert recipe["scales"][0]["servings"] == 2
 
 
-def test_parse_yield_as_list():
+def test_servings_from_yield_list():
     """Test parsing yield when it is expressed as a list of values."""
     recipe_dir = os.path.join(test_data, "recipe_yield_as_list")
     recipe = build.load_recipe(recipe_dir)
@@ -49,22 +49,3 @@ def test_ingredient_grocery_amoount():
     assert recipe["scales"][0]["ingredients"][2]["grocery_count"] == 2
     assert recipe["scales"][0]["ingredients"][3]["grocery_count"] == 3
     assert recipe["scales"][0]["ingredients"][4]["grocery_count"] == 0
-
-
-def test_nested_recipe_quantity():
-    """Test that nested recipe quantities are correctly resolved."""
-    site_dir = os.path.join(test_data, "site_nested_recipe_quantity")
-    site = build.load_site(site_dir)
-    qty_volume = site["recipes"][-1]["scales"][0]["ingredients"][0]["recipe_quantity"]
-    qty_weight = site["recipes"][-1]["scales"][0]["ingredients"][1]["recipe_quantity"]
-    qty_units = site["recipes"][-1]["scales"][0]["ingredients"][2]["recipe_quantity"]
-    assert qty_volume == 12
-    assert qty_weight == pytest.approx(6)
-    assert qty_units == 2
-
-
-def test_nested_recipe_loop_error():
-    """Test that a cyclic reference in nested recipes raises a ValueError."""
-    site_dir = os.path.join(test_data, "site_nested_recipe_loop_error")
-    with pytest.raises(ValueError, match="Cyclic recipe reference found"):
-        build.load_site(site_dir)

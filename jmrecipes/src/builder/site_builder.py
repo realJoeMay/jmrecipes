@@ -298,7 +298,6 @@ def set_nutrition(site):
 
     for ingredient in ingredients_in(site):
         ingredient["nutrition_final"] = False
-
     for scale in scales_in(site):
         scale["nutrition_final"] = False
 
@@ -333,7 +332,7 @@ def set_nutrition(site):
         calculate_recipes_nutrition(site)
         post_pending_count = recipes_nutrition_pending_count(site)
         if pre_pending_count == post_pending_count:
-            raise ValueError("Cyclic recipe reference found")
+            raise ValueError("Recipe loop found")
 
     return site
 
@@ -390,13 +389,13 @@ def ingredients_nutrition_final(scale):
 def sum_ingredient_nutrition(scale) -> dict:
     """Returns the nutrition of a scale by adding each ingredient."""
 
-    nutrition = empty_nutrition()
+    recipe_nutrition = empty_nutrition()
     for ingredient in scale["ingredients"]:
-        nutrition["calories"] += ingredient["nutrition"]["calories"]
-        nutrition["fat"] += ingredient["nutrition"]["fat"]
-        nutrition["protein"] += ingredient["nutrition"]["protein"]
-        nutrition["carbohydrates"] += ingredient["nutrition"]["carbohydrates"]
-    return nutrition
+        recipe_nutrition["calories"] += ingredient["nutrition"]["calories"]
+        recipe_nutrition["fat"] += ingredient["nutrition"]["fat"]
+        recipe_nutrition["protein"] += ingredient["nutrition"]["protein"]
+        recipe_nutrition["carbohydrates"] += ingredient["nutrition"]["carbohydrates"]
+    return recipe_nutrition
 
 
 def empty_nutrition() -> dict:
@@ -447,10 +446,10 @@ def scale_has_visible_nutrition(scale, recipe) -> bool:
     return has_nutrients(scale["nutrition"])
 
 
-def has_nutrients(nutrition: dict):
+def has_nutrients(nutrition_data: dict):
     """Return True if any item in nutrition is nonzero."""
 
-    for value in nutrition.values():
+    for value in nutrition_data.values():
         if value > 0:
             return True
     return False
@@ -538,7 +537,7 @@ def set_description_areas(site):
             or scale["has_visible_cost"]
             or recipe["has_description"]
             or recipe["used_in_any"]
-            or recipe["has_linked_videos"]
+            or recipe["has_videos_linked"]
         )
     return site
 

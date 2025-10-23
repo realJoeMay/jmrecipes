@@ -145,31 +145,32 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
         Recipes data as a dictionary.
     """
 
-    file = recipe_file(recipe_path)
-    filepath = os.path.join(recipe_path, file)
+    file_name = recipe_file(recipe_path)
+    file_path = os.path.join(recipe_path, file_name)
+    file_data = from_file.recipe(file_path)
+    file_data["folder_name"] = os.path.basename(recipe_path)
 
-    recipe = from_file.recipe(filepath)
-    folder = os.path.basename(recipe_path)
-    recipe["url_slug"] = utils.sluggify(folder)
+    recipe = {}
+    recipe["file"] = file_data
 
-    recipe["has_image"] = False
     image = recipe_image(recipe_path)
     if image:
-        recipe["has_image"] = True
         recipe["image"] = image
-        recipe["image_src_path"] = os.path.join(recipe_path, image)
+        recipe["image_path"] = os.path.join(recipe_path, image)
 
     if log_path is None:
         log_path = ""
     else:
-        log_path = os.path.join(log_path, recipe["url_slug"])
+        log_path = os.path.join(log_path, file_data["folder_name"])
 
     return utils.pipe(
         recipe,
         log_path,
-        recipe_builder.set_defaults,
+        recipe_builder.standardize_yields,
+        recipe_builder.standardize_instructions,
+        recipe_builder.standardize_ingredients,
+        recipe_builder.set_title,
         recipe_builder.set_url,
-        recipe_builder.set_subtitle,
         recipe_builder.set_description,
         recipe_builder.set_image,
         recipe_builder.set_scales,
@@ -189,6 +190,7 @@ def load_recipe(recipe_path: str, log_path=None) -> dict:
         recipe_builder.set_videos,
         recipe_builder.set_schema,
         recipe_builder.set_search_targets,
+        recipe_builder.set_special_cases,
     )
 
 
@@ -206,11 +208,9 @@ def recipe_file(recipe_path: str) -> str:
     """
 
     for file in os.listdir(recipe_path):
-        if file.endswith(".json"):
+        if file.endswith((".json", ".yaml")):
             return file
-        elif file.endswith(".yaml"):
-            return file
-    raise OSError(f"Data file not found in {dir}")
+    raise OSError(f"Recipe data file not found in {dir}")
 
 
 def recipe_image(recipe_path: str) -> str:
