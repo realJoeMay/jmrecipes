@@ -1,4 +1,5 @@
 unit,plural,type,to_standard
+,,,
 ml,ml,volume,1
 milliliter,milliliters,volume,1
 liter,liters,volume,1000
@@ -17,11 +18,9 @@ oz,oz,weight,28.3495
 ounce,ounces,weight,28.3495
 lb,lbs,weight,453.592
 pound,pounds,weight,453.592
-serving,servings,,
-box,boxes,,
-head,heads,,
-scoop,scoops,,
-stick,sticks,,
-loaf,loaves,`,
 slice,slices,,
-burger,burgers,,
+,,,
+,,,
+,,,
+,,,
+,,`,

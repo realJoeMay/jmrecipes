@@ -59,15 +59,16 @@ def make_step(data: str | dict) -> dict:
 
     if not isinstance(data, (str, dict)):
         raise TypeError("Instructions step must be a string or dictionary.")
-
     if isinstance(data, dict) and "text" not in data:
-        raise KeyError('Instructions step must include "text" field.')
+        raise KeyError('Instructions step dict must include "text" field.')
+
+    default_list = "Instructions"
 
     if isinstance(data, str):
-        return {"text": data}
+        return {"text": data, "list": default_list}
 
-    # data is dict with 'text'
-    step = {"text": data["text"], "list": data.get("list", "Instructions")}
+    # data is dict with "text"
+    step = {"text": data["text"], "list": data.get("list", default_list)}
     if "scale" in data:
         step["scale"] = data["scale"]
     if "list" in data:
@@ -84,7 +85,7 @@ def standardize_ingredients(recipe):
     return recipe
 
 
-def _read_ingredient(data: dict) -> dict:
+def _read_ingredient(data: dict | str) -> dict:
     """Formats ingredient data from input file."""
 
     # default values
@@ -98,13 +99,21 @@ def _read_ingredient(data: dict) -> dict:
         "display_item": "",
     }
 
-    if "text" in data:
-        ingredient.update(parse.ingredient(data["text"]))
+    if not isinstance(data, (str, dict)):
+        raise TypeError("Ingredient must be a string or dictionary.")
+
+    if isinstance(data, str):
+        data_dict = {"text": data}
+    else:  # dict
+        data_dict = data
+
+    if "text" in data_dict:
+        ingredient.update(parse.ingredient(data_dict["text"]))
 
     # read number fields
     for field in ["number", "display_number"]:
-        if field in data:
-            ingredient[field] = parse.to_fraction(data[field])
+        if field in data_dict:
+            ingredient[field] = parse.to_fraction(data_dict[field])
 
     # read text fields
     for field in [
@@ -116,16 +125,16 @@ def _read_ingredient(data: dict) -> dict:
         "list",
         "scale",
     ]:
-        if field in data:
-            ingredient[field] = data[field]
+        if field in data_dict:
+            ingredient[field] = data_dict[field]
 
     # read fields that change name
-    if "cost" in data:
-        ingredient["explicit_cost"] = data["cost"]
-    if "nutrition" in data:
-        ingredient["explicit_nutrition"] = nutrition.read(data["nutrition"])
-    if "recipe" in data:
-        ingredient["recipe_slug"] = data["recipe"]
+    if "cost" in data_dict:
+        ingredient["explicit_cost"] = data_dict["cost"]
+    if "nutrition" in data_dict:
+        ingredient["explicit_nutrition"] = nutrition.read(data_dict["nutrition"])
+    if "recipe" in data_dict:
+        ingredient["recipe_slug"] = data_dict["recipe"]
 
     return ingredient
 
@@ -191,9 +200,9 @@ def set_image(recipe):
     - 'image_url' (str)
     """
 
-    recipe["has_image"] = "image" in recipe["file"]
+    recipe["has_image"] = "image" in recipe
     if recipe["has_image"]:
-        recipe["image_url"] = "/".join((recipe["url_slug"], recipe["file"]["image"]))
+        recipe["image_url"] = "/".join((recipe["url_slug"], recipe["image"]))
     else:
         recipe["image_url"] = "default.jpg"
     return recipe
@@ -756,13 +765,6 @@ def set_sources(recipe: dict) -> dict:
     for source_data in sources_data:
         recipe["sources"].append(_read_source(source_data))
 
-    # if "sources" not in recipe:
-    #     # recipe["has_sources"] = False
-    #     return recipe
-
-    # for source in recipe["sources"]:
-    #     source["html"] = source_html(source)
-
     recipe["has_sources"] = bool(recipe["sources"])
 
     return recipe
@@ -824,8 +826,10 @@ def set_notes(recipe):
 def _read_note(note_data):
     """Returns formatted note data from input file."""
 
-    if not isinstance(note_data, dict):
-        raise TypeError("Note must be a dictionary.")
+    if not isinstance(note_data, (dict, str)):
+        raise TypeError("Note must be a dict or str.")
+    if isinstance(note_data, str):
+        return {"text": note_data}
     if "text" not in note_data:
         raise KeyError("Note must have text.")
 

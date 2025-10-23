@@ -301,7 +301,7 @@ def build_site(
         make_print_page(recipe, os.path.join(recipe_dir, "p"), local)
         if recipe["has_image"]:
             shutil.copyfile(
-                recipe["image_src_path"], os.path.join(recipe_dir, recipe["image"])
+                recipe["image_path"], os.path.join(recipe_dir, recipe["image"])
             )
         if verbose:
             print(f'Recipe: {recipe["title"]}')

@@ -1,7 +1,7 @@
 ---
-name: "2nd Collection"
-label: "More in 2nd Collection"
-url_path: "collection-2"
+name: "Special Recipes"
+label: "More Special Recipes"
+url_path: "special"
 search_placeholder: search collection...
 recipes: 
 - "french-toast"
