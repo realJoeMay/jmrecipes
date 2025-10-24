@@ -1,12 +1,9 @@
 title: No Servings
 yield:
-- number: 24
-  unit: cups
+- number: 1
+  unit: cup
 scale:
 - multiplier: 2
 - multiplier: 3
 ingredients:
-- number: '2'
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+- 1 cup milk

@@ -1,102 +1,22 @@
 title: No Instructions
-subtitle: it's pretty good
+scale:
+- 2
+ingredients:
+- 4 Eggs
+- 1/4 cup Milk
+- 1/2 tsp Vanilla Extract
+- 1 tsp Cinnamon
+- 8 slices Brioche Bread
+- 1/2 cup Maple Syrup
 yield:
-- number: 12
+- number: 2
   unit: servings
-- number: 24
+- number: 4
+  unit: toasts
   show_serving_size: true
   show_yield: false
-  unit: cups
-scale:
-- multiplier: 2
-ingredients:
-- number: '2'
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
-- number: '1'
-  item: Ground Sweet Italian Sausage
-  list: Ingredients
-  unit: lb
-- number: '60'
-  descriptor: drained
-  display_number: '4'
-  display_unit: (15 oz) cans
-  item: Red Kidney Beans
-  list: Ingredients
-  unit: oz
-- number: '48'
-  descriptor: with juice
-  display_number: '2'
-  display_unit: (28 oz) cans
-  item: Diced Tomatoes
-  list: Ingredients
-  unit: oz
-- number: '6'
-  display_number: '1'
-  display_unit: (6 oz) can
-  item: Tomato Paste
-  list: Ingredients
-  unit: oz
-- number: '1'
-  item: Sweet Onion
-  list: Ingredients
-- number: '2'
-  display_item: Red Bell Peppers
-  item: Red Bell Pepper
-  list: Ingredients
-- number: '4'
-  item: Better Than Bouillon Beef
-  list: Ingredients
-  unit: tsp
-- number: '1'
-  item: Worcestershire Sauce
-  list: Ingredients
-  unit: tbsp
-- number: 1/2
-  item: Beer
-  list: Ingredients
-  unit: cup
-- number: '12'
-  item: Frozen Corn
-  list: Ingredients
-  unit: oz
-- number: 1/4
-  item: Chili Powder
-  list: Staples
-  unit: cup
-- number: '1'
-  item: Minced Garlic
-  list: Staples
-  unit: tbsp
-- number: '1'
-  item: Cayenne
-  list: Staples
-  unit: tsp
-- number: '2'
-  item: Cumin
-  list: Staples
-  unit: tsp
-- number: '1'
-  item: Paprika
-  list: Staples
-  unit: tsp
-- number: '1'
-  item: Oregano
-  list: Staples
-  unit: tsp
-- number: '1'
-  item: Basil
-  list: Staples
-  unit: tsp
-- number: '1'
-  item: Salt
-  list: Staples
-  unit: tsp
-- number: '1'
-  item: Black Pepper
-  list: Staples
-  unit: tsp
 sources:
-- name: Boilermaker Chili
-  url: https://www.allrecipes.com/recipe/78299/boilermaker-tailgate-chili/
+- name: Robert Irvine
+  url: https://www.foodnetwork.com/recipes/robert-irvine/french-toast-recipe-1951408
+notes:
+- For a vegan option, eat a banana. 

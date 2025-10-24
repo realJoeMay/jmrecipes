@@ -3,6 +3,7 @@ label: More Recipes
 url_path: ""
 recipes: 
 - french-toast
+- ingredient-lists
 - test-yields
 - test-no-servings
 - test-times

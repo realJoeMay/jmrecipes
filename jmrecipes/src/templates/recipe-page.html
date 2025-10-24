@@ -387,22 +387,29 @@ a.menu-header:hover {
 
 /* INGREDIENTS */
 
+.ingredient-list-header {
+    padding-bottom: 0.5rem;
+    padding-top: 1.2rem;
+    margin-top: 1.3rem;
+    border-top: solid 1px #ccc;
+
+}
+
+.ingredient-list-header:first-child {
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+}
+
 .ingredient-list-name {
     width: 100%;
     font-size: 2rem;
     font-weight: 500;
     color: #343434;
-    padding-bottom: 0.5rem;
-    padding-top: 1.2rem;
-    margin-top: 1rem;
-    border-top: solid 1px #ccc;
 }
 
-.ingredient-list-name:first-child {
-    padding-top: 0;
-    margin-top: 0;
-    border-top: none;
-}
+/* .ingredient-list-name:first-child {
+} */
 
 .ingredient-list {
     display: flex;
@@ -627,7 +634,7 @@ a.menu-header:hover {
 }
 
 .theme-dark .description-area,
-.theme-dark .ingredient-list-name,
+.theme-dark .ingredient-list-header,
 .theme-dark .step {
     border-color: #666;
 }
@@ -693,7 +700,7 @@ a.menu-header:hover {
     }
 
     .theme-system .description-area,
-    .theme-system .ingredient-list-name,
+    .theme-system .ingredient-list-header,
     .theme-system .step {
         border-color: #666;
     }
@@ -982,9 +989,9 @@ a.menu-header:hover {
                     {% for list_name, ingredients in scale.ingredient_lists.items() %}
                     <div class="ingredient-list-header">
                         <h2 class='ingredient-list-name'>{{ list_name }}</h2>
-                        <span class="ingredient-detail ingredient-detail-label detail-cost">Showing total cost</span>
+                        <span class="ingredient-detail ingredient-detail-label detail-cost">Showing cost</span>
                         <span class="ingredient-detail ingredient-detail-label detail-cost-per-serving">Showing cost per serving</span>
-                        <span class="ingredient-detail ingredient-detail-label detail-nutrition-per-serving">Showing nutrition per serving</span>
+                        <span class="ingredient-detail ingredient-detail-label detail-nutrition-per-serving">Showing nutrition {% if scale.has_servings %}per serving{% endif %}</span>
                     </div>
                     
                     <div class="ingredient-list">
