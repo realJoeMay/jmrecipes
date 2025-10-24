@@ -387,20 +387,12 @@ a.menu-header:hover {
 
 /* INGREDIENTS */
 
-.recipe-box-ingredients {
-    display: flex;
-    flex-wrap: wrap;
-    row-gap: 0.75rem;
-    column-gap: 4%;
-}
-
 .ingredient-list-name {
     width: 100%;
     font-size: 2rem;
     font-weight: 500;
     color: #343434;
     padding-bottom: 0.5rem;
-
     padding-top: 1.2rem;
     margin-top: 1rem;
     border-top: solid 1px #ccc;
@@ -412,6 +404,12 @@ a.menu-header:hover {
     border-top: none;
 }
 
+.ingredient-list {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+    column-gap: 4%;
+}
 
 .ingredient {
     width: 100%;
@@ -462,6 +460,16 @@ a.menu-header:hover {
 
 
 /* DETAILS */
+.ingredient-detail.ingredient-detail-label {
+    display: none;
+    font-style: italic;
+    color: #555;
+    font-size: 1rem;
+    margin-left: 0;
+    margin-bottom: 10px;
+}
+
+
 .ingredient-detail {
     display: none;
     font-style: italic;
@@ -972,48 +980,56 @@ a.menu-header:hover {
                 <div class="recipe-box recipe-box-ingredients">
     
                     {% for list_name, ingredients in scale.ingredient_lists.items() %}
-                    <h2 class='ingredient-list-name'>{{ list_name }}</h2>
-        
-                    {% for ingredient in ingredients %}
-                    <div class="ingredient">
-        
-                        {% if ingredient.display_amount %}
-                        <div class="ingredient-amount">{{ ingredient.display_amount }}</div>
-                        {% endif %}
+                    <div class="ingredient-list-header">
+                        <h2 class='ingredient-list-name'>{{ list_name }}</h2>
+                        <span class="ingredient-detail ingredient-detail-label detail-cost">Showing total cost</span>
+                        <span class="ingredient-detail ingredient-detail-label detail-cost-per-serving">Showing cost per serving</span>
+                        <span class="ingredient-detail ingredient-detail-label detail-nutrition-per-serving">Showing nutrition per serving</span>
+                    </div>
+                    
+                    <div class="ingredient-list">
+                        {% for ingredient in ingredients %}
+                        <div class="ingredient">
             
-                        {% if ingredient.display_item %}
-                        <div class="ingredient-item">
-                            {{ ingredient.display_item }}
-                            {% if ingredient.descriptor %}
-                            <span class="ingredient-item-descriptor">{{ ingredient.descriptor }}</span>
+                            {% if ingredient.display_amount %}
+                            <div class="ingredient-amount">{{ ingredient.display_amount }}</div>
                             {% endif %}
-                            {% if ingredient.is_recipe %}
-                            <a href="{{ ingredient.recipe_url }}{% if is_local %}/index.html{% endif %}" target="_blank" class="child-recipe-link">{{ icon.link }}</a>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-
-                        <div class="ingredient-detail detail-cost">{{ ingredient.cost_string }}</div>
-                        <div class="ingredient-detail detail-cost-per-serving">{{ ingredient.cost_per_serving_string }}</div>
-
-                        {% if ingredient.has_nutrition %}
-                        <div class="ingredient-detail detail-nutrition-per-serving">
-                            <div class="nutrition">
-                                <div class="calories value">{{ ingredient.nutrition_display.calories }}</div>
-                                <div class="calories label">Calories</div>
-                                <div class="calories value">{{ ingredient.nutrition_display.fat }}g</div>
-                                <div class="fat label">fat</div>
-                                <div class="fat value">{{ ingredient.nutrition_display.carbohydrates }}g</div>
-                                <div class="carbs label">carbs</div>
-                                <div class="calories value">{{ ingredient.nutrition_display.protein }}g</div>
-                                <div class="protein label">protein</div>
+                
+                            {% if ingredient.display_item %}
+                            <div class="ingredient-item">
+                                {{ ingredient.display_item }}
+                                {% if ingredient.descriptor %}
+                                <span class="ingredient-item-descriptor">{{ ingredient.descriptor }}</span>
+                                {% endif %}
+                                {% if ingredient.is_recipe %}
+                                <a href="{{ ingredient.recipe_url }}{% if is_local %}/index.html{% endif %}" target="_blank" class="child-recipe-link">{{ icon.link }}</a>
+                                {% endif %}
                             </div>
-                        </div>
-                        {% endif %}
+                            {% endif %}
 
-                    </div><!-- ingredient -->
+                            <div class="ingredient-detail detail-cost">{{ ingredient.cost_string }}</div>
+                            <div class="ingredient-detail detail-cost-per-serving">{{ ingredient.cost_per_serving_string }}</div>
+
+                            {% if ingredient.has_nutrition %}
+                            <div class="ingredient-detail detail-nutrition-per-serving">
+                                <div class="nutrition">
+                                    <div class="calories value">{{ ingredient.nutrition_display.calories }}</div>
+                                    <div class="calories label">Calories</div>
+                                    <div class="calories value">{{ ingredient.nutrition_display.fat }}g</div>
+                                    <div class="fat label">fat</div>
+                                    <div class="fat value">{{ ingredient.nutrition_display.carbohydrates }}g</div>
+                                    <div class="carbs label">carbs</div>
+                                    <div class="calories value">{{ ingredient.nutrition_display.protein }}g</div>
+                                    <div class="protein label">protein</div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                        </div><!-- ingredient -->
+                        {% endfor %}
+                    </div><!-- ingredient list -->
+
     
-                {% endfor %}
                 {% endfor %}
                 </div><!-- recipe-box -->
             </div><!-- scale -->
