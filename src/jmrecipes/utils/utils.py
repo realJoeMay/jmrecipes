@@ -12,12 +12,13 @@ import re
 
 # Directories
 utils_directory = os.path.dirname(os.path.abspath(__file__))
-src_directory = os.path.split(utils_directory)[0]
+jmr_directory = os.path.split(utils_directory)[0]
+src_directory = os.path.split(jmr_directory)[0]
 project_directory = os.path.split(src_directory)[0]
 builds_directory = os.path.join(project_directory, "builds")
 data_directory = os.path.join(project_directory, "data")
 assets_directory = os.path.join(data_directory, "assets")
-templates_directory = os.path.join(src_directory, "templates")
+# templates_directory = os.path.join(src_directory, "templates")
 
 
 # Folders and files

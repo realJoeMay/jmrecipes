@@ -5,13 +5,13 @@ import os
 import shutil
 from typing import Optional
 
-from src.builder import from_file
-from src.builder import recipe_builder
-from src.builder import collection_builder
-from src.builder import site_builder
-from src.utils import utils
-from src.utils import template
-from src.utils import qr
+from jmrecipes.builder import from_file
+from jmrecipes.builder import recipe_builder
+from jmrecipes.builder import collection_builder
+from jmrecipes.builder import site_builder
+from jmrecipes.utils import utils
+from jmrecipes.utils import template
+from jmrecipes.utils import qr
 
 
 def build():

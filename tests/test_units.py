@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.utils import units
+from src.jmrecipes.utils import units
 
 
 @pytest.mark.parametrize(

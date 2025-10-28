@@ -6,8 +6,8 @@ import jinja2
 
 # Directories
 utils_directory = os.path.dirname(os.path.abspath(__file__))
-src_directory = os.path.split(utils_directory)[0]
-templates_directory = os.path.join(src_directory, "templates")
+jmr_directory = os.path.split(utils_directory)[0]
+templates_directory = os.path.join(jmr_directory, "templates")
 icons_directory = os.path.join(utils_directory, "icons")
 
 _environment = jinja2.Environment(loader=jinja2.FileSystemLoader(templates_directory))

@@ -3,7 +3,7 @@
 import os
 import pytest
 
-from src import build
+from src.jmrecipes import build
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 test_data = os.path.join(file_dir, "data")

@@ -1,6 +1,6 @@
 """Collection Builder Utilities"""
 
-from src.utils import utils
+from jmrecipes.utils import utils
 
 
 def set_collection_defaults(collection):

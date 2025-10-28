@@ -4,7 +4,7 @@ from math import floor
 from fractions import Fraction
 from typing import Tuple
 
-from src.utils import units
+from jmrecipes.utils import units
 
 
 def ingredient(text: str) -> dict:

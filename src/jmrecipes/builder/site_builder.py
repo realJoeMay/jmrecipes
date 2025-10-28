@@ -3,11 +3,11 @@
 from collections import defaultdict
 import math
 
-from src.utils import grocery
-from src.utils import units
-from src.utils import utils
-from src.utils import nutrition
-from src.builder.iterate import ingredients_in, scales_in
+from jmrecipes.utils import grocery
+from jmrecipes.utils import units
+from jmrecipes.utils import utils
+from jmrecipes.utils import nutrition
+from jmrecipes.builder.iterate import ingredients_in, scales_in
 
 
 def set_child_recipe_links(site):

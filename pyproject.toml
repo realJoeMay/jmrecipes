@@ -1,0 +1,29 @@
+[project]
+name = "jmrecipes"
+version = "0.1.0"
+description = "Recipe site builder"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests"
+]
+norecursedirs = [
+    ".*",
+    "build",
+    "dist",
+    "venv",
+    "Lib",
+    "site-packages",
+    "__pycache__"
+]
+addopts = "-ra -q"
+
+[project.scripts]
+jmrecipes = "jmrecipes.cli:main"

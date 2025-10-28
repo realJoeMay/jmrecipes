@@ -5,12 +5,12 @@ from fractions import Fraction
 import json
 from urllib.parse import urlparse
 
-from src.utils import utils
-from src.utils import units
-from src.utils import grocery
-from src.utils import parse
-from src.utils import nutrition
-from src.builder.iterate import ingredients_in
+from jmrecipes.utils import utils
+from jmrecipes.utils import units
+from jmrecipes.utils import grocery
+from jmrecipes.utils import parse
+from jmrecipes.utils import nutrition
+from jmrecipes.builder.iterate import ingredients_in
 
 
 def standardize_yields(recipe):

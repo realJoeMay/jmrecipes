@@ -1,6 +1,6 @@
 """Unit tests for utility functions in src/utils/utils.py"""
 
-from src.utils import utils
+from src.jmrecipes.utils import utils
 
 
 def test_is_youtube_url():

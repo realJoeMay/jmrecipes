@@ -1,5 +1,5 @@
 """Build Script Entry Point"""
 
-from src.build import build
+from jmrecipes.build import build
 
 build()

@@ -4,7 +4,8 @@ import pandas as pd
 
 # Directories
 utils_directory = os.path.dirname(os.path.abspath(__file__))
-src_directory = os.path.split(utils_directory)[0]
+jmr_directory = os.path.split(utils_directory)[0]
+src_directory = os.path.split(jmr_directory)[0]
 project_directory = os.path.split(src_directory)[0]
 data_directory = os.path.join(project_directory, "data")
 
