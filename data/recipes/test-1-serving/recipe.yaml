@@ -1,35 +1,21 @@
 title: 1 Serving
-subtitle: it's pretty good
+scale:
+- 2
+ingredients:
+- 4 Eggs
+- 1/4 cup Milk
+- 1/2 tsp Vanilla Extract
+- 1 tsp Cinnamon
+- 8 slices Brioche Bread
+- 1/2 cup Maple Syrup
+instructions:
+- In a skillet, melt butter over medium heat. Whisk together cinnamon, eggs, milk, and vanilla and pour into a shallow container.
+- Dip bread in egg mixture. Fry slices until golden brown, then flip to cook the other side.
+- Serve with syrup.
 yield:
 - number: 1
-  unit: servings
-- number: 24
+  unit: serving
+- number: 4
+  unit: toasts
   show_serving_size: true
   show_yield: false
-  unit: cups
-scale:
-- multiplier: 2
-ingredients:
-- number: '2'
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
-- number: '1'
-  item: Ground Sweet Italian Sausage
-  list: Ingredients
-  unit: lb
-- number: '60'
-  descriptor: drained
-  display_number: '4'
-  display_unit: (15 oz) cans
-  item: Red Kidney Beans
-  list: Ingredients
-  unit: oz
-instructions:
-- text: Crumble ground chuck and sausage into a large stock pot. Cook, stirring frequently,
-    until meat is evenly browned. Drain off excess grease.
-- text: Add in remaining ingredients. Stir to blend, then cover and simmer over low
-    heat for at least 2 hours, stirring occasionally.
-sources:
-- name: Boilermaker Chili
-  url: https://www.allrecipes.com/recipe/78299/boilermaker-tailgate-chili/

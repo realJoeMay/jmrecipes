@@ -478,7 +478,9 @@ def set_ingredient_details(site):
             has_cost_detail(scale) and not cost_hidden and not explicit_cost
         )
         scale["has_cost_per_serving_detail"] = (
-            scale["has_cost_detail"] and scale["has_servings"]
+            scale["has_cost_detail"]
+            and scale["has_servings"]
+            and scale["servings"] != 1
         )
         scale["has_nutrition_detail"] = (
             scale["has_visible_nutrition"] and not explicit_nutrition
@@ -493,13 +495,14 @@ def set_ingredient_details(site):
         recipe["has_cost_detail"] = False
         recipe["has_cost_per_serving_detail"] = False
         recipe["has_nutrition_detail"] = False
-        for scale in recipe["scales"]:
-            if scale["has_cost_detail"]:
-                recipe["has_cost_detail"] = True
-            if scale["has_cost_per_serving_detail"]:
-                recipe["has_cost_per_serving_detail"] = True
-            if scale["has_nutrition_detail"]:
-                recipe["has_nutrition_detail"] = True
+
+    for recipe, scale in scales_in(site, include="r"):
+        if scale["has_cost_detail"]:
+            recipe["has_cost_detail"] = True
+        if scale["has_cost_per_serving_detail"]:
+            recipe["has_cost_per_serving_detail"] = True
+        if scale["has_nutrition_detail"]:
+            recipe["has_nutrition_detail"] = True
 
     return site
 

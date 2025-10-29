@@ -23,7 +23,6 @@ norecursedirs = [
     "site-packages",
     "__pycache__"
 ]
-addopts = "-ra -q"
 
 [project.scripts]
 jmrecipes = "jmrecipes.cli:main"
