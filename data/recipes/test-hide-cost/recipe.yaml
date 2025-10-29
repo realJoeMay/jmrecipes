@@ -1,9 +1,6 @@
 title: Hide Cost
 scale:
-- multiplier: 2
+- 2
 ingredients:
-- number: 2
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+- 2 Eggs
 hide_cost: true

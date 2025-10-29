@@ -3,9 +3,6 @@ cost: 100
 yield:
 - number: 1
 scale:
-- multiplier: 2
+- 2
 ingredients:
-- number: 2
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+- 2 Eggs

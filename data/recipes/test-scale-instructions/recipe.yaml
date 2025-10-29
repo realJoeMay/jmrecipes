@@ -1,4 +1,6 @@
-title: Scale Instructions
+title: Custom Scale Instructions
+yield:
+- number: 2
 scale:
 - multiplier: 2
 instructions:

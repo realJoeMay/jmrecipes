@@ -5,6 +5,4 @@ yield:
 - number: 8
   unit: oz
 ingredients:
-- number: '2'
-  unit: lb
-  item: Ground Beef
+- 2 eggs

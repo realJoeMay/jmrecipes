@@ -1,5 +1,4 @@
 unit,plural,type,to_standard
-,,,
 ml,ml,volume,1
 milliliter,milliliters,volume,1
 liter,liters,volume,1000
@@ -20,7 +19,3 @@ lb,lbs,weight,453.592
 pound,pounds,weight,453.592
 slice,slices,,
 loaf,loaves,,
-,,,
-,,,
-,,,
-,,`,

@@ -2,13 +2,10 @@ title: Videos
 scale:
 - multiplier: 2
 ingredients:
-- number: '2'
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+- 2 Eggs
 video:
 - url: https://youtu.be/RmeM7WYB5Os
 - url: https://www.youtube.com/watch?v=JYg1UfVCfiw
 - url: https://rumble.com/vldkuj-strawberry-tiramisu-amazing-short-cooking-video-recipe-and-food-hacks.html
 instructions:
-- text: Crumble ground chuck into a large stock pot.
+- text: Cook eggs.

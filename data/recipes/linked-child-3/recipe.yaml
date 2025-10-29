@@ -5,6 +5,4 @@ yield:
 - number: 1
   unit: loaf
 ingredients:
-- number: '2'
-  unit: lb
-  item: Ground Beef
+- 2 eggs

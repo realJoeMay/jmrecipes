@@ -8,10 +8,7 @@ nutrition:
   protein: 5
   carbohydrates: 5
 scale:
-- multiplier: 2
-- multiplier: 3
+- 2
+- 3
 ingredients:
-- number: 2
-  item: Ground Beef
-  list: Ingredients
-  unit: lb
+- 2 Eggs

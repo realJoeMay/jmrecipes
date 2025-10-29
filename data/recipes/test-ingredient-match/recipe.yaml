@@ -1,13 +1,6 @@
 title: Ingredients Match
 ingredients:
-- number: 8
-  unit: oz
-  item: Ground Beef
-- number: 2
-  unit: tsp
-  item: Thyme
-- number: 1
-  item: Sweet Onion
-- number: 1
-  unit: slice
-  item: Brioche Bread
+- 8 oz Test Weight
+- 2 tsp Test Volume
+- 0.5 loaf Test Other
+- 2 Test Count
