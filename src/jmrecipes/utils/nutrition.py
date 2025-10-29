@@ -1,14 +1,14 @@
 """Nutrition."""
 
 
-def read(data: dict) -> dict:
+def read(nutrition_data: dict) -> dict:
     """Formats nutrition data from input file."""
 
     return {
-        "calories": data.get("calories", 0),
-        "fat": data.get("fat", 0),
-        "protein": data.get("protein", 0),
-        "carbohydrates": data.get("carbohydrates", 0),
+        "calories": nutrition_data.get("calories", 0),
+        "fat": nutrition_data.get("fat", 0),
+        "protein": nutrition_data.get("protein", 0),
+        "carbohydrates": nutrition_data.get("carbohydrates", 0),
     }
 
 

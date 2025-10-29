@@ -4,6 +4,8 @@ from collections import defaultdict
 from fractions import Fraction
 import json
 from urllib.parse import urlparse
+from typing import Optional
+from typing import Dict, Any
 
 from jmrecipes.utils import utils
 from jmrecipes.utils import units
@@ -76,17 +78,44 @@ def make_step(data: str | dict) -> dict:
     return step
 
 
-def standardize_ingredients(recipe):
+def standardize_ingredients(recipe: dict) -> dict:
     """Saves ingredient info from input file formats."""
 
     recipe["ingredients"] = []
+    file_data = recipe["file"]
+
+    # 1. Default ingredients list
     for ingredient in recipe["file"].get("ingredients", []):
         recipe["ingredients"].append(_read_ingredient(ingredient))
+
+    # 2. Named ingredient lists (ingredients-staples, ...)
+    prefix = "ingredients-"
+    for key, items in file_data.items():
+        if not key.startswith(prefix):
+            continue
+
+        list_name = _normalize_list_name(key[len(prefix) :])
+        recipe["ingredients"].extend(_read_ingredient(ing, list_name) for ing in items)
+
     return recipe
 
 
-def _read_ingredient(data: dict | str) -> dict:
+def _normalize_list_name(raw: str) -> str:
+    # turn "sauce_base" / "sauce-base" into "Sauce Base"
+    return raw.replace("_", " ").replace("-", " ").strip().title()
+
+
+def _read_ingredient(data: dict | str, list_name: Optional[str] = None) -> dict:
     """Formats ingredient data from input file."""
+
+    if not isinstance(data, (str, dict)):
+        raise TypeError("Ingredient must be a string or dictionary.")
+
+    data_dict: Dict[str, Any]
+    if isinstance(data, str):
+        data_dict = {"text": data}
+    else:  # dict
+        data_dict = data
 
     # default values
     ingredient = {
@@ -97,25 +126,20 @@ def _read_ingredient(data: dict | str) -> dict:
         "display_number": 0,
         "display_unit": "",
         "display_item": "",
+        "list": "Ingredients",
     }
-
-    if not isinstance(data, (str, dict)):
-        raise TypeError("Ingredient must be a string or dictionary.")
-
-    if isinstance(data, str):
-        data_dict = {"text": data}
-    else:  # dict
-        data_dict = data
 
     if "text" in data_dict:
         ingredient.update(parse.ingredient(data_dict["text"]))
+    if list_name is not None:
+        ingredient["list"] = list_name
 
-    # read number fields
+    # update number fields
     for field in ["number", "display_number"]:
         if field in data_dict:
             ingredient[field] = parse.to_fraction(data_dict[field])
 
-    # read text fields
+    # update text fields
     for field in [
         "unit",
         "item",
@@ -128,7 +152,7 @@ def _read_ingredient(data: dict | str) -> dict:
         if field in data_dict:
             ingredient[field] = data_dict[field]
 
-    # read fields that change name
+    # update custom fields
     if "cost" in data_dict:
         ingredient["explicit_cost"] = data_dict["cost"]
     if "nutrition" in data_dict:

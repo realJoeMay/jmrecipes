@@ -1,14 +1,15 @@
 """Read recipe and collection files for build."""
 
 import json
+from pathlib import Path
 import yaml
 
 
-def collection(file_path: str) -> dict:
+def collection(file_path: Path) -> dict:
     """Converts a collection data file to a collection dictionary.
 
     Args:
-        file_path: Str path to collection data file.
+        file_path: Path to collection data file.
 
     Returns:
         Dict containing collection data.
@@ -17,15 +18,15 @@ def collection(file_path: str) -> dict:
     with open(file_path, "r", encoding="utf8") as f:
         data = f.read()
 
-    if file_path.endswith(".json"):
+    if file_path.suffix == ".json":
         return json.loads(data)
-    if file_path.endswith(".yaml"):
+    if file_path.suffix in {".yaml", ".yml"}:
         return yaml.safe_load(data)
 
     raise ValueError("file is not a valid format")
 
 
-def recipe(file_path: str) -> dict:
+def recipe(file_path: Path) -> dict:
     """Converts a recipe data file to a recipe dictionary.
 
     Args:
@@ -38,9 +39,9 @@ def recipe(file_path: str) -> dict:
     with open(file_path, "r", encoding="utf8") as f:
         data = f.read()
 
-    if file_path.endswith(".json"):
+    if file_path.suffix == ".json":
         return json.loads(data)
-    if file_path.endswith(".yaml"):
+    if file_path.suffix in {".yaml", ".yml"}:
         return yaml.safe_load(data)
 
     raise ValueError("file is not a valid format")

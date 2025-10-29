@@ -8,10 +8,9 @@ ingredients:
 - 1/4 cup Milk
 - 8 slices Brioche Bread
 - 1/2 cup Maple Syrup
-- text: 1/2 tsp Vanilla Extract
-  list: Staples
-- text: 1 tsp Cinnamon
-  list: Staples
+ingredients-staples:
+- 1/2 tsp Vanilla Extract
+- 1 tsp Cinnamon
 instructions:
 - In a skillet, melt butter over medium heat. Whisk together cinnamon, eggs, milk, and vanilla and pour into a shallow container.
 - Dip bread in egg mixture. Fry slices until golden brown, then flip to cook the other side.

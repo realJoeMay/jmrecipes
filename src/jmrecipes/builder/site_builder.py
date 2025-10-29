@@ -552,9 +552,7 @@ def set_ingredient_lists(site):
     for scale in scales_in(site):
         scale["ingredient_lists"] = defaultdict(list)
         for ingredient in scale["ingredients"]:
-            scale["ingredient_lists"][ingredient.get("list", "Ingredients")].append(
-                ingredient
-            )
+            scale["ingredient_lists"][ingredient["list"]].append(ingredient)
     return site
 
 

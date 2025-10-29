@@ -4,6 +4,7 @@ from configparser import ConfigParser
 from fractions import Fraction
 import json
 import os
+from pathlib import Path
 import shutil
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
 from typing import Union
@@ -18,7 +19,6 @@ project_directory = os.path.split(src_directory)[0]
 builds_directory = os.path.join(project_directory, "builds")
 data_directory = os.path.join(project_directory, "data")
 assets_directory = os.path.join(data_directory, "assets")
-# templates_directory = os.path.join(src_directory, "templates")
 
 
 # Folders and files
@@ -40,7 +40,7 @@ def make_empty_dir(path):
     os.makedirs(path, exist_ok=True)
 
 
-def write_file(content: str, path: str):
+def write_file(content: str, path: Path):
     """Save content to a text file."""
 
     with open(path, "w", encoding="utf-8") as f:
@@ -76,19 +76,19 @@ class JMREncoder(json.JSONEncoder):
 
 
 # Pipe
-def pipe(data: dict, log_path: str, *funcs) -> dict:
+def pipe(data: dict, log_path: Path | None, *funcs) -> dict:
     """Pipe data through a sequence of functions.
 
     Optionally saves data after each function in log files. Saves no log
-    if log_path is empty string.
+    if log_path is None.
     """
 
-    has_log = log_path != ""
+    has_log = log_path is not None
 
     if has_log:
         create_dir(log_path)
-        log_file_path = os.path.join(log_path, "0_start.json")
-        write_json_file(data, log_file_path)
+        log_file_path_0 = os.path.join(log_path, "0_start.json")
+        write_json_file(data, log_file_path_0)
 
     for i, func in enumerate(funcs, 1):
         data = func(data)
