@@ -5,7 +5,13 @@ description = "Recipe site builder"
 readme = "README.md"
 requires-python = ">=3.10"
 
-dependencies = []
+dependencies = [
+    "Jinja2",
+    "openpyxl",
+    "pandas",
+    "PyYAML",
+    "segno"
+]
 
 [project.optional-dependencies]
 dev = []
