@@ -23,6 +23,7 @@ recipes:
 - test-yields
 - test-scale-ingredients
 - test-scale-instructions
+- scale-pluralize
 - linked-parent
 - linked-child-1
 - linked-child-2

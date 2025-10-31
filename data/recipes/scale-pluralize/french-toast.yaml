@@ -1,0 +1,13 @@
+title: Pluralize
+scale:
+- 2
+- 4
+ingredients:
+- 1 Egg
+- 1/2 cup Milk
+- 1 slice Brioche Bread
+yield:
+- number: 1
+  unit: serving
+- number: 1
+  unit: toast

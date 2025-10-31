@@ -15,7 +15,7 @@ from jmrecipes.utils import nutrition
 from jmrecipes.builder.iterate import ingredients_in
 
 
-def standardize_yields(recipe):
+def normalize_yields(recipe):
     """Sets yield data from input file."""
 
     yield_data = recipe["file"].get("yield", [])
@@ -46,7 +46,7 @@ def make_yield_item(data: dict) -> dict:
     return yielb
 
 
-def standardize_instructions(recipe):
+def normalize_instructions(recipe):
     """Sets instructions data from input file."""
 
     recipe["instructions"] = []
@@ -78,7 +78,7 @@ def make_step(data: str | dict) -> dict:
     return step
 
 
-def standardize_ingredients(recipe: dict) -> dict:
+def normalize_ingredients(recipe: dict) -> dict:
     """Saves ingredient info from input file formats."""
 
     recipe["ingredients"] = []
@@ -159,6 +159,12 @@ def _read_ingredient(data: dict | str, list_name: Optional[str] = None) -> dict:
         ingredient["explicit_nutrition"] = nutrition.read(data_dict["nutrition"])
     if "recipe" in data_dict:
         ingredient["recipe_slug"] = data_dict["recipe"]
+
+    # fill display fields if not set
+    for field in ["number", "unit", "item"]:
+        display = "display_" + field
+        if not ingredient[display]:
+            ingredient[display] = ingredient[field]
 
     return ingredient
 
@@ -493,14 +499,14 @@ def scale_ingredients(recipe):
     """
 
     for scale in recipe["scales"]:
-        scale["ingredients"] = ingredients_in_scale(
+        scale["ingredients"] = _ingredients_in_scale(
             recipe["ingredients"], scale["multiplier"]
         )
         scale["has_ingredients"] = bool(scale["ingredients"])
     return recipe
 
 
-def ingredients_in_scale(base_ingredients, multiplier) -> list:
+def _ingredients_in_scale(base_ingredients, multiplier) -> list:
     """Get list of ingredients for a recipe scale.
 
     Ingredients are scaled using a multiplier. If the base
@@ -511,13 +517,13 @@ def ingredients_in_scale(base_ingredients, multiplier) -> list:
     ingredients = []
     for ingredient in base_ingredients:
         if "scale" not in ingredient:
-            ingredients.append(multiply_ingredient(ingredient, multiplier))
+            ingredients.append(_multiply_ingredient(ingredient, multiplier))
         elif parse.to_fraction(ingredient["scale"]) == multiplier:
             ingredients.append(ingredient)
     return ingredients
 
 
-def multiply_ingredient(ingredient, multiplier) -> dict:
+def _multiply_ingredient(ingredient, multiplier) -> dict:
     """Returns ingredient data scaled by multiplier."""
 
     scaled = ingredient.copy()
@@ -541,32 +547,46 @@ def set_ingredient_outputs(recipe):
     """
 
     for ingredient in ingredients_in(recipe):
-        if ingredient["display_number"] == 0:
-            ingredient["display_number"] = ingredient["number"]
-        if ingredient["display_unit"] == "":
-            ingredient["display_unit"] = ingredient["unit"]
-        if ingredient["display_item"] == "":
-            ingredient["display_item"] = ingredient["item"]
-        ingredient["string"] = ingredient_string(ingredient)
-        ingredient["display_amount"] = ingredient_display_amount(ingredient)
+        ingredient["display_unit"] = units.numberize(
+            ingredient["display_unit"], ingredient["display_number"]
+        )
+        ingredient["display_item"] = _numberize_ingredient_item(ingredient)
+        ingredient["string"] = _ingredient_string(ingredient)
+        ingredient["display_amount"] = _ingredient_display_amount(ingredient)
     return recipe
 
 
-def ingredient_string(ing: dict) -> str:
+def _numberize_ingredient_item(ingredient):
+
+    if ingredient["display_unit"]:
+        return ingredient["display_item"]
+    if "grocery" not in ingredient:
+        return ingredient["display_item"]
+
+    if ingredient["display_number"] <= 1 and ingredient["grocery"]["singular"]:
+        return ingredient["grocery"]["singular"]
+
+    if ingredient["display_number"] > 1 and ingredient["grocery"]["plural"]:
+        return ingredient["grocery"]["plural"]
+
+    return ingredient["display_item"]
+
+
+def _ingredient_string(ing: dict) -> str:
     """String for ingredient with number, unit, and item."""
 
-    i_str = []
+    words = []
     if ing["display_number"]:
-        i_str.append(parse.fraction_to_string(ing["display_number"]))
+        words.append(parse.fraction_to_string(ing["display_number"]))
     if ing["display_unit"]:
-        i_str.append((ing["display_unit"]))
+        words.append((ing["display_unit"]))
     if ing["display_item"]:
-        i_str.append((ing["display_item"]))
-    string = " ".join(i_str)
+        words.append((ing["display_item"]))
+    string = " ".join(words)
     return string
 
 
-def ingredient_display_amount(ingredient):
+def _ingredient_display_amount(ingredient):
     """String for ingredient with number and unit."""
 
     amount = []
@@ -605,6 +625,8 @@ def lookup_grocery(ingredient):
     grocery_keys = [
         "grocery_id",
         "name",
+        "singular",
+        "plural",
         "cost",
         "volume_amount",
         "volume_unit",
@@ -612,7 +634,7 @@ def lookup_grocery(ingredient):
         "weight_unit",
         "other_amount",
         "other_unit",
-        "discrete_amount",
+        "count",
         "calories",
         "fat",
         "carbohydrates",
@@ -652,7 +674,7 @@ def grocery_count(ingredient) -> float:
 def grocery_number_discrete(ingredient):
     """Number of groceries in ingredient, measured by count."""
 
-    count = ingredient["grocery"]["discrete_amount"]
+    count = ingredient["grocery"]["count"]
     if count == 0:
         return 0
 

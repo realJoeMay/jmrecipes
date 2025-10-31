@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+from jmrecipes.utils import parse
+
 
 # Directories
 utils_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,8 +27,8 @@ def lookup(ingredient_name: str) -> dict | None:
         is found, otherwise None.
     """
 
-    search_name = ingredient_name.lower()
-    matching_items = _groceries[_groceries.name == search_name]
+    # search_name = ingredient_name.lower()
+    matching_items = _groceries[_groceries.name.str.lower() == ingredient_name.lower()]
 
     if matching_items.empty:
         return None
@@ -45,18 +47,18 @@ def full_list() -> list[dict]:
 def _load_groceries():
     groceries_path = os.path.join(data_directory, "groceries.xlsx")
     groceries = pd.read_excel(groceries_path)
-    column_defaults = {
+
+    # fill empty cells
+    defaults = {
         "name": "",
+        "plural": "",
         "category": "",
         "url": "",
         "cost": 0,
-        "volume_amount": 0,
-        "volume_unit": "",
-        "weight_amount": 0,
-        "weight_unit": "",
-        "other_amount": 0,
-        "other_unit": "",
-        "discrete_amount": 0,
+        "volume": "",
+        "weight": "",
+        "other": "",
+        "count": 0,
         "calories": 0,
         "fat": 0,
         "carbohydrates": 0,
@@ -64,11 +66,33 @@ def _load_groceries():
         "tags": "",
         "notes": "",
     }
-    groceries.fillna(value=column_defaults, inplace=True)
+    groceries.fillna(value=defaults, inplace=True)
     groceries.index = groceries.index + 1
     groceries.index.name = "grocery_id"
     groceries = groceries.reset_index()
-    return groceries
+
+    # split amount into number and unit columns (volume => volume_number, volume_unit)
+    for unit_type in ["volume", "weight", "other"]:
+        groceries[[unit_type + "_amount", unit_type + "_unit"]] = groceries[
+            unit_type
+        ].apply(lambda x: pd.Series(parse.amount(x)))
+
+    # transform to include singular and plural items
+    singular_rows = groceries.assign(singular="")
+    plural_rows = groceries[groceries["plural"] != ""].copy()
+    plural_rows["name"], plural_rows["singular"] = (
+        plural_rows["plural"],
+        plural_rows["name"],
+    )
+    result = pd.concat([singular_rows, plural_rows], ignore_index=True)
+
+    # move singular column from end to position 2
+    cols = list(result.columns)
+    cols.insert(2, cols.pop(cols.index("singular")))
+    result = result[cols]
+
+    # print(result.to_string(index=False))
+    return result
 
 
 _groceries = _load_groceries()

@@ -8,10 +8,9 @@ from jmrecipes.utils import units
 
 
 def ingredient(text: str) -> dict:
-    """Parses an ingredient string into its component parts.
+    """Parses an ingredient string into its components.
 
-    This function takes a textual ingredient description (e.g., "1 cup chopped onions")
-    and extracts four structured components:
+    This function takes ingredient text (e.g., "1 cup chopped onions") and extracts four components:
       - number: the quantity (e.g., 1)
       - unit: the measurement unit (e.g., "cup")
       - item: the core ingredient name (e.g., "onions")
@@ -28,10 +27,16 @@ def ingredient(text: str) -> dict:
             - "descriptor" (str)
     """
 
-    number, other = _amount_and_other(text)
-    unit, other = _unit_and_other(other)
-    item, descriptor = _item_and_descriptor(other)
+    number, other = _split_fraction_and_text(text)
+    unit, other = _split_unit_and_other(other)
+    item, descriptor = _split_item_and_descriptor(other)
     return {"number": number, "unit": unit, "item": item, "descriptor": descriptor}
+
+
+def amount(text: str) -> Tuple[Fraction, str]:
+    """Parses an amount into a number and unit."""
+
+    return _split_fraction_and_text(text)
 
 
 def to_fraction(number: int | float | str) -> Fraction:
@@ -52,11 +57,11 @@ def to_fraction(number: int | float | str) -> Fraction:
         return Fraction(number)
 
     # str
-    amount, remaining = _split_fraction_amount_and_text(number)
+    frac, remaining = _split_fraction_and_text(number)
     if remaining:
         raise ValueError(f"{number} is not a number.")
 
-    return amount
+    return frac
 
 
 def fraction_to_string(frac: Fraction, to_unicode: bool = True) -> str:
@@ -84,53 +89,53 @@ def fraction_to_string(frac: Fraction, to_unicode: bool = True) -> str:
     return amount_display
 
 
-def _amount_and_other(text, amount_as_str=False) -> Tuple[Fraction | str, str]:
-    """Splits a text string into an amount and the remaining text.
+# def _amount_and_other(text: str, amount_as_str=False) -> Tuple[Fraction | str, str]:
+#     """Splits a text string into an amount and the remaining text.
 
-    It recognizes Unicode vulgar fractions and converts them to ASCII
-    equivalents.
+#     It recognizes Unicode vulgar fractions and converts them to ASCII
+#     equivalents.
 
-    Args:
-        text (str): The input text, e.g., "1½ cups flour".
-        amount_as_str (bool): If True, return the amount as a formatted
-        string (e.g., '1 1/2').
+#     Args:
+#         text (str): The input text, e.g., "1½ cups flour".
+#         amount_as_str (bool): If True, return the amount as a formatted
+#         string (e.g., '1 1/2').
 
-    Returns:
-        Tuple[Union[Fraction, str], str]: The numeric part (as Fraction
-        or string) and the remaining text.
-    """
+#     Returns:
+#         Tuple[Union[Fraction, str], str]: The numeric part (as Fraction
+#         or string) and the remaining text.
+#     """
 
-    if amount_as_str:
-        return _split_string_amount_and_text(text)
+#     if amount_as_str:
+#         return _split_string_amount_and_text(text)
 
-    return _split_fraction_amount_and_text(text)
+#     return _split_fraction_amount_and_text(text)
 
 
 def _split_string_amount_and_text(text) -> Tuple[str, str]:
-    amount, text = _split_fraction_amount_and_text(text)
-    return fraction_to_string(amount), text
+    number, text = _split_fraction_and_text(text)
+    return fraction_to_string(number), text
 
 
-def _split_fraction_amount_and_text(text) -> Tuple[Fraction, str]:
+def _split_fraction_and_text(text) -> Tuple[Fraction, str]:
 
     # replace "1½" with "1 1/2"
     for asci, unicode in _unicode_fractions.items():
         text = text.replace(unicode, " " + asci)
 
-    amount = Fraction()
+    number = Fraction()
     words = text.split()
     remaining_words = []
     for i, word in enumerate(words):
         try:
-            amount += Fraction(word)
+            number += Fraction(word)
         except ValueError:
             remaining_words = words[i:]
             break
 
-    return amount, " ".join(remaining_words)
+    return number, " ".join(remaining_words)
 
 
-def _unit_and_other(text: str) -> tuple[str, str]:
+def _split_unit_and_other(text: str) -> tuple[str, str]:
     """Splits a string into a unit and the remaining text.
 
     This function attempts to extract the longest prefix from the
@@ -161,7 +166,7 @@ def _unit_and_other(text: str) -> tuple[str, str]:
     return "", text
 
 
-def _item_and_descriptor(text: str) -> tuple[str, str]:
+def _split_item_and_descriptor(text: str) -> tuple[str, str]:
     """Splits an ingredient string into the main ingredient and its
     description.
 
