@@ -5,7 +5,7 @@ from jmrecipes.build import build
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="jmrecipes", description="A simple static recipe site generator demo"
+        prog="jmrecipes", description="A static recipe website generator."
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)

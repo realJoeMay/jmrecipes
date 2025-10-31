@@ -230,6 +230,9 @@ def load_collections(
         Collections data as a list of dictionaries.
     """
 
+    if not collections_path.exists():
+        return []
+
     has_log = collections_log_path is not None
     if has_log:
         utils.create_dir(collections_log_path)
