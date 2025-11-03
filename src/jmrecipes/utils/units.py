@@ -92,6 +92,9 @@ def _plural(unit: str) -> str:
     If unit not found, return original unit.
     """
 
+    if not unit:
+        return unit
+
     matching_items = _units[_units["unit"] == unit]
     if matching_items.empty:
         return unit
@@ -104,6 +107,9 @@ def _single(unit: str) -> str:
 
     If unit not found, return original unit.
     """
+
+    if not unit:
+        return unit
 
     matching_items = _units[_units["plural"] == unit]
     if matching_items.empty:

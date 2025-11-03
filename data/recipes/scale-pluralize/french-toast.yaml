@@ -6,6 +6,16 @@ ingredients:
 - 1 Egg
 - 1/2 cup Milk
 - 1 slice Brioche Bread
+- text: 15 oz Red Kidney Beans
+  display_number: 1
+  display_unit: (15 oz) can
+  descriptor: drained
+  scale: 1
+- text: 15 oz Red Kidney Beans
+  display_number: 2
+  display_unit: (15 oz) cans
+  descriptor: drained
+  scale: 2
 yield:
 - number: 1
   unit: serving

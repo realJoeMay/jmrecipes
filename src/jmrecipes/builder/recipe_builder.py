@@ -582,6 +582,7 @@ def _ingredient_string(ing: dict) -> str:
         words.append((ing["display_unit"]))
     if ing["display_item"]:
         words.append((ing["display_item"]))
+
     string = " ".join(words)
     return string
 
