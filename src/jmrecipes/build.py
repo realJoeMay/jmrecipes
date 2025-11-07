@@ -106,18 +106,10 @@ def load_recipes(recipes_path: Path, recipes_log_path: Optional[Path] = None) ->
     recipes = []
     for recipe_folder in os.listdir(recipes_path):
         recipe_path = recipes_path / recipe_folder
-        # recipe_log_path = recipes_log_path / recipe_folder
-        # recipes.append(load_recipe(recipe_path, recipes_log_path))
-
+        recipe_log_path = None
         if has_log:
             recipe_log_path = recipes_log_path / recipe_folder
-            # utils.create_dir(recipe_log_path)
-        else:
-            recipe_log_path = None
         recipes.append(load_recipe(recipe_path, recipe_log_path))
-        # else:
-        #     recipes.append(load_recipe(recipe_path))
-
     return recipes
 
 
