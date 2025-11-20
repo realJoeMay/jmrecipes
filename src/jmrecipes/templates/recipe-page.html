@@ -962,9 +962,9 @@ a.menu-header:hover {
                         </div>
                         {% endif %}
 
-                        {% if r.has_linked_videos %}
+                        {% if r.has_videos_linked %}
                         <div class=''>
-                            {% for video in r.linked_videos %}
+                            {% for video in r.videos_linked %}
                             <span class='description-value video-link'>
                                 <a href="{{ video.url }}" target="_blank">Link to video {{ icon.link }}</a>
                             </span>
@@ -1045,10 +1045,10 @@ a.menu-header:hover {
             {% endfor %}
 
 
-            {% if r.has_embedded_videos %}
+            {% if r.has_videos_embedded %}
             <div class="recipe-box recipe-box-instructions">
                 <h2 class='box-title'>Video</h2>
-                {% for video in r.embedded_videos %}
+                {% for video in r.videos_embedded %}
                 <div class="video-container">{{ video.embed_url }}</div>
                 {% endfor %}
             </div>

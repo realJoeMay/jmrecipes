@@ -906,7 +906,7 @@ def set_videos(recipe):
     - 'has_videos_linked' (bool)
     """
 
-    videos_data = recipe["file"].get("videos", [])
+    videos_data = recipe["file"].get("video", [])
     if not isinstance(videos_data, list):
         raise TypeError("Videos data must be a list.")
 
