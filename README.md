@@ -54,9 +54,6 @@ pip install -e .
 ### 4. CLI Usage
 
 ```bash
-# Check installed version
-jmrecipes --version
-
 # Check available commands
 jmrecipes --help
 
