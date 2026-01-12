@@ -573,6 +573,98 @@ a.menu-header:hover {
 }
 
 
+/* TABS */
+
+.view-tabs .recipe-banner,
+.view-tabs .recipe-boxes {
+    display: none;
+}
+
+.tabs-view {
+    display: none;
+}
+
+.view-tabs .tabs-view {
+    display: block;
+}
+
+.tab-buttons {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.tab-button {
+    padding-bottom: 3px;
+    cursor: pointer;
+}
+
+.tab-button.active {
+    color: #318ddf;
+    border-bottom: solid 2px #318ddf;
+}
+
+header {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.09);
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.header-content {
+    max-width: 880px;
+    flex-grow: 1;
+    margin: 10px 10px 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tabs-description {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.tabs-description h3 {
+    padding-bottom: 6px
+}
+
+.active-tab-ingredients .tab:not(.tab-ingredients),
+.active-tab-instructions .tab:not(.tab-instructions),
+.active-tab-video .tab:not(.tab-video),
+.active-tab-notes .tab:not(.tab-notes) {
+    display: none;
+}
+
+/* TAB CONTENTS */
+.tab {
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 880px;
+}
+
+.tab h2 {
+    padding-top: 20px;
+    padding-bottom: 16px;
+}
+
+.tab h2:first-child {
+    padding-top: 0;
+}
+
+.tab .ingredient-amount {
+    font-weight: bold;
+}
+
+.tab .tab-step {
+    padding-bottom: 10px;
+}
+
+
 /* DARK THEME */
 
 .theme-dark {
@@ -605,6 +697,7 @@ a.menu-header:hover {
     filter: brightness(80%);
 }
 
+.theme-dark header,
 .theme-dark .recipe-box,
 .theme-dark .menu {
     background-color: #2a2a2a;
@@ -640,6 +733,8 @@ a.menu-header:hover {
 }
 
 
+
+
 @media (prefers-color-scheme: dark) {
 
     .theme-system {
@@ -673,6 +768,7 @@ a.menu-header:hover {
         filter: brightness(80%);
     }
 
+    .theme-system header,
     .theme-system .recipe-box,
     .theme-system .menu {
         background-color: #2a2a2a;
@@ -712,6 +808,16 @@ a.menu-header:hover {
         <div class="menu-top">
 
             <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
+
+            <div class="menu-view">
+                <h3 class="menu-header">View</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-view-normal selected" onclick="viewNormal()">Normal</div>
+                    <div class="menu-button button-view-tabs" onclick="viewTabs()">Tabs</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
 
             <div class="menu-appearance">
                 <h3 class="menu-header">Theme</h3>
@@ -1053,7 +1159,7 @@ a.menu-header:hover {
                 {% endfor %}
             </div>
             {% endif %}
-    
+
 
             {% for scale in r.scales %}
             {% if scale.has_instructions %}
@@ -1103,6 +1209,205 @@ a.menu-header:hover {
             </div>
             {% endif %}
             {% endfor %}
+
+
+        </div>
+
+        <div class="tabs-view">
+
+            <header>
+                <div class="header-content">
+                    <h1>{{ r.title }}</h1>
+                    <div>
+                        <span class='menu-toggle-btn icon-wrapper' onclick='toggleMenu()'>{{ icon.bars }}</span>
+                    </div>        
+                </div>
+            </header>
+
+            <!-- Description Area -->
+            {% for scale in r.scales %}
+            {% if scale.has_description_area %}
+            <div class='tabs-description scale {{ scale.item_class }}'>
+
+                {% if r.has_subtitle %}
+                <h3 class='recipe-subtitle'>{{ r.subtitle }}</h3>
+                {% endif %}
+
+                {% if scale.has_visible_yields %}
+                <div class='description-row'>
+                    <span class='description-label'>Yield:</span>
+                    <span class='description-value'>
+                        {% for yield in scale.yield %}
+                        {% if yield.show_yield %}
+                        <span class=''>{{ yield.yield_string }}</span>
+                        {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+
+                {% if scale.has_visible_serving_sizes %}
+                <div class='description-row'>
+                    <span class='description-label'>Serving Size:</span>
+                    <span class='description-value'>
+                        {% for yield in scale.yield %}
+                        {% if yield.show_serving_size %}
+                        <span class=''>{{ yield.serving_size_string }}</span>
+                        {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+
+                {% if scale.has_times %}
+                <div class='times'>
+                    {% for time in scale.times %}
+                    <div class='description-row'>
+                        <span class='time-label'>{{ time.name }}:</span>
+                        <span class='time-value'>{{ time.time_string }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if r.used_in_any %}
+                <div class='description-row'>
+                    <span class='description-label'>Used in:</span>
+                    <span class='description-value'>
+                        {% for parent_recipe in r.used_in %}
+                        <a href="../{{ parent_recipe.slug }}{% if is_local %}/index.html{% endif %}" target="_blank" class="parent-recipe-link">{{ parent_recipe.title }}</a>
+                        {% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+
+                {% if r.has_videos_linked %}
+                <div class=''>
+                    {% for video in r.videos_linked %}
+                    <span class='description-value video-link'>
+                        <a href="{{ video.url }}" target="_blank">Link to video {{ icon.link }}</a>
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+            {% endif %}
+            {% endfor %}
+
+
+            <!-- Tab Menu -->
+            <div class="tab-buttons">
+                {% for scale in r.scales %}
+                {% if scale.has_ingredients %}
+                <div class="tab-button scale {{ scale.item_class }}" data-tab="ingredients">Ingredients</div>
+                {% endif %}
+                {% if scale.has_instructions %}
+                <div class="tab-button scale {{ scale.item_class }}" data-tab="instructions">Instructions</div>
+                {% endif %}
+                {% endfor %}
+
+                {% if r.has_videos_embedded %}
+                <div class="tab-button" data-tab="video">Video</div>
+                {% endif %}
+
+                {% for scale in r.scales %}
+                {% if scale.has_notes_box %}
+                <div class="tab-button scale {{ scale.item_class }}" data-tab="notes">Notes</div>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+
+
+
+            <!-- Ingredients -->
+            {% for scale in r.scales %}
+            {% if scale.has_ingredients %}
+            <div class="tab tab-ingredients scale {{ scale.item_class }}">
+    
+                {% for list_name, ingredients in scale.ingredient_lists.items() %}
+                <h2>{{ list_name }}</h2>
+                
+                <div class="">
+                    {% for ingredient in ingredients %}
+                    <div>
+                        {% if ingredient.display_amount %}
+                        <span class="ingredient-amount">{{ ingredient.display_amount }}</span>
+                        {% endif %}
+                        {% if ingredient.display_item %}
+                        <span class="">
+                            {{ ingredient.display_item }}
+                            {% if ingredient.descriptor %}
+                            <span class="">{{ ingredient.descriptor }}</span>
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </div>
+        
+                    {% endfor %}
+                </div><!-- ingredient list -->
+
+            {% endfor %}
+            </div><!-- scale -->
+            
+            {% endif %}
+            {% endfor %}
+
+
+            <!-- Instructions -->
+            {% for scale in r.scales %}
+            {% if scale.has_instructions %}
+            <div class="tab tab-instructions scale {{ scale.item_class }}">
+
+                {% for list_name, steps in scale.instruction_lists.items() %}
+                <h2>{{ list_name }}</h2>
+                {% for step in steps %}
+                <div class="tab-step">{{ step.text }}</div>
+        
+                {% endfor %}
+                {% endfor %}
+
+            </div>
+
+
+            {% endif %}
+            {% endfor %}
+
+            <!-- Video -->
+            {% if r.has_videos_embedded %}
+            <div class="tab tab-video">
+                <h2 class='box-title'>Video</h2>
+                {% for video in r.videos_embedded %}
+                <div class="video-container">{{ video.embed_url }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Notes -->
+            {% for scale in r.scales %}
+            {% if scale.has_notes_box %}
+            <div class="tab tab-notes scale {{ scale.item_class }}">
+                <h2>Notes</h2>
+
+                {% if scale.has_notes %}
+                {% for note in scale.notes %}
+                <div class="note">{{ note.text }}</div>
+                {% endfor %}
+                {% endif %}
+
+                {% if r.has_sources %}
+                <div class="note sources">
+                    {% for source in r.sources %}
+                    <div class="source">Source: {{ source.html }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+            {% endif %}
+            {% endfor %}
+
 
 
         </div>
@@ -1163,6 +1468,38 @@ function closeMenu() {
     pageBody.classList.remove("menu-open");
 }
 
+
+// View
+
+var viewNormalButton = document.querySelector(".button-view-normal");
+var viewTabsButton = document.querySelector(".button-view-tabs");
+
+function viewNormal() {
+    pageBody.classList.remove("view-tabs");
+    pageBody.classList.add("view-normal");
+    viewTabsButton.classList.remove('selected');
+    viewNormalButton.classList.add('selected');
+    setCookie("view", "normal", 365);
+}
+
+function viewTabs() {
+    pageBody.classList.remove("view-normal");
+    pageBody.classList.add("view-tabs");
+    viewNormalButton.classList.remove('selected');
+    viewTabsButton.classList.add('selected');
+    setCookie("view", "tabs", 365);
+}
+
+function loadPreviousView() {
+    console.log("Checking view now");
+    if (getCookie("view") == "tabs") {
+        viewTabs();
+    } else {
+        console.log("Loading normal view");
+        viewNormal(); 
+    }
+}
+loadPreviousView()
 
 
 // Theme
@@ -1319,8 +1656,30 @@ document.querySelector(".menu-copy-ingredients.{{ scale.item_class }} .menu-head
 
 
 
+// Tabs
+const tabButtons = document.querySelectorAll(".tab-button");
 
+tabButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+        const tabName = button.dataset.tab
 
+        // set class to body
+        Array.from(document.body.classList)
+            .filter(cls => cls.startsWith('active-tab'))
+            .forEach(cls => document.body.classList.remove(cls));
+        pageBody.classList.add(`active-tab-${tabName}`)
+
+        // set class to clicked button for all scales
+        tabButtons.forEach(btn => btn.classList.remove("active"));
+        document
+            .querySelectorAll(`[data-tab="${tabName}"]`)
+            .forEach(el => el.classList.add('active'));
+    });
+});
+const firstTab = document.querySelector('.tab-button');
+if (firstTab) {
+    firstTab.click();
+}
 
 
 // Keyboard Shortcuts
