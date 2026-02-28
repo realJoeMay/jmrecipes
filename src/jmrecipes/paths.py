@@ -1,3 +1,5 @@
+"""Path handling for jmrecipes."""
+
 from pathlib import Path
 
 PROJECT_MARKERS = ("pyproject.toml", ".git")
@@ -15,10 +17,17 @@ def find_project_root(start: Path | None = None) -> Path:
 class PathConfig:
     """Central place to resolve directories."""
 
-    def __init__(self, project_dir: Path | None = None) -> None:
+    def __init__(
+        self,
+        project_dir: Path | None = None,
+        data_dir: Path | None = None,
+    ) -> None:
+
         self.project_dir = project_dir or find_project_root()
         self.builds_dir = self.project_dir / "builds"
-        self.data_dir = self.project_dir / "data"
+        self.data_dir = (
+            Path(data_dir).resolve() if data_dir else self.project_dir / "data"
+        )
         self.assets_dir = self.data_dir / "assets"
 
     def ensure(self) -> "PathConfig":

@@ -1,4 +1,4 @@
-"""Recipe Site Builder"""
+"""Builds a recipe website from data files."""
 
 import datetime
 import os
@@ -16,12 +16,11 @@ from jmrecipes.utils import template
 from jmrecipes.utils import qr
 
 
-def build():
+def build(data: str | None):
     """Loads site data and creates a recipe website."""
 
     timestamp = datetime.datetime.now()
-
-    paths = PathConfig().ensure()
+    paths = PathConfig(data_dir=Path(data) if data else None).ensure()
     latest_folder = paths.builds_dir / "latest"
     site_web = latest_folder / "web"
     site_local = latest_folder / "local"
