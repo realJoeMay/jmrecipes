@@ -1,15 +1,9 @@
-import os
+"""Grocery data access and lookup."""
+
 import pandas as pd
 
+from jmrecipes.paths import get_paths
 from jmrecipes.utils import parse
-
-
-# Directories
-utils_directory = os.path.dirname(os.path.abspath(__file__))
-jmr_directory = os.path.split(utils_directory)[0]
-src_directory = os.path.split(jmr_directory)[0]
-project_directory = os.path.split(src_directory)[0]
-data_directory = os.path.join(project_directory, "data")
 
 
 def lookup(ingredient_name: str) -> dict | None:
@@ -28,6 +22,7 @@ def lookup(ingredient_name: str) -> dict | None:
     """
 
     # search_name = ingredient_name.lower()
+    _groceries = _load_groceries()
     matching_items = _groceries[_groceries.name.str.lower() == ingredient_name.lower()]
 
     if matching_items.empty:
@@ -41,12 +36,12 @@ def lookup(ingredient_name: str) -> dict | None:
 
 def full_list() -> list[dict]:
     """Return list of all loaded groceries."""
+    _groceries = _load_groceries()
     return _groceries.to_dict(orient="records")
 
 
 def _load_groceries():
-    groceries_path = os.path.join(data_directory, "groceries.xlsx")
-    groceries = pd.read_excel(groceries_path)
+    groceries = pd.read_excel(get_paths().data_dir / "groceries.xlsx")
 
     # fill empty cells
     defaults = {
@@ -93,6 +88,3 @@ def _load_groceries():
 
     # print(result.to_string(index=False))
     return result
-
-
-_groceries = _load_groceries()

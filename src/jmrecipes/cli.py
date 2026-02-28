@@ -1,7 +1,9 @@
 """Command-line interface for the jmrecipes application."""
 
 import argparse
+
 from jmrecipes.build import build
+from jmrecipes.paths import init_paths
 
 
 def main():
@@ -21,4 +23,5 @@ def main():
 
     args = parser.parse_args()
     if args.command == "build":
-        build(data=args.data)
+        init_paths(data_dir=args.data)
+        build()

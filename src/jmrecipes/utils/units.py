@@ -1,15 +1,8 @@
 """Unit utilities for parsing, identifying, and converting units."""
 
-import os
 import pandas as pd
 
-
-# Directories
-utils_directory = os.path.dirname(os.path.abspath(__file__))
-jmr_directory = os.path.split(utils_directory)[0]
-src_directory = os.path.split(jmr_directory)[0]
-project_directory = os.path.split(src_directory)[0]
-data_directory = os.path.join(project_directory, "data")
+from jmrecipes.paths import get_paths
 
 
 def is_unit(text: str) -> bool:
@@ -17,6 +10,8 @@ def is_unit(text: str) -> bool:
 
     if not text:
         return False
+
+    _units = _load_units()
 
     single_units = set(_units["unit"])
     plural_units = set(_units["plural"])
@@ -26,6 +21,7 @@ def is_unit(text: str) -> bool:
 
 def is_weight(unit: str) -> bool:
     """Returns True if unit is a single or plural weight unit."""
+    _units = _load_units()
 
     weights_df = _units[_units["type"] == "weight"]
     single_weights = set(weights_df["unit"])
@@ -36,6 +32,7 @@ def is_weight(unit: str) -> bool:
 
 def is_volume(unit: str) -> bool:
     """Returns True if unit is a single or plural volume unit."""
+    _units = _load_units()
 
     volume_df = _units[_units["type"] == "volume"]
     single_weights = set(volume_df["unit"])
@@ -52,6 +49,7 @@ def is_equivalent(unit1: str, unit2: str) -> bool:
     - unit2 is plural of unit1
     - unit1 is plural of unit2
     """
+    _units = _load_units()
 
     unit1 = unit1.lower()
     unit2 = unit2.lower()
@@ -69,6 +67,7 @@ def is_equivalent(unit1: str, unit2: str) -> bool:
 
 def to_standard(unit: str):
     """Returns a unit's conversion to standard."""
+    _units = _load_units()
 
     unit_mask = _units["unit"] == unit
     plural_mask = _units["plural"] == unit
@@ -95,6 +94,8 @@ def _plural(unit: str) -> str:
     if not unit:
         return unit
 
+    _units = _load_units()
+
     matching_items = _units[_units["unit"] == unit]
     if matching_items.empty:
         return unit
@@ -111,6 +112,8 @@ def _single(unit: str) -> str:
     if not unit:
         return unit
 
+    _units = _load_units()
+
     matching_items = _units[_units["plural"] == unit]
     if matching_items.empty:
         return unit
@@ -121,11 +124,7 @@ def _single(unit: str) -> str:
 def _load_units() -> pd.DataFrame:
     """Loads list of units from file."""
 
-    path = os.path.join(data_directory, "units.csv")
-    df = pd.read_csv(path)
+    df = pd.read_csv(get_paths().data_dir / "units.csv")
     column_defaults = {"units": "", "plural": "", "type": "", "to_standard": 0}
     df.fillna(value=column_defaults, inplace=True)
     return df
-
-
-_units = _load_units()

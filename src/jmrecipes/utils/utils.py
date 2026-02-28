@@ -3,41 +3,24 @@
 from configparser import ConfigParser
 from fractions import Fraction
 import json
-import os
 from pathlib import Path
 import shutil
 from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
-from typing import Union
+from typing import Callable, Union
 import re
 
-
-# Directories
-utils_directory = os.path.dirname(os.path.abspath(__file__))
-jmr_directory = os.path.split(utils_directory)[0]
-src_directory = os.path.split(jmr_directory)[0]
-project_directory = os.path.split(src_directory)[0]
-builds_directory = os.path.join(project_directory, "builds")
-data_directory = os.path.join(project_directory, "data")
-assets_directory = os.path.join(data_directory, "assets")
+from jmrecipes.paths import get_paths
 
 
 # Folders and files
-def create_dir(path):
-    """Create a folder."""
+def make_empty_dir(path: Path) -> None:
+    """Create an empty directory, deleting existing contents if necessary."""
+    path = Path(path)
 
-    if not os.path.exists(path):
-        os.mkdir(path)
-
-
-def make_empty_dir(path):
-    """Create a folder.
-
-    Empty folder if already exists.
-    """
-
-    if os.path.exists(path):
+    if path.exists():
         shutil.rmtree(path)
-    os.makedirs(path, exist_ok=True)
+
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def write_file(content: str, path: Path):
@@ -47,7 +30,7 @@ def write_file(content: str, path: Path):
         f.write(content)
 
 
-def write_json_file(data: dict, path: str):
+def write_json_file(data: dict, path: Path):
     """Save dictionary data to a JSON file.
 
     Args:
@@ -76,7 +59,7 @@ class JMREncoder(json.JSONEncoder):
 
 
 # Pipe
-def pipe(data: dict, log_path: Path | None, *funcs) -> dict:
+def pipe(data: dict, log_path: Path | None, *funcs: Callable[[dict], dict]) -> dict:
     """Pipe data through a sequence of functions.
 
     Optionally saves data after each function in log files. Saves no log
@@ -86,14 +69,14 @@ def pipe(data: dict, log_path: Path | None, *funcs) -> dict:
     has_log = log_path is not None
 
     if has_log:
-        create_dir(log_path)
-        log_file_path_0 = os.path.join(log_path, "0_start.json")
+        log_path.mkdir(parents=True, exist_ok=True)
+        log_file_path_0 = log_path / "0_start.json"
         write_json_file(data, log_file_path_0)
 
     for i, func in enumerate(funcs, 1):
         data = func(data)
         if has_log:
-            log_file_path = os.path.join(log_path, f"{i}_{func.__name__}.json")
+            log_file_path = log_path / f"{i}_{func.__name__}.json"
             write_json_file(data, log_file_path)
 
     return data
@@ -103,9 +86,8 @@ def pipe(data: dict, log_path: Path | None, *funcs) -> dict:
 def config(section: str, name: str, as_boolean: bool = False) -> str | bool:
     """Read from config file."""
 
-    config_path = os.path.join(data_directory, "config.ini")
     parser = ConfigParser()
-    parser.read(config_path)
+    parser.read(get_paths().config_file)
     if as_boolean:
         return parser.getboolean(section, name)
     return parser.get(section, name)

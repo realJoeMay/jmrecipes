@@ -1,4 +1,4 @@
-"""Builds a recipe website from data files."""
+"""Builds a recipe website."""
 
 import datetime
 import os
@@ -10,29 +10,28 @@ from jmrecipes.builder import from_file
 from jmrecipes.builder import recipe_builder
 from jmrecipes.builder import collection_builder
 from jmrecipes.builder import site_builder
-from jmrecipes.paths import PathConfig
-from jmrecipes.utils import utils
-from jmrecipes.utils import template
-from jmrecipes.utils import qr
+from jmrecipes.paths import get_paths
+from jmrecipes.utils import qr, template, utils
 
 
-def build(data: str | None):
+def build():
     """Loads site data and creates a recipe website."""
 
     timestamp = datetime.datetime.now()
-    paths = PathConfig(data_dir=Path(data) if data else None).ensure()
+
+    paths = get_paths()
     latest_folder = paths.builds_dir / "latest"
-    site_web = latest_folder / "web"
-    site_local = latest_folder / "local"
+    # site_web = latest_folder / "web"
+    # site_local = latest_folder / "local"
     site_log_path = latest_folder / "build-log"
 
-    utils.create_dir(paths.builds_dir)
+    # utils.create_dir(paths.builds_dir)
     utils.make_empty_dir(latest_folder)
-    utils.create_dir(site_log_path)
+    # utils.create_dir(site_log_path)
 
     site = load_site(paths.data_dir, site_log_path)
-    build_site(site, site_web, timestamp, verbose=True)
-    build_site(site, site_local, timestamp, local=True)
+    build_site(site, latest_folder / "web", timestamp, verbose=True)
+    build_site(site, latest_folder / "local", timestamp, local=True)
 
     timestamp_folder = paths.builds_dir / timestamp.strftime("%Y-%m-%d %H-%M-%S")
     shutil.copytree(latest_folder, timestamp_folder)
@@ -100,7 +99,7 @@ def load_recipes(recipes_path: Path, recipes_log_path: Optional[Path] = None) ->
 
     has_log = recipes_log_path is not None
     if has_log:
-        utils.create_dir(recipes_log_path)
+        recipes_log_path.mkdir(parents=True, exist_ok=True)
 
     recipes = []
     for recipe_folder in os.listdir(recipes_path):
@@ -140,7 +139,8 @@ def load_recipe(recipe_path: Path, recipe_log_path: Optional[Path] = None) -> di
         recipe["image_path"] = os.path.join(recipe_path, image)
 
     if recipe_log_path is not None:
-        utils.create_dir(recipe_log_path)
+        # utils.create_dir(recipe_log_path)
+        recipe_log_path.mkdir(parents=True, exist_ok=True)
 
     return utils.pipe(
         recipe,
@@ -226,7 +226,8 @@ def load_collections(
 
     has_log = collections_log_path is not None
     if has_log:
-        utils.create_dir(collections_log_path)
+        # utils.create_dir(collections_log_path)
+        collections_log_path.mkdir(parents=True, exist_ok=True)
 
     collections = []
     for collection_file in os.listdir(collections_path):
@@ -304,12 +305,13 @@ def build_site(
     make_404_page(site_path / "404.html")
     make_summary_page(site, timestamp, local, site_path / "summary.html")
 
+    assets_dir = get_paths().assets_dir
     shutil.copyfile(
-        os.path.join(utils.assets_directory, "icon.png"),
+        os.path.join(assets_dir, "icon.png"),
         os.path.join(site_path, "icon.png"),
     )
     shutil.copyfile(
-        os.path.join(utils.assets_directory, "default_720x540.jpg"),
+        os.path.join(assets_dir, "default_720x540.jpg"),
         os.path.join(site_path, "default.jpg"),
     )
 
@@ -331,12 +333,12 @@ def make_recipe_page(recipe: dict, output_dir: Path, local: bool) -> None:
         local: Builds local version if true, web version otherwise.
     """
 
-    utils.create_dir(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / "index.html"
     content = template.render(
         "recipe-page.html",
         r=recipe,
-        icon=template.icons,
+        icon=template.get_icons(),
         site_title=utils.site_title(),
         is_local=local,
     )
@@ -352,14 +354,14 @@ def make_print_page(recipe: dict, output_dir: Path, local: bool) -> None:
         local: Builds local version if true, web version otherwise.
     """
 
-    utils.create_dir(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / "index.html"
     content = template.render(
         "print-page.html",
         r=recipe,
         is_local=local,
         site_title=utils.site_title(),
-        icon=template.icons,
+        icon=template.get_icons(),
     )
     utils.write_file(content, file_path)
 
@@ -373,14 +375,14 @@ def make_collection_page(collection: dict, collection_dir: Path, local: bool) ->
         local: Builds local version if true, web version otherwise.
     """
 
-    utils.create_dir(collection_dir)
+    collection_dir.mkdir(parents=True, exist_ok=True)
     file_path = collection_dir / "index.html"
     content = template.render(
         "collection.html",
         c=collection,
         is_local=local,
         site_title=utils.site_title(),
-        icon=template.icons,
+        icon=template.get_icons(),
     )
     utils.write_file(content, file_path)
 

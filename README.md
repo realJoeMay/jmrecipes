@@ -54,11 +54,11 @@ pip install -e .
 ### 4. CLI Usage
 
 ```bash
-# Check available commands
-jmrecipes --help
-
 # Build the site
 jmrecipes build
+
+# Build with a separate data directory
+jmrecipes build --data ../jmr-data
 
 # run built in test
 pytest
