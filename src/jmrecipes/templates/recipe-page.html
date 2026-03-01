@@ -596,8 +596,8 @@ a.menu-header:hover {
     display: flex;
     gap: 20px;
     padding: 15px 20px 12px;
-	background: #222;
-	box-shadow: 0px 10px 10px #222;
+	background: #eee;
+	box-shadow: 0px 10px 10px #eee;
 }
 
 .tab-button {
@@ -708,8 +708,6 @@ header {
     box-shadow: 0 1px 10px rgb(0 0 0 / 20%);
 }
 
-
-
 .theme-dark .step-number-circle {
     background-color: #3a3a3a;
 }
@@ -736,6 +734,10 @@ header {
     border-color: #666;
 }
 
+.theme-dark .tab-buttons {
+	background: #222;
+	box-shadow: 0px 10px 10px #222;
+}
 
 
 
@@ -804,6 +806,12 @@ header {
     .theme-system .step {
         border-color: #666;
     }
+
+    .theme-system .tab-buttons {
+        background: #222;
+        box-shadow: 0px 10px 10px #222;
+}
+
 }
     </style>
 </head>
@@ -813,27 +821,7 @@ header {
 
             <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
 
-            <div class="menu-view">
-                <h3 class="menu-header">View</h3>
-                <div class="menu-content menu-button-section">
-                    <div class="menu-button button-view-normal selected" onclick="viewNormal()">Normal</div>
-                    <div class="menu-button button-view-tabs" onclick="viewTabs()">Tabs</div>
-                </div>
-            </div>
-
-            <div class="menu-section-break"></div>
-
-            <div class="menu-appearance">
-                <h3 class="menu-header">Theme</h3>
-                <div class="menu-content menu-button-section">
-                    <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
-                    <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
-                    <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
-                </div>
-            </div>
-
-            <div class="menu-section-break"></div>
-
+            <!-- Scale -->
             {% if r.has_scales %}
             <div class='menu-scale'>
                 <h3 class='menu-header'>Scale</h3>
@@ -856,7 +844,7 @@ header {
             <div class="menu-section-break"></div>
             {% endif %}
 
-
+            <!-- Ingredient Detail -->
             {% for scale in r.scales %}
             {% if scale.has_any_detail %}
             <div class='menu-details scale {{ scale.item_class }}'>
@@ -887,7 +875,6 @@ header {
                             {% endif %}
                         </div>
                         {% endif %}
-
                     </div>
                 </div>
             </div>
@@ -895,11 +882,32 @@ header {
             <div class="menu-section-break scale {{ scale.item_class }}"></div>
             {% endif %}
             {% endfor %}
-    
+
+            <!-- View -->
+            <div class="menu-view">
+                <h3 class="menu-header">View</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-view-normal selected" onclick="viewNormal()">Normal</div>
+                    <div class="menu-button button-view-tabs" onclick="viewTabs()">Tabs</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
+
+            <!-- Theme -->
+            <div class="menu-appearance">
+                <h3 class="menu-header">Theme</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
+                    <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
+                    <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
 
 
-
-
+            <!-- Copy Ingredients -->
             {% for scale in r.scales %}
             {% if scale.has_ingredients %}
             <div class='menu-copy-ingredients scale {{ scale.item_class }}'>
@@ -922,9 +930,7 @@ header {
             {% endfor %}
 
 
-
-
-        
+            <!-- Print -->
             <div class='menu_print'>
                 <a class='menu-header menu-item' href='./p{% if is_local %}/index.html{% endif %}'>
                     <span class='menu-icon icon-wrapper'>{{ icon.print }}</span>
@@ -932,6 +938,7 @@ header {
                 </a>
             </div>
 
+            <!-- Collections -->
             {% for collection in r.collections %}
             <div class='menu_collection'>
               <a class='menu-header menu-item' href='{{ collection.href }}{% if is_local %}/index.html{% endif %}'>
@@ -1333,18 +1340,22 @@ header {
                 {% for list_name, ingredients in scale.ingredient_lists.items() %}
                 <h2>{{ list_name }}</h2>
                 
-                <div>
+                <div class="">
                     {% for ingredient in ingredients %}
                     <div>
                         {% if ingredient.display_amount %}
                         <span class="ingredient-amount">{{ ingredient.display_amount }}</span>
                         {% endif %}
                         {% if ingredient.display_item %}
-                        <span>
-                            {{ ingredient.display_item }}{% if ingredient.descriptor %}, {{ ingredient.descriptor }}{% endif %}
+                        <span class="">
+                            {{ ingredient.display_item }}
+                            {% if ingredient.descriptor %}
+                            <span class="">{{ ingredient.descriptor }}</span>
+                            {% endif %}
                         </span>
                         {% endif %}
                     </div>
+        
                     {% endfor %}
                 </div><!-- ingredient list -->
 
@@ -1727,6 +1738,29 @@ document.addEventListener("keydown", function(e) {
         detailNutritionPerServing();
     }
     {% endif %}
+
+    // Press a for normal view
+    if (e.code === "KeyA") {
+        viewNormal();
+    }
+
+    // Press s for tabs view
+    if (e.code === "KeyS") {
+        viewTabs();
+    }
+
+    // Press zxc for theme
+    if (e.code === "KeyZ") {
+        themeSystem();
+    }
+
+    if (e.code === "KeyX") {
+        themeLight();
+    }
+
+    if (e.code === "KeyC") {
+        themeDark();
+    }
     
 });
 
