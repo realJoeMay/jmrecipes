@@ -1333,22 +1333,18 @@ header {
                 {% for list_name, ingredients in scale.ingredient_lists.items() %}
                 <h2>{{ list_name }}</h2>
                 
-                <div class="">
+                <div>
                     {% for ingredient in ingredients %}
                     <div>
                         {% if ingredient.display_amount %}
                         <span class="ingredient-amount">{{ ingredient.display_amount }}</span>
                         {% endif %}
                         {% if ingredient.display_item %}
-                        <span class="">
-                            {{ ingredient.display_item }}
-                            {% if ingredient.descriptor %}
-                            <span class="">{{ ingredient.descriptor }}</span>
-                            {% endif %}
+                        <span>
+                            {{ ingredient.display_item }}{% if ingredient.descriptor %}, {{ ingredient.descriptor }}{% endif %}
                         </span>
                         {% endif %}
                     </div>
-        
                     {% endfor %}
                 </div><!-- ingredient list -->
 
