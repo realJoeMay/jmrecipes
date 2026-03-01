@@ -821,6 +821,31 @@ header {
 
             <span class="menu-close-btn icon-wrapper" onclick="closeMenu()">{{ icon.x }}</span>
 
+            <!-- Theme -->
+            <div class="menu-appearance">
+                <h3 class="menu-header">Theme</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
+                    <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
+                    <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
+
+
+            <!-- View -->
+            <div class="menu-view">
+                <h3 class="menu-header">View</h3>
+                <div class="menu-content menu-button-section">
+                    <div class="menu-button button-view-normal selected" onclick="viewNormal()">Normal</div>
+                    <div class="menu-button button-view-tabs" onclick="viewTabs()">Tabs</div>
+                </div>
+            </div>
+
+            <div class="menu-section-break"></div>
+
+
             <!-- Scale -->
             {% if r.has_scales %}
             <div class='menu-scale'>
@@ -882,30 +907,6 @@ header {
             <div class="menu-section-break scale {{ scale.item_class }}"></div>
             {% endif %}
             {% endfor %}
-
-            <!-- View -->
-            <div class="menu-view">
-                <h3 class="menu-header">View</h3>
-                <div class="menu-content menu-button-section">
-                    <div class="menu-button button-view-normal selected" onclick="viewNormal()">Normal</div>
-                    <div class="menu-button button-view-tabs" onclick="viewTabs()">Tabs</div>
-                </div>
-            </div>
-
-            <div class="menu-section-break"></div>
-
-            <!-- Theme -->
-            <div class="menu-appearance">
-                <h3 class="menu-header">Theme</h3>
-                <div class="menu-content menu-button-section">
-                    <div class="menu-button button-theme-system selected" onclick="themeSystem()">System</div>
-                    <div class="menu-button button-theme-light" onclick="themeLight()">Light</div>
-                    <div class="menu-button button-theme-dark" onclick="themeDark()">Dark</div>
-                </div>
-            </div>
-
-            <div class="menu-section-break"></div>
-
 
             <!-- Copy Ingredients -->
             {% for scale in r.scales %}
@@ -1716,51 +1717,50 @@ document.addEventListener("keydown", function(e) {
     }
     {% endfor %}
 
-    // Press qwer for ingredient details
+    // Select theme
     if (e.code === "KeyQ") {
+        themeSystem();
+    }
+
+    if (e.code === "KeyW") {
+        themeLight();
+    }
+
+    if (e.code === "KeyE") {
+        themeDark();
+    }
+
+    // Select view
+    if (e.code === "KeyA") {
+        viewNormal();
+    }
+
+    if (e.code === "KeyS") {
+        viewTabs();
+    }
+
+    // Ingredient details
+    if (e.code === "KeyZ") {
         detailNone();
     }
 
     {% if r.has_cost_detail %}
-    if (e.code === "KeyW") {
+    if (e.code === "KeyX") {
         detailCost();
     }
     {% endif %}
 
     {% if r.has_cost_per_serving_detail %}
-    if (e.code === "KeyE") {
+    if (e.code === "KeyC") {
         detailCostPerServing();
     }
     {% endif %}
 
     {% if r.has_nutrition_detail %}
-    if (e.code === "KeyR") {
+    if (e.code === "KeyV") {
         detailNutritionPerServing();
     }
     {% endif %}
-
-    // Press a for normal view
-    if (e.code === "KeyA") {
-        viewNormal();
-    }
-
-    // Press s for tabs view
-    if (e.code === "KeyS") {
-        viewTabs();
-    }
-
-    // Press zxc for theme
-    if (e.code === "KeyZ") {
-        themeSystem();
-    }
-
-    if (e.code === "KeyX") {
-        themeLight();
-    }
-
-    if (e.code === "KeyC") {
-        themeDark();
-    }
     
 });
 
