@@ -64,7 +64,7 @@ class PathConfig:
 def init_paths(
     project_dir: Path | None = None, data_dir: Path | str | None = None
 ) -> None:
-    """Initialize global path configuration once."""
+    """Initialize global path configuration."""
     global _paths  # pylint: disable=global-statement
     if _paths is not None:
         raise RuntimeError("Paths already initialized")
@@ -77,7 +77,11 @@ def init_paths(
 
 
 def get_paths() -> PathConfig:
-    """Return initialized path configuration."""
+    """Return path configuration."""
+    if _paths is None:
+        init_paths()  # auto-initialize with defaults if not already done
+
     if _paths is None:
         raise RuntimeError("Paths not initialized")
+
     return _paths
