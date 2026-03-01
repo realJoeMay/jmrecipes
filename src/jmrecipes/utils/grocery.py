@@ -1,5 +1,6 @@
 """Grocery data access and lookup."""
 
+from functools import lru_cache
 import pandas as pd
 
 from jmrecipes.paths import get_paths
@@ -21,8 +22,7 @@ def lookup(ingredient_name: str) -> dict | None:
         is found, otherwise None.
     """
 
-    # search_name = ingredient_name.lower()
-    _groceries = _load_groceries()
+    _groceries = _get_groceries()
     matching_items = _groceries[_groceries.name.str.lower() == ingredient_name.lower()]
 
     if matching_items.empty:
@@ -36,11 +36,18 @@ def lookup(ingredient_name: str) -> dict | None:
 
 def full_list() -> list[dict]:
     """Return list of all loaded groceries."""
-    _groceries = _load_groceries()
+    _groceries = _get_groceries()
     return _groceries.to_dict(orient="records")
 
 
-def _load_groceries():
+@lru_cache(maxsize=1)
+def _get_groceries() -> pd.DataFrame:
+    """Load groceries from Excel file with caching."""
+    return _load_groceries().copy()
+
+
+def _load_groceries() -> pd.DataFrame:
+    """Load groceries from Excel file and preprocess the data."""
     groceries = pd.read_excel(get_paths().data_dir / "groceries.xlsx")
 
     # fill empty cells
@@ -86,5 +93,4 @@ def _load_groceries():
     cols.insert(2, cols.pop(cols.index("singular")))
     result = result[cols]
 
-    # print(result.to_string(index=False))
     return result
